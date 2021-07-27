@@ -60,6 +60,8 @@ export const checkAuthenticated = () => async dispatch => {
     try {
       const res = await axios.post(`https://idab.mba/auth/jwt/verify/`, body, config)
 
+      console.log(res.data.code)
+
       if (res.data.code !== 'token_not_valid') {
         dispatch({
           type: AUTHENTICATED_SUCCESS

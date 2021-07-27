@@ -19,7 +19,7 @@ import {
 const initialState = {
   access: localStorage.getItem('access'),
   refresh: localStorage.getItem('refresh'),
-  isAuthenticated: null,
+  isAuthenticated: !!(localStorage.getItem('access') && localStorage.getItem('refresh')),
   user: null
 };
 
