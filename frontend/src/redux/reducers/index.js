@@ -9,6 +9,7 @@ import program from "./program";
 import auth from "./auth/auth";
 import tableReducer from "./admin/tables";
 import students from "./admin/students";
+import teachers from "./admin/teachers";
 
 export default combineReducers({
   home,
@@ -20,5 +21,6 @@ export default combineReducers({
   program,
   auth,
   tableReducer,
-  students
+  students,
+  teachers
 });
