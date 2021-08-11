@@ -2,6 +2,7 @@ import React, {useState, Fragment} from 'react';
 import {MDBCol, MDBContainer, MDBIcon, MDBIframe, MDBModal, MDBModalBody, MDBModalHeader, MDBRow} from "mdbreact";
 import play from '../../assets/play.svg';
 import background from '../../assets/home_background4-inv.jpg'
+import banner from '../../assets/subsidia.jpg'
 
 import {connect} from 'react-redux';
 
@@ -26,7 +27,12 @@ const FirstSection = ({height, margin}) => {
           </div>
         </MDBModalBody>
       </MDBModal>
-      <MDBRow className="w-100 mx-0 d-flex justify-content-stretch idab-2" style={firstSectionStyle}>
+      <div className="d-flex flex-column" style={firstSectionStyle}>
+        <a href="/events/8" style={{width:'100%'}}>
+          <img src={banner} height="120" style={{width:'100%'}} alt="banner"/>
+        </a>
+      
+      <MDBRow className="w-100 mx-0 d-flex justify-content-stretch idab-2" style={{flex:'1 0 auto'}}>
         <MDBCol className="home-first-section d-flex justify-content-center align-items-center text-idab" md="6">
           <div>
             <h2>Почему я выбрал MBA</h2>
@@ -47,6 +53,7 @@ const FirstSection = ({height, margin}) => {
         >
         </MDBCol>
       </MDBRow>
+      </div>
     </Fragment>
   )
 }
