@@ -17,7 +17,6 @@ const FirstSection = ({height, margin}) => {
   }
 
   return (
-
     <Fragment>
       <MDBModal size="fluid" isOpen={modal} toggle={toggle}>
         <MDBModalBody className="mb-0 py-0 fluid-modal">
@@ -31,7 +30,6 @@ const FirstSection = ({height, margin}) => {
         <a href="/events/8" style={{width:'100%'}}>
           <img src={banner} height="120" style={{width:'100%'}} alt="banner"/>
         </a>
-      
       <MDBRow className="w-100 mx-0 d-flex justify-content-stretch idab-2" style={{flex:'1 0 auto'}}>
         <MDBCol className="home-first-section d-flex justify-content-center align-items-center text-idab" md="6">
           <div>
@@ -57,7 +55,6 @@ const FirstSection = ({height, margin}) => {
     </Fragment>
   )
 }
-
 const mapStateToProps = state => ({
   height: state.home.section_height,
   margin: state.home.navbar_height,
