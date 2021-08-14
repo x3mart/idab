@@ -1,5 +1,5 @@
 from rest_framework import viewsets
-from rest_framework.permissions import BasePermission, SAFE_METHODS
+from rest_framework.permissions import AllowAny, BasePermission, SAFE_METHODS
 from .models import Program, TrainingGroup, Category, TrainingGroupBasic
 from .serializers import LkCategorySerializer, LkProgramSerializer, LkTrainingGroupBasicSerializer, LkTrainingGroupSerializer
 
@@ -35,3 +35,9 @@ class LkTrainingGroupViewSet(viewsets.ModelViewSet):
     queryset = TrainingGroup.objects.all()
     serializer_class = LkTrainingGroupSerializer
     permission_classes = [IsAdminOrReadOnlyPermission]
+
+    def get_queryset(self):
+        program = self.request.query_params.get('program')
+        if self.action == 'list'and program:
+            return TrainingGroup.objects.filter(basic__program=program)
+        return super().get_queryset()
