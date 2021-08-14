@@ -30,6 +30,7 @@ export const get_all_students = () => async dispatch => {
     };
 
     try {
+      // const res = await axios.get(`${process.env.REACT_APP_API_URL}/api/lk/st/`, config);
       const res = await axios.get(`${process.env.REACT_APP_API_URL}/api/lk/students/`, config);
       const user_id_list = () => {
         let list = []
@@ -72,7 +73,7 @@ export const add_student = (student) => async dispatch => {
     }
   };
 
-  const body = JSON.stringify({name, email, password, group});
+  const body = JSON.stringify({name, email, password, phone, group});
 
   try {
     const res = await axios.post(`${process.env.REACT_APP_API_URL}/api/lk/students/`, body, config);
@@ -172,8 +173,6 @@ export const load_programs = (slug) => async dispatch => {
       const data = {
         programs: res.data.programs,
       }
-
-      console.log('programs: ', data)
 
       dispatch({
         type: GET_PROGRAMS_SUCCESS,
