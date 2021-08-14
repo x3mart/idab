@@ -131,3 +131,6 @@ dmypy.json
 
 # PyCharm IDE
 .idea/
+
+#npm
+package-lock.json
