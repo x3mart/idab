@@ -25,6 +25,7 @@ class MyUserCreateSerializer(BaseUserRegistrationSerializer):
 
 class TrainingGroupSerializer(serializers.ModelSerializer):
     program = serializers.CharField(source='basic.program.name', read_only=True)
+    basic = serializers.CharField(source='basic.name', read_only=True)
     class Meta:
         model = TrainingGroup
         fields = '__all__'
