@@ -132,6 +132,7 @@ class Student(User):
     
 
     class Meta:
+        ordering = ['-id']
         verbose_name = 'Слушатель'
         verbose_name_plural = 'Слушатели'
 

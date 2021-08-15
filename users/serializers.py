@@ -20,12 +20,13 @@ class TrainingGroupSerializer(serializers.ModelSerializer):
     class Meta:
         model = TrainingGroup
         fields = '__all__'
-        depth = 3
+        depth = 0
 
 
 class LkStudentSerializer(serializers.ModelSerializer):
-    traning_group = TrainingGroupSerializer(read_only=True)
+    training_group = TrainingGroupSerializer(read_only=True)
     password = serializers.CharField(write_only=True, min_length=8)
+    # re_password = serializers.CharField(write_only=True, min_length=8)
     class Meta:
         exclude = ['is_superuser', 'is_staff', 'groups', 'user_permissions']
         read_only_fields = ['id', 'last_login']

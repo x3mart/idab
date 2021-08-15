@@ -8,7 +8,6 @@ from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from rest_framework_simplejwt.views import TokenObtainPairView
 
 
-
 class LkUserPermission(BasePermission):
     def has_permission(self, request, view):
         if request.method in SAFE_METHODS:
@@ -32,10 +31,10 @@ class LkStudentViewSet(viewsets.ModelViewSet):
 
     def perform_create(self, serializer):
         try:
-            traning_group = TrainingGroup.objects.get(pk=self.request.data['traning_group'])
-            serializer.save(traning_group=traning_group)
+            training_group = TrainingGroup.objects.get(pk=self.request.data['training_group'])
         except:
-            raise serializers.ValidationError({"traning_group": "Обязательное поле"})
+            raise serializers.ValidationError({"training_group": "Обязательное поле!"})
+        serializer.save(training_group=training_group)
 
     def perform_update(self, serializer):
         if self.request.user and self.request.user.is_staff:
