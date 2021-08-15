@@ -25,23 +25,19 @@ class TrainingGroupSerializer(serializers.ModelSerializer):
 
 class LkStudentSerializer(serializers.ModelSerializer):
     training_group = TrainingGroupSerializer(read_only=True)
-    password = serializers.CharField(write_only=True, min_length=8)
+    password = serializers.CharField(write_only=True, min_length=8, required=False)
     # re_password = serializers.CharField(write_only=True, min_length=8)
     class Meta:
         exclude = ['is_superuser', 'is_staff', 'groups', 'user_permissions']
         read_only_fields = ['id', 'last_login']
         model = Student
         extra_kwargs = {
-            'password': {'write_only': True},
+            'password': {'write_only': True, 'required': False},
         }
 
     def create(self, validated_data):
-        re_password = self.context['request'].data['re_password']
-        password = validated_data.pop('password')
-        if password != re_password:
-            raise serializers.ValidationError('Пароли должны совпадать')
         student = Student(**validated_data)
-        student.set_password(password)
+        student.set_password('awsomEpassword123')
         student.is_student = True
         student.is_active = True
         student.save()
