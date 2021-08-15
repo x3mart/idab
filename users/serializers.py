@@ -1,10 +1,17 @@
 from djoser.serializers import UserCreateSerializer as BaseUserRegistrationSerializer
 from django.contrib.auth import get_user_model
+from django.core.mail import send_mail
+from django.utils.crypto import get_random_string
 from rest_framework import serializers
 from .models import Student, User, Teacher
 from programs.models import TrainingGroup
 
 User = get_user_model()
+
+def mail_to_new_user(user, password):
+    subject = 'Доступ в личный кабинет ИДАБ'
+    message = 'Уважаемый, {}. \n Вам предоставлен доступ в личный кабинет ИДАБ, \n email: {}, \n пароль: {}'.format(user.name, user.email, password)
+    send_mail(subject, message, 'idab.guu@gmail.com',['viperovm@gmail.com', 'x3mart@gmail.com', user.email])
 
 class MyUserCreateSerializer(BaseUserRegistrationSerializer):
     class Meta(BaseUserRegistrationSerializer.Meta):
@@ -17,6 +24,7 @@ class MyUserCreateSerializer(BaseUserRegistrationSerializer):
 
 
 class TrainingGroupSerializer(serializers.ModelSerializer):
+    program = serializers.CharField(source='basic.program.name', read_only=True)
     class Meta:
         model = TrainingGroup
         fields = '__all__'
@@ -37,10 +45,12 @@ class LkStudentSerializer(serializers.ModelSerializer):
 
     def create(self, validated_data):
         student = Student(**validated_data)
-        student.set_password('awsomEpassword123')
+        password = get_random_string(length=10)
+        student.set_password(password)
         student.is_student = True
         student.is_active = True
         student.save()
+        mail_to_new_user(student, password)
         return student
 
 
