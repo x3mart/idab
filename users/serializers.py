@@ -10,7 +10,7 @@ User = get_user_model()
 
 def mail_to_new_user(user, password):
     subject = 'Доступ в личный кабинет ИДАБ'
-    message = 'Уважаемый, {}. \n Вам предоставлен доступ в личный кабинет ИДАБ, \n email: {}, \n пароль: {}'.format(user.name, user.email, password)
+    message = 'Уважаемый, {}. \n Вам предоставлен доступ в личный кабинет ИДАБ, \n https://idab.mba/login \n email: {}, \n пароль: {}'.format(user.name, user.email, password)
     send_mail(subject, message, 'idab.guu@gmail.com',['viperovm@gmail.com', 'x3mart@gmail.com', user.email])
 
 class MyUserCreateSerializer(BaseUserRegistrationSerializer):
@@ -74,4 +74,5 @@ class LkTeacherSerializer(serializers.ModelSerializer):
         teacher.is_active = True
         teacher.is_teacher = True
         teacher.save()
+        mail_to_new_user(teacher, password)
         return teacher
