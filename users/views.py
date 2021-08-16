@@ -13,7 +13,7 @@ class LkUserPermission(BasePermission):
         if request.method in SAFE_METHODS:
             return request.user and request.auth
         elif view.action in ['create', 'destroy',]:
-            return request.user and request.user.is_staff
+            return request.auth and request.user.is_staff
         else:
             return True           
 
@@ -37,10 +37,10 @@ class LkStudentViewSet(viewsets.ModelViewSet):
         serializer.save(training_group=training_group)
 
     def perform_update(self, serializer):
-        if self.request.user and self.request.user.is_staff:
+        if self.request.auth and self.request.user.is_staff:
             try:
-                traning_group = TrainingGroup.objects.get(pk=self.request.data['traning_group'])
-                serializer.save(traning_group=traning_group)
+                training_group = TrainingGroup.objects.get(pk=self.request.data['training_group'])
+                serializer.save(training_group=training_group)
             except:
                 pass
         serializer.save()
