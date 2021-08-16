@@ -100,4 +100,4 @@ class TrainingGroup(models.Model):
     class Meta:
         verbose_name = 'Группа'
         verbose_name_plural = 'Группы'
-        ordering = ['-start_date']
+        ordering = ['-id']
