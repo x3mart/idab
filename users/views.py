@@ -10,12 +10,9 @@ from rest_framework_simplejwt.views import TokenObtainPairView
 
 class LkUserPermission(BasePermission):
     def has_permission(self, request, view):
-        if request.method in SAFE_METHODS:
-            return request.user and request.auth
-        elif view.action in ['create', 'destroy',]:
+        if view.action in ['create', 'destroy',]:
             return request.auth and request.user.is_staff
-        else:
-            return True           
+        return request.auth           
 
     def has_object_permission(self, request, view, obj):
         if view.action in ['update', 'partial_update',]:
@@ -27,7 +24,7 @@ class LkUserPermission(BasePermission):
 class LkStudentViewSet(viewsets.ModelViewSet):
     queryset = Student.objects.all()
     serializer_class = LkStudentSerializer
-    permission_classes = [LkUserPermission, AllowAny]
+    permission_classes = [LkUserPermission]
 
     def perform_create(self, serializer):
         try:
@@ -42,13 +39,13 @@ class LkStudentViewSet(viewsets.ModelViewSet):
                 training_group = TrainingGroup.objects.get(pk=self.request.data['training_group'])
                 serializer.save(training_group=training_group)
             except:
-                pass
+                raise serializers.ValidationError({"training_group": "Вероятно такой группы не существует!"})
         serializer.save()
 
 class LkTeacherViewSet(viewsets.ModelViewSet):
     queryset = Teacher.objects.all()
     serializer_class = LkTeacherSerializer
-    permission_classes = [LkUserPermission, AllowAny]
+    permission_classes = [LkUserPermission]
 
 
 class MyTokenObtainPairSerializer(TokenObtainPairSerializer):
