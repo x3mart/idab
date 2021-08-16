@@ -26,22 +26,6 @@ class LkStudentViewSet(viewsets.ModelViewSet):
     serializer_class = LkStudentSerializer
     permission_classes = [LkUserPermission]
 
-    def perform_create(self, serializer):
-        try:
-            training_group = TrainingGroup.objects.get(pk=self.request.data['training_group'])
-        except:
-            raise serializers.ValidationError({"training_group": "Обязательное поле!"})
-        serializer.save(training_group=training_group)
-
-    def perform_update(self, serializer):
-        if self.request.auth and self.request.user.is_staff:
-            try:
-                training_group = TrainingGroup.objects.get(pk=self.request.data['training_group'])
-                serializer.save(training_group=training_group)
-            except:
-                raise serializers.ValidationError({"training_group": "Вероятно такой группы не существует!"})
-        serializer.save()
-
 class LkTeacherViewSet(viewsets.ModelViewSet):
     queryset = Teacher.objects.all()
     serializer_class = LkTeacherSerializer

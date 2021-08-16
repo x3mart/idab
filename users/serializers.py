@@ -1,3 +1,4 @@
+from utils.image_crop import create_avatar
 from djoser.serializers import UserCreateSerializer as BaseUserRegistrationSerializer
 from django.contrib.auth import get_user_model
 from django.core.mail import send_mail
@@ -45,6 +46,10 @@ class LkStudentSerializer(serializers.ModelSerializer):
         }
 
     def create(self, validated_data):
+        request = self.context['request']
+        training_group = request.data.get('training_group')
+        if training_group:
+            validated_data['training_group'] = TrainingGroup.objects.get(pk=training_group)
         student = Student(**validated_data)
         password = get_random_string(length=10)
         student.set_password(password)
@@ -52,6 +57,18 @@ class LkStudentSerializer(serializers.ModelSerializer):
         student.is_active = True
         student.save()
         mail_to_new_user(student, password)
+        if student.avatar:
+            create_avatar(student.avatar)
+        return student
+    
+    def update(self, instance, validated_data):
+        request = self.context['request']
+        training_group = request.data.get('training_group')
+        if training_group and training_group != instance.training_group and request.user.is_staff:
+            validated_data['training_group'] = TrainingGroup.objects.get(pk=training_group)
+        student = super().update(instance, validated_data)
+        if validated_data.get('avatar'):
+            create_avatar(student.avatar)
         return student
 
 
@@ -75,4 +92,6 @@ class LkTeacherSerializer(serializers.ModelSerializer):
         teacher.is_teacher = True
         teacher.save()
         mail_to_new_user(teacher, password)
+        if teacher.avatar:
+            create_avatar(teacher.avatar)
         return teacher

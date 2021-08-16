@@ -1,6 +1,8 @@
 from PIL import Image
 import os
 from idab.settings import BASE_DIR
+from django.template.defaultfilters import slugify
+from unidecode import unidecode
 
 
 def create_crop_3x1_wout_tmb(instance, crop_width=1920, crop_heigth=960):
