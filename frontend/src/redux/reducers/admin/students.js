@@ -6,74 +6,70 @@ import {
   STUDENT_UPDATE_FAIL,
   STUDENT_DELETE_SUCCESS,
   STUDENT_DELETE_FAIL,
-  STUDENTS_ID_LIST_ADD,
-  STUDENTS_ID_LIST_REMOVE,
-  STUDENTS_ID_LIST_ADD_ALL,
-  STUDENTS_ID_LIST_REMOVE_ALL,
   STUDENT_ADD_SUCCESS,
   STUDENT_ADD_FAIL,
   GET_SPECIALITIES_SUCCESS,
   GET_SPECIALITIES_FAIL,
   GET_PROGRAMS_SUCCESS,
   GET_PROGRAMS_FAIL,
-
+  GET_GROUPS_SUCCESS,
+  GET_GROUPS_FAIL,
 } from '../../actions/types'
 
 const initialState = {
-  students_list:[],
-  students_ids_list:[],
-  students_actions_list:[],
-  specialities:[],
-  programs:[],
-};
+  students_list: [],
+  specialities: [],
+  programs: [],
+  groups: [],
+}
 
-export default function(state= initialState, action) {
-  const {type, payload} = action;
+export default function (state = initialState, action) {
+  const { type, payload } = action
 
-  let {students_actions_list} = state
-
-  switch(type) {
+  switch (type) {
     case GET_ALL_STUDENTS_LIST_SUCCESS:
-    case STUDENT_ADD_SUCCESS:
       return {
         ...state,
         students_list: payload.students_list,
-        students_ids_list: payload.students_ids_list
       }
-    case STUDENTS_ID_LIST_ADD:
+    case STUDENT_ADD_SUCCESS:
       return {
         ...state,
-        students_actions_list: students_actions_list.includes(payload) ? [...students_actions_list] : [...students_actions_list, payload]
+        students_list: [payload, ...state.students_list],
       }
-    case STUDENTS_ID_LIST_REMOVE:
+    case STUDENT_UPDATE_SUCCESS:
       return {
         ...state,
-        students_actions_list: students_actions_list.filter(item => item !== payload)
+        students_list: state.students_list.map(item => {if(item.id == payload.id){
+          return payload
+        }
+        return item
+      }),
+      }
+    case STUDENT_DELETE_SUCCESS:
+      return {
+        ...state,
+        students_list: state.students_list.filter(item => item.id !== payload),
       }
     case GET_SPECIALITIES_SUCCESS:
       return {
         ...state,
-        specialities: payload.specialities
+        specialities: payload.specialities,
       }
     case GET_PROGRAMS_SUCCESS:
       return {
         ...state,
-        programs: payload.programs
+        programs: payload.programs,
       }
-    case STUDENTS_ID_LIST_ADD_ALL:
+    case GET_GROUPS_SUCCESS:
       return {
         ...state,
-        students_actions_list: payload
-      }
-    case STUDENTS_ID_LIST_REMOVE_ALL:
-      return {
-        ...state,
-        students_actions_list: []
+        groups: payload.groups,
       }
     case GET_ALL_STUDENTS_LIST_FAIL:
     case STUDENT_ADD_FAIL:
       return {
-        state
+        state,
       }
     default:
       return state

@@ -6,10 +6,12 @@ import { Redirect } from 'react-router-dom'
 import StudentTableRow from '../../components/admin/StudentTableRow'
 import {
   get_all_students,
-  add_id,
-  remove_id,
   load_specialities,
   load_programs,
+  load_groups,
+  add_student,
+  delete_student,
+  update_student,
 } from '../../redux/actions/admin/students'
 import { isNotEmptyObject } from '../../functions'
 import { MDBSpinner } from 'mdbreact'
@@ -17,26 +19,42 @@ import { MDBSpinner } from 'mdbreact'
 const Students = ({
   isAuthenticated,
   user,
-  add_id,
-  remove_id,
   get_all_students,
   students_list,
-  students_ids_list,
-  students_actions_list,
   specialities,
   load_specialities,
   load_programs,
   programs,
+  load_groups,
+  groups,
+  add_student,
+  delete_student,
+  update_student,
 }) => {
-  const [studentsIdsList, setStudentsIdsList] = useState([])
+  if (!isAuthenticated) {
+    return <Redirect to='/login' />
+  }
+
   const [specialitiesList, setSpecialitiesList] = useState([])
   const [programsList, setProgramsList] = useState([])
-  const [checked, setChecked] = useState(false)
   const [studentsData, setStudentsData] = useState({
     loaded: false,
     pending: true,
     error: false,
   })
+  const [studentsList, setStudentsList] = useState([])
+  const [selectedSpeciality, setSelectedSpeciality] = useState('')
+  const [groupsList, setGroupsList] = useState([])
+  const [selectedProgram, setSelectedProgram] = useState('')
+  const [selectedGroup, setSelectedGroup] = useState(null)
+  const [studentName, setStudentName] = useState('')
+  const [studentMail, setStudentMail] = useState('')
+  const [studentPhone, setStudentPhone] = useState('')
+  const [deleteActive, setDeleteActive] = useState(false)
+  const [addActive, setAddActive] = useState(false)
+  const [updateActive, setUpdateActive] = useState(false)
+  const [deleteId, setDeleteId] = useState(null)
+  const [updateId, setUpdateId] = useState(null)
 
   useEffect(() => {
     {
@@ -45,6 +63,7 @@ const Students = ({
         10000
       )
       if (Array.isArray(students_list) && students_list.length > 0) {
+        setStudentsList(students_list)
         setStudentsData({ loaded: true, pending: false, error: false })
         clearTimeout(timer)
       }
@@ -52,25 +71,12 @@ const Students = ({
         clearTimeout(timer)
       }
     }
-  }, [students_list])
+  }, [students_list, studentsList])
 
   useEffect(() => {
     get_all_students()
     load_specialities()
   }, [])
-
-  useEffect(() => {
-    setStudentsIdsList(students_ids_list)
-  }, [students_ids_list])
-
-  useEffect(() => {
-    if (
-      typeof students_actions_list === 'object' &&
-      typeof students_ids_list === 'object'
-    ) {
-      setChecked(students_actions_list.length === students_ids_list.length)
-    }
-  }, [students_actions_list, students_ids_list])
 
   useEffect(() => {
     setSpecialitiesList(specialities)
@@ -80,38 +86,9 @@ const Students = ({
     setProgramsList(programs)
   }, [programs])
 
-  if (!isAuthenticated) {
-    return <Redirect to='/login' />
-  }
-
-  const updateRow = id => {}
-
-  const deleteRow = id => {}
-
-  const handleReload = () => {
-    setStudentsData({ loaded: false, pending: true, error: false })
-    window.location.reload(true)
-  }
-
-  const [selectedAll, setSelectedAll] = useState(false)
-  const [deleteActive, setDeleteActive] = useState(false)
-  const [addActive, setAddActive] = useState(false)
-  const [selectedSpeciality, setSelectedSpeciality] = useState('')
-  const [selectedProgram, setSelectedProgram] = useState('')
-
-  const handleSpecialitiesSelect = e => {
-    setSelectedSpeciality(e.target.value)
-  }
-
-  const handleProgramsSelect = e => {
-    setSelectedProgram(e.target.value)
-  }
-
   useEffect(() => {
-    if (selectedSpeciality) {
-      load_programs(selectedSpeciality)
-    }
-  }, [selectedSpeciality])
+    setGroupsList(groups)
+  }, [groups])
 
   useEffect(() => {
     if (selectedSpeciality) {
@@ -121,10 +98,104 @@ const Students = ({
 
   useEffect(() => {
     if (selectedProgram) {
-      console.log(selectedProgram)
-      // load_programs(selectedSpeciality)
+      load_groups(selectedProgram)
     }
   }, [selectedProgram])
+
+  const handleSpecialitiesSelect = e => {
+    setSelectedSpeciality(e.target.value)
+  }
+
+  const handleProgramsSelect = e => {
+    setSelectedProgram(e.target.value)
+  }
+
+  const handleGroupSelect = e => {
+    setSelectedGroup(e.target.value)
+  }
+
+  const updateRow = id => {
+    const student = studentsList.filter(item => item.id === id)[0]
+    setUpdateId(id)
+    setStudentName(student.name)
+    setStudentMail(student.email)
+    setStudentPhone(student.phone)
+    setUpdateActive(true)
+  }
+
+  const handleUpdate = e => {
+    e.preventDefault()
+    console.log(selectedGroup)
+    // const oldStudent = studentsList.filter(item => item.id === updateId)[0]
+    const student = {
+      id: updateId,
+      name: studentName,
+      email: studentMail,
+      phone: studentPhone,
+      training_group: selectedGroup,
+      // training_group:
+      //   oldStudent.training_group && oldStudent.training_group.id !== selectedGroup
+      //     ? selectedGroup
+      //     : oldStudent.training_group.id,
+    }
+    setUpdateActive(false)
+    update_student(student)
+    setUpdateId(null)
+  }
+
+  const handleCancelUpdate = () => {
+    setUpdateActive(false)
+    setUpdateId(null)
+  }
+
+  const deleteRow = id => {
+    setDeleteId(id)
+    setDeleteActive(true)
+  }
+
+  const handleDelete = () => {
+    setDeleteActive(false)
+    delete_student(deleteId)
+    setDeleteId(null)
+  }
+
+  const handleCancelDelete = () => {
+    setDeleteActive(false)
+    setDeleteId(null)
+  }
+
+  const handleReload = () => {
+    setStudentsData({ loaded: false, pending: true, error: false })
+    window.location.reload(true)
+  }
+
+  const studentAdd = e => {
+    e.preventDefault()
+    let student = {
+      name: studentName,
+      email: studentMail,
+      phone: studentPhone,
+      training_group: selectedGroup,
+    }
+    add_student(student)
+    setAddActive(false)
+    setSelectedSpeciality('')
+    setSelectedProgram('')
+    setSelectedGroup(null)
+    setStudentName('')
+    setStudentMail('')
+    setStudentPhone('')
+  }
+
+  const handleCancelAdd = () => {
+    setAddActive(false)
+    setSelectedSpeciality('')
+    setSelectedProgram('')
+    setSelectedGroup(null)
+    setStudentName('')
+    setStudentMail('')
+    setStudentPhone('')
+  }
 
   return (
     <Fragment>
@@ -154,14 +225,11 @@ const Students = ({
             <div className='modal-footer'>
               <button
                 className='btn btn-default'
-                onClick={() => setDeleteActive(false)}
+                onClick={() => handleCancelDelete()}
               >
                 Отменить
               </button>
-              <button
-                className='btn btn-danger'
-                onClick={() => handleBunchDelete()}
-              >
+              <button className='btn btn-danger' onClick={() => handleDelete()}>
                 Удалить
               </button>
             </div>
@@ -175,13 +243,12 @@ const Students = ({
       >
         <div className='modal-dialog'>
           <div className='modal-content'>
-            <form>
+            <form onSubmit={e => studentAdd(e)}>
               <div className='modal-header'>
                 <h4 className='modal-title'>Добавить слушателя</h4>
                 <button
                   type='button'
                   className='close'
-                  studentsData-dismiss='modal'
                   onClick={() => setAddActive(false)}
                   aria-hidden='true'
                 >
@@ -229,10 +296,11 @@ const Students = ({
                       <select
                         className='form-select'
                         aria-label='Выберите группу'
+                        onChange={event => handleGroupSelect(event)}
                       >
                         <option selected>Выберите группу</option>
-                        {programsList &&
-                          programsList.map(item => (
+                        {groupsList &&
+                          groupsList.map(item => (
                             <option key={item.id} value={item.id}>
                               {item.name}
                             </option>
@@ -242,19 +310,33 @@ const Students = ({
                   )}
                   <div className='form-group'>
                     <label>Фамилия Имя Отчество</label>
-                    <input type='text' className='form-control' required />
-                  </div>
-                  <div className='form-group'>
-                    <label>Email</label>
-                    <input type='email' className='form-control' required />
-                  </div>
-                  <div className='form-group'>
-                    <label>Пароль</label>
-                    <input type='password' className='form-control' required />
+                    <input
+                      type='text'
+                      className='form-control'
+                      value={studentName}
+                      required
+                      onChange={e => setStudentName(e.target.value)}
+                    />
                   </div>
                   <div className='form-group'>
                     <label>Телефон</label>
-                    <input type='text' className='form-control' required />
+                    <input
+                      type='phone'
+                      className='form-control'
+                      value={studentPhone}
+                      required
+                      onChange={e => setStudentPhone(e.target.value)}
+                    />
+                  </div>
+                  <div className='form-group'>
+                    <label>Email</label>
+                    <input
+                      type='email'
+                      className='form-control'
+                      value={studentMail}
+                      required
+                      onChange={e => setStudentMail(e.target.value)}
+                    />
                   </div>
                 </div>
               </div>
@@ -262,9 +344,126 @@ const Students = ({
                 <input
                   type='button'
                   className='btn btn-default'
-                  studentsData-dismiss='modal'
                   value='Отменить'
-                  onClick={() => setAddActive(false)}
+                  onClick={() => handleCancelAdd()}
+                />
+                <input
+                  type='submit'
+                  className='btn btn-info'
+                  value='Сохранить'
+                />
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+
+      <div
+        className={`modal fade ${updateActive ? 'show' : ''}`}
+        style={{ display: updateActive ? 'block' : 'none' }}
+      >
+        <div className='modal-dialog'>
+          <div className='modal-content'>
+            <form onSubmit={e => handleUpdate(e)}>
+              <div className='modal-header'>
+                <h4 className='modal-title'>Добавить слушателя</h4>
+                <button
+                  type='button'
+                  className='close'
+                  onClick={() => setUpdateActive(false)}
+                  aria-hidden='true'
+                >
+                  &times;
+                </button>
+              </div>
+              <div className='modal-body'>
+                <div className='custom-modal-form'>
+                  <div className='form-group'>
+                    <select
+                      className='form-select'
+                      aria-label='Выберите специализацию'
+                      onChange={event => handleSpecialitiesSelect(event)}
+                    >
+                      <option selected>Выберите специализацию</option>
+
+                      {specialitiesList &&
+                        specialitiesList.map(item => (
+                          <option key={item.id} value={item.slug}>
+                            {item.name}
+                          </option>
+                        ))}
+                    </select>
+                  </div>
+                  {selectedSpeciality.length > 0 && (
+                    <div className='form-group'>
+                      <select
+                        className='form-select'
+                        aria-label='Выберите программу'
+                        onChange={event => handleProgramsSelect(event)}
+                      >
+                        <option selected>Выберите программу</option>
+                        {programsList &&
+                          programsList.map(item => (
+                            <option key={item.id} value={item.id}>
+                              {item.name}
+                            </option>
+                          ))}
+                      </select>
+                    </div>
+                  )}
+
+                  {selectedProgram.length > 0 && (
+                    <div className='form-group'>
+                      <select
+                        className='form-select'
+                        aria-label='Выберите группу'
+                        onChange={event => handleGroupSelect(event)}
+                      >
+                        <option selected>Выберите группу</option>
+                        {groupsList &&
+                          groupsList.map(item => (
+                            <option key={item.id} value={item.id}>
+                              {item.name}
+                            </option>
+                          ))}
+                      </select>
+                    </div>
+                  )}
+                  <div className='form-group'>
+                    <label>Фамилия Имя Отчество</label>
+                    <input
+                      type='text'
+                      className='form-control'
+                      value={studentName}
+                      onChange={e => setStudentName(e.target.value)}
+                    />
+                  </div>
+                  <div className='form-group'>
+                    <label>Телефон</label>
+                    <input
+                      type='phone'
+                      className='form-control'
+                      value={studentPhone}
+                      onChange={e => setStudentPhone(e.target.value)}
+                    />
+                  </div>
+                  <div className='form-group'>
+                    <label>Email</label>
+                    <input
+                      type='email'
+                      className='form-control'
+                      value={studentMail}
+                      onChange={e => setStudentMail(e.target.value)}
+                    />
+                  </div>
+                </div>
+              </div>
+              <div className='modal-footer'>
+                <input
+                  type='button'
+                  className='btn btn-default'
+                  value='Отменить'
+                  onClick={() => handleCancelUpdate()}
                 />
                 <input
                   type='submit'
@@ -312,35 +511,14 @@ const Students = ({
                   <i className='material-icons'>&#xE147;</i>{' '}
                   <span>Добавить слушателя</span>
                 </button>
-                <button
-                  className='btn btn-danger'
-                  onClick={() => setDeleteActive(true)}
-                >
-                  <i className='material-icons'>&#xE15C;</i>{' '}
-                  <span>Удалить</span>
-                </button>
               </div>
             </div>
             <div className='cards'>
               <table className='table table-striped table-hover'>
                 <thead>
                   <tr>
-                    <th>
-                      <span className='custom-checkbox'>
-                        <input
-                          type='checkbox'
-                          id='selectAll'
-                          checked={checked}
-                          onClick={() =>
-                            checked
-                              ? remove_id(studentsIdsList)
-                              : add_id(studentsIdsList)
-                          }
-                        />
-                        <label htmlFor='selectAll' />
-                      </span>
-                    </th>
                     <th>Фото</th>
+                    <th>Группа</th>
                     <th>Имя</th>
                     <th>Почта</th>
                     <th>Телефон</th>
@@ -348,14 +526,15 @@ const Students = ({
                   </tr>
                 </thead>
                 <tbody>
-                  {students_list.map(item => (
-                    <StudentTableRow
-                      student={item}
-                      key={item.id}
-                      update_modal={updateRow}
-                      delete_modal={deleteRow}
-                    />
-                  ))}
+                  {studentsList.length > 1 &&
+                    studentsList.map(item => (
+                      <StudentTableRow
+                        key={item.id}
+                        student={item}
+                        update_modal={id => updateRow(id)}
+                        delete_modal={id => deleteRow(id)}
+                      />
+                    ))}
                 </tbody>
               </table>
             </div>
@@ -369,18 +548,18 @@ const Students = ({
 const mapStateToProps = state => ({
   isAuthenticated: state.auth.isAuthenticated,
   user: state.auth.user,
-  ids: state.tableReducer.payload,
   students_list: state.students.students_list,
-  students_ids_list: state.students.students_ids_list,
-  students_actions_list: state.students.students_actions_list,
   specialities: state.students.specialities,
   programs: state.students.programs,
+  groups: state.students.groups,
 })
 
 export default connect(mapStateToProps, {
-  add_id,
-  remove_id,
   get_all_students,
   load_specialities,
   load_programs,
+  load_groups,
+  add_student,
+  delete_student,
+  update_student,
 })(Students)
