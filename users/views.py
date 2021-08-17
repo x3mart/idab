@@ -17,14 +17,19 @@ class LkUserPermission(BasePermission):
     def has_object_permission(self, request, view, obj):
         if view.action in ['update', 'partial_update',]:
             return obj.id == request.user.id or request.user.is_staff
-        else:
-            return True
+        return True
     
     
 class LkStudentViewSet(viewsets.ModelViewSet):
     queryset = Student.objects.all()
     serializer_class = LkStudentSerializer
     permission_classes = [LkUserPermission]
+
+    def get_queryset(self):
+        training_group = self.request.query_params.get('training_group')
+        if self.action == 'list' and training_group:
+            return Student.objects.filter(training_group=training_group)
+        return super().get_queryset()
 
 class LkTeacherViewSet(viewsets.ModelViewSet):
     queryset = Teacher.objects.all()
