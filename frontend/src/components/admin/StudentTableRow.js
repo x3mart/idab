@@ -1,13 +1,14 @@
-import React, {Fragment, useEffect, useState} from "react";
-import '../../admin/containers/Students.css';
-import dummy_avatar from "../../assets/man.svg"
-import students from "../../redux/reducers/admin/students";
+import React, { Fragment, useEffect, useState } from 'react'
+import '../../admin/containers/Students.css'
+import dummy_avatar from '../../assets/man.svg'
+import students from '../../redux/reducers/admin/students'
 
-const StudentTableRow = (props) => {
-
-  const {student, update_modal, delete_modal} = props
+const StudentTableRow = props => {
+  const { student, update_modal, delete_modal } = props
 
   const { id, avatar, name, email, phone, training_group } = student
+
+  console.log(student)
 
   return (
     <tr>
@@ -17,7 +18,7 @@ const StudentTableRow = (props) => {
           style={{ backgroundImage: `url(${avatar ? avatar : dummy_avatar})` }}
         />
       </td>
-      <td>{training_group ? training_group.basic : ''}</td>
+      <td>{training_group.length > 0 ? training_group[0].basic : ''}</td>
       <td>{name}</td>
       <td>{email}</td>
       <td>{phone}</td>
@@ -44,6 +45,5 @@ const StudentTableRow = (props) => {
     </tr>
   )
 }
-
 
 export default StudentTableRow
