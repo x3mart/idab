@@ -38,6 +38,6 @@ class LkTrainingGroupViewSet(viewsets.ModelViewSet):
 
     def get_queryset(self):
         program = self.request.query_params.get('program')
-        if self.action == 'list' and program:
+        if self.action == 'list' and program is not None:
             return TrainingGroup.objects.filter(basic__program=program)
         return super().get_queryset()

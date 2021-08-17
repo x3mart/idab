@@ -48,7 +48,7 @@ class LkStudentSerializer(serializers.ModelSerializer):
     def create(self, validated_data):
         request = self.context['request']
         training_group = request.data.get('training_group')
-        if training_group:
+        if training_group is not None:
             training_group = TrainingGroup.objects.get(pk=training_group)
         else:
             raise serializers.ValidationError({
@@ -70,7 +70,7 @@ class LkStudentSerializer(serializers.ModelSerializer):
         request = self.context['request']
         training_group = request.data.get('training_group')
         student = super().update(instance, validated_data)
-        if training_group and training_group != instance.training_group and request.user.is_staff:
+        if training_group is not None and training_group != instance.training_group and request.user.is_staff:
             if request.data.get('group_to_delete'):
                 group_to_delete = TrainingGroup.objects.get(pk=request.data.get('group_to_delete'))
                 student.training_group.remove(group_to_delete)
