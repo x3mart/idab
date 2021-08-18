@@ -12,6 +12,7 @@ import {
   add_student,
   delete_student,
   update_student,
+  sort_students,
 } from '../../redux/actions/admin/students'
 import { isNotEmptyObject } from '../../functions'
 import { MDBSpinner } from 'mdbreact'
@@ -21,6 +22,7 @@ const Students = ({
   user,
   get_all_students,
   students_list,
+  sorted_list,
   specialities,
   load_specialities,
   load_programs,
@@ -30,6 +32,7 @@ const Students = ({
   add_student,
   delete_student,
   update_student,
+  sort_students,
 }) => {
   if (!isAuthenticated) {
     return <Redirect to='/login' />
@@ -37,6 +40,7 @@ const Students = ({
 
   const [specialitiesList, setSpecialitiesList] = useState([])
   const [programsList, setProgramsList] = useState([])
+  const [filteredList, setFilteredList] = useState([])
   const [studentsData, setStudentsData] = useState({
     loaded: false,
     pending: true,
@@ -47,6 +51,7 @@ const Students = ({
   const [groupsList, setGroupsList] = useState([])
   const [selectedProgram, setSelectedProgram] = useState('')
   const [selectedGroup, setSelectedGroup] = useState(null)
+  const [selectedGroupHeader, setSelectedGroupHeader] = useState(null)
   const [studentName, setStudentName] = useState('')
   const [studentMail, setStudentMail] = useState('')
   const [studentPhone, setStudentPhone] = useState('')
@@ -55,15 +60,18 @@ const Students = ({
   const [updateActive, setUpdateActive] = useState(false)
   const [deleteId, setDeleteId] = useState(null)
   const [updateId, setUpdateId] = useState(null)
+  const [sortValue, setSortValue] = useState(null)
 
   useEffect(() => {
     {
+      console.log(1)
       let timer = setTimeout(
         () => setStudentsData({ loaded: false, pending: false, error: true }),
         10000
       )
-      if (Array.isArray(students_list) && students_list.length > 0) {
-        setStudentsList(students_list)
+      if (Array.isArray(sorted_list) && sorted_list.length > 0) {
+        console.log(2)
+        setStudentsList(sorted_list)
         setStudentsData({ loaded: true, pending: false, error: false })
         clearTimeout(timer)
       }
@@ -71,7 +79,7 @@ const Students = ({
         clearTimeout(timer)
       }
     }
-  }, [students_list, studentsList])
+  }, [sorted_list, studentsList])
 
   useEffect(() => {
     get_all_students()
@@ -114,6 +122,17 @@ const Students = ({
     setSelectedGroup(e.target.value)
   }
 
+  const handleGroupSelectHeader = e => {
+    setSelectedGroupHeader(e.target.value)
+    sort_students(e.target.value)
+  }
+  const handleGroupResetHeader = () => {
+    setSelectedSpeciality('')
+    setSelectedProgram('')
+    setSelectedGroupHeader(null)
+    sort_students(null)
+  }
+
   const updateRow = id => {
     const student = studentsList.filter(item => item.id === id)[0]
     setUpdateId(id)
@@ -125,7 +144,6 @@ const Students = ({
 
   const handleUpdate = e => {
     e.preventDefault()
-    console.log(selectedGroup)
     // const oldStudent = studentsList.filter(item => item.id === updateId)[0]
     const student = {
       id: updateId,
@@ -513,6 +531,77 @@ const Students = ({
                 </button>
               </div>
             </div>
+
+            <div className='custom-modal-form student-table-header'>
+              <div className='column first'>
+                <div className='form-group'>
+                  <select
+                    className='form-select'
+                    aria-label='Выберите специализацию'
+                    onChange={event => handleSpecialitiesSelect(event)}
+                  >
+                    <option selected>Выберите специализацию</option>
+
+                    {specialitiesList &&
+                      specialitiesList.map(item => (
+                        <option key={item.id} value={item.slug}>
+                          {item.name}
+                        </option>
+                      ))}
+                  </select>
+                </div>
+              </div>
+              {selectedSpeciality.length > 0 && (
+                <div className='column first'>
+                  <div className='form-group'>
+                    <select
+                      className='form-select'
+                      aria-label='Выберите программу'
+                      onChange={event => handleProgramsSelect(event)}
+                    >
+                      <option selected>Выберите программу</option>
+                      {programsList &&
+                        programsList.map(item => (
+                          <option key={item.id} value={item.id}>
+                            {item.name}
+                          </option>
+                        ))}
+                    </select>
+                  </div>
+                </div>
+              )}
+              {selectedProgram.length > 0 && (
+                <div className='column first'>
+                  <div className='form-group'>
+                    <select
+                      className='form-select'
+                      aria-label='Выберите группу'
+                      onChange={event => handleGroupSelectHeader(event)}
+                    >
+                      <option selected>Выберите группу</option>
+                      {groupsList &&
+                        groupsList.map(item => (
+                          <option key={item.id} value={item.id}>
+                            {item.name}
+                          </option>
+                        ))}
+                    </select>
+                  </div>
+                </div>
+              )}
+            </div>
+            {selectedGroupHeader > 0 && (
+              <div className="header-reset-button">
+                <button
+                  className='btn btn-outline-danger'
+                  type='button'
+                  onClick={() => handleReload()}
+                >
+                  Сбросить
+                </button>
+              </div>
+            )}
+
             <div className='cards'>
               <table className='table table-striped table-hover'>
                 <thead>
@@ -548,7 +637,7 @@ const Students = ({
 const mapStateToProps = state => ({
   isAuthenticated: state.auth.isAuthenticated,
   user: state.auth.user,
-  students_list: state.students.students_list,
+  sorted_list: state.students.sorted_list,
   specialities: state.students.specialities,
   programs: state.students.programs,
   groups: state.students.groups,
@@ -562,4 +651,5 @@ export default connect(mapStateToProps, {
   add_student,
   delete_student,
   update_student,
+  sort_students,
 })(Students)

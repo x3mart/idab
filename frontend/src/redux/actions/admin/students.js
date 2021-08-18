@@ -18,6 +18,8 @@ import {
   GET_PROGRAMS_FAIL,
   GET_GROUPS_SUCCESS,
   GET_GROUPS_FAIL,
+  SORT_STUDENTS_SUCCESS,
+  SORT_STUDENTS_FAIL,
 } from '../types'
 import axios from 'axios'
 
@@ -230,6 +232,61 @@ export const load_groups = id => async dispatch => {
     })
   }
 }
+
+export const sort_students = id => dispatch => {
+  
+  dispatch({
+      type: SORT_STUDENTS_SUCCESS,
+      payload: id,
+    })
+}
+
+// export const sort_students = id => async dispatch => {
+
+//   const config = {
+//     headers: {
+//       'Content-Type': 'application/json',
+//       Authorization: `JWT ${localStorage.getItem('access')}`,
+//       Accept: 'application/json',
+//     },
+//   }
+
+//   try {
+//     const res = await axios.get(
+//       `${process.env.REACT_APP_API_URL}/api/lk/students/?training_group=${id}`,
+//       config
+//     )
+//     const data = {
+//       student: res.data,
+//     }
+
+    // dispatch({
+    //   type: SORT_STUDENTS_SUCCESS,
+    //   payload: data,
+    // })
+//   } catch (err) {
+//     dispatch({
+//       type: SORT_STUDENTS_FAIL,
+//     })
+//   }
+
+  // try {
+  //   const res = await axios.get(
+  //     `${process.env.REACT_APP_API_URL}/api/lk/students/?training_group=${id}`,
+  //     config
+  //   )
+  //   const student = res.data
+
+  //   dispatch({
+  //     type: SORT_STUDENTS_SUCCESS,
+  //     payload: student,
+  //   })
+  // } catch (err) {
+  //   dispatch({
+  //     type: SORT_STUDENTS_FAIL,
+  //   })
+  // }
+// }
 
 // export const add_id = (id) => {
 //   return dispatch => {
