@@ -27,7 +27,7 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     # path to djoser end points
     path('auth/', include('djoser.urls')),
-    path('auth/', include('djoser.urls.jwt')),
+    # path('auth/', include('djoser.urls.jwt')),
     # path to my app's endpoints
     path("api/", include("users.urls")),
     path("api/", include("siteblocks.urls")),
@@ -37,8 +37,8 @@ urlpatterns = [
     # ckeditor
     path('ckeditor/', include('ckeditor_uploader.urls')),
     # Token Access Refresh
-    path('api/lk/login/', MyTokenObtainPairView.as_view(), name='lk_login'),
-    path('api/lk/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
+    path('auth/jwt/create/', MyTokenObtainPairView.as_view(), name='lk_login'),
+    path('auth/jwt/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
 ]
 if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
