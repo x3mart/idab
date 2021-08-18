@@ -34,8 +34,8 @@ class TrainingGroupSerializer(serializers.ModelSerializer):
 
 
 class LkStudentSerializer(serializers.ModelSerializer):
-    # training_group = TrainingGroupSerializer(read_only=True, many=False)
-    training_group = serializers.SerializerMethodField(read_only=True)
+    training_group = TrainingGroupSerializer(read_only=True, many=True)
+    # training_group = serializers.SerializerMethodField(read_only=True)
     password = serializers.CharField(write_only=True, min_length=8, required=False)
     # re_password = serializers.CharField(write_only=True, min_length=8)
     class Meta:
@@ -46,11 +46,11 @@ class LkStudentSerializer(serializers.ModelSerializer):
             'password': {'write_only': True, 'required': False},
         }
     
-    def get_training_group(self, obj):
-        if obj.training_group is not None:
-            print(TrainingGroupSerializer(obj.training_group).data)
-            return TrainingGroupSerializer(obj.training_group).data
-        return {'id': None, 'basic': None}
+    # def get_training_group(self, obj):
+    #     if obj.training_group is not None:
+    #         print(TrainingGroupSerializer(obj.training_group).data)
+    #         return TrainingGroupSerializer(obj.training_group).data
+    #     return {'id': None, 'basic': None}
 
     def create(self, validated_data):
         request = self.context['request']
@@ -62,24 +62,27 @@ class LkStudentSerializer(serializers.ModelSerializer):
                 'training_group': 'Обязательное поле!'
             }) 
         student = Student(**validated_data)
-        student.training_group = training_group
         password = get_random_string(length=10)
         student.set_password(password)
         student.is_student = True
         student.is_active = True
         student.save()
+        student.training_group.add(training_group)
         mail_to_new_user(student, password)
         if student.avatar:
             create_avatar(student.avatar)
         return student
     
     def update(self, instance, validated_data):
+        student = super().update(instance, validated_data)
         request = self.context['request']
         training_group = request.data.get('training_group')
         if training_group is not None and training_group != instance.training_group and request.user.is_staff:
+            if request.data.get('group_to_delete'):
+                group_to_delete = TrainingGroup.objects.get(pk=request.data.get('group_to_delete'))
+                student.training_group.remove(group_to_delete)
             training_group = TrainingGroup.objects.get(pk=training_group)
-            validated_data['training_group'] = training_group
-        student = super().update(instance, validated_data)
+            student.training_group.add(training_group)
         if validated_data.get('avatar'):
             create_avatar(student.avatar)
         return student
