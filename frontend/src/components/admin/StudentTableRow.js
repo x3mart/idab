@@ -7,9 +7,7 @@ const StudentTableRow = props => {
   const { student, update_modal, delete_modal } = props
 
   const { id, avatar, name, email, phone, training_group } = student
-
-  console.log(student)
-
+  
   return (
     <tr>
       <td>
