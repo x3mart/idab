@@ -34,7 +34,8 @@ class TrainingGroupSerializer(serializers.ModelSerializer):
 
 
 class LkStudentSerializer(serializers.ModelSerializer):
-    training_group = TrainingGroupSerializer(read_only=True, many=False)
+    # training_group = TrainingGroupSerializer(read_only=True, many=False)
+    training_group = serializers.SerializerMethodField(read_only=True)
     password = serializers.CharField(write_only=True, min_length=8, required=False)
     # re_password = serializers.CharField(write_only=True, min_length=8)
     class Meta:
@@ -44,6 +45,12 @@ class LkStudentSerializer(serializers.ModelSerializer):
         extra_kwargs = {
             'password': {'write_only': True, 'required': False},
         }
+    
+    def get_training_group(self, obj):
+        if obj.training_group is not None:
+            print(TrainingGroupSerializer(obj.training_group).data)
+            return TrainingGroupSerializer(obj.training_group).data
+        return {'id': None, 'basic': None}
 
     def create(self, validated_data):
         request = self.context['request']
