@@ -98,16 +98,19 @@ class LkTeacherSerializer(serializers.ModelSerializer):
         }
         
     def create(self, validated_data):
-        re_password = self.context['request'].data['re_password']
-        password = validated_data.pop('password')
-        if password != re_password:
-            raise serializers.ValidationError('Пароли должны совпадать')
         teacher = Teacher(**validated_data)
+        password = get_random_string(length=10)
         teacher.set_password(password)
         teacher.is_active = True
         teacher.is_teacher = True
         teacher.save()
         mail_to_new_user(teacher, password)
         if teacher.avatar:
+            create_avatar(teacher.avatar)
+        return teacher
+    
+    def update(self, instance, validated_data):
+        teacher = super().update(instance, validated_data)
+        if validated_data.get('avatar'):
             create_avatar(teacher.avatar)
         return teacher
