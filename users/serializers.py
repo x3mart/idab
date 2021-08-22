@@ -94,7 +94,7 @@ class LkTeacherSerializer(serializers.ModelSerializer):
         exclude = ['is_superuser', 'is_staff', 'groups', 'user_permissions']
         read_only_fields = ['id', 'last_login']
         extra_kwargs = {
-            'password': {'write_only': True},
+            'password': {'write_only': True, 'required': False},
         }
         
     def create(self, validated_data):
