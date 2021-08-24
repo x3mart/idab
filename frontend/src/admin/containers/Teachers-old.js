@@ -1,26 +1,16 @@
 import React, { useState, useEffect, Fragment } from 'react'
 import { connect } from 'react-redux'
 import '../hocs/AdminLayout.scss'
-import './Teachers.css'
+import './Students.css'
 import { Redirect } from 'react-router-dom'
 import TeacherTableRow from '../../components/admin/TeacherTableRow'
-import {
-  get_all_teachers,
-  add_teacher,
-  delete_teacher,
-  update_teacher,
-} from '../../redux/actions/admin/teachers'
-import { isNotEmptyObject } from '../../functions'
-import { MDBSpinner } from 'mdbreact'
+import { get_all_teachers } from '../../redux/actions/admin/teachers'
 
 const Teachers = ({
   isAuthenticated,
   user,
   get_all_teachers,
   teachers_list,
-  add_teacher,
-  delete_teacher,
-  update_teacher,
 }) => {
   if (!isAuthenticated) {
     return <Redirect to='/login' />
@@ -31,17 +21,16 @@ const Teachers = ({
     pending: true,
     error: false,
   })
-  const [teachersList, setTeachersList] = useState([])
+  const [teachers, setTeachers] = useState([])
   const [teacherName, setTeacherName] = useState('')
-  const [teacherImage, setTeacherImage] = useState(null)
-  const [teacherAvatar, setTeacherAvatar] = useState('')
   const [teacherMail, setTeacherMail] = useState('')
   const [teacherPhone, setTeacherPhone] = useState('')
-  const [deleteActive, setDeleteActive] = useState(false)
+  const [teacherImage, setTeacherImage] = useState(null)
+  const [deleteId, setDeleteId] = useState(null)
   const [addActive, setAddActive] = useState(false)
   const [updateActive, setUpdateActive] = useState(false)
-  const [deleteId, setDeleteId] = useState(null)
   const [updateId, setUpdateId] = useState(null)
+  const [deleteActive, setDeleteActive] = useState(false)
 
   useEffect(() => {
     {
@@ -50,7 +39,7 @@ const Teachers = ({
         10000
       )
       if (Array.isArray(teachers_list) && teachers_list.length > 0) {
-        setTeachersList(teachers_list)
+        setTeachers(teachers_list)
         setTeachersData({ loaded: true, pending: false, error: false })
         clearTimeout(timer)
       }
@@ -58,19 +47,18 @@ const Teachers = ({
         clearTimeout(timer)
       }
     }
-  }, [teachers_list, teachersList])
+  }, [teachers_list, teachers])
 
   useEffect(() => {
     get_all_teachers()
   }, [])
 
   const updateRow = id => {
-    const teacher = teachersList.filter(item => item.id === id)[0]
+    const teacher = teachers.filter(item => item.id === id)[0]
     setUpdateId(id)
     setTeacherName(teacher.name)
     setTeacherMail(teacher.email)
     setTeacherPhone(teacher.phone)
-    setTeacherAvatar(teacher.avatar)
     setUpdateActive(true)
   }
 
@@ -81,7 +69,7 @@ const Teachers = ({
       name: teacherName,
       email: teacherMail,
       phone: teacherPhone,
-      avatar: teacherImage,
+      training_group: selectedGroup,
     }
     setUpdateActive(false)
     update_teacher(teacher)
@@ -100,7 +88,7 @@ const Teachers = ({
 
   const handleDelete = () => {
     setDeleteActive(false)
-    delete_teacher(deleteId)
+    delete_student(deleteId)
     setDeleteId(null)
   }
 
@@ -110,31 +98,34 @@ const Teachers = ({
   }
 
   const handleReload = () => {
-    setTeachersData({ loaded: false, pending: true, error: false })
+    setStudentsData({ loaded: false, pending: true, error: false })
     window.location.reload(true)
   }
 
-  const teacherAdd = e => {
+  const studentAdd = e => {
     e.preventDefault()
-    const teacher = {
-      name: teacherName,
-      email: teacherMail,
-      phone: teacherPhone,
-      avatar: teacherImage,
+    let student = {
+      image: teacherImage,
+      name: studentName,
+      email: studentMail,
+      phone: studentPhone,
     }
-    add_teacher(teacher)
+    add_student(student)
     setAddActive(false)
-    setTeacherName('')
-    setTeacherMail('')
-    setTeacherPhone('')
+
+    setStudentName('')
+    setStudentMail('')
+    setStudentPhone('')
   }
 
   const handleCancelAdd = () => {
     setAddActive(false)
-    setTeacherName('')
-    setTeacherMail('')
-    setTeacherPhone('')
-    setTeacherImage(null)
+    setSelectedSpeciality('')
+    setSelectedProgram('')
+    setSelectedGroup(null)
+    setStudentName('')
+    setStudentMail('')
+    setStudentPhone('')
   }
 
   return (
@@ -157,7 +148,7 @@ const Teachers = ({
               </button>
             </div>
             <div className='modal-body'>
-              <p>Вы уверены, что хотите удалить эту запись?</p>
+              <p>Вы уверены, что хотите удалить эти записи?</p>
               <p className='text-warning'>
                 <small>Это действие нельзя отменить!</small>
               </p>
@@ -165,11 +156,14 @@ const Teachers = ({
             <div className='modal-footer'>
               <button
                 className='btn btn-default'
-                onClick={() => handleCancelDelete()}
+                onClick={() => setDeleteActive(false)}
               >
                 Отменить
               </button>
-              <button className='btn btn-danger' onClick={() => handleDelete()}>
+              <button
+                className='btn btn-danger'
+                onClick={() => handleBunchDelete()}
+              >
                 Удалить
               </button>
             </div>
@@ -183,12 +177,13 @@ const Teachers = ({
       >
         <div className='modal-dialog'>
           <div className='modal-content'>
-            <form onSubmit={e => teacherAdd(e)}>
+            <form onSubmit={e => handleUpdate(e)}>
               <div className='modal-header'>
-                <h4 className='modal-title'>Добавить преподавателя</h4>
+                <h4 className='modal-title'>Обновить преподавателя</h4>
                 <button
                   type='button'
                   className='close'
+                  data-dismiss='modal'
                   onClick={() => setAddActive(false)}
                   aria-hidden='true'
                 >
@@ -209,33 +204,15 @@ const Teachers = ({
                   </div>
                   <div className='form-group'>
                     <label>Фамилия Имя Отчество</label>
-                    <input
-                      type='text'
-                      className='form-control'
-                      value={teacherName}
-                      required
-                      onChange={e => setTeacherName(e.target.value)}
-                    />
-                  </div>
-                  <div className='form-group'>
-                    <label>Телефон</label>
-                    <input
-                      type='phone'
-                      className='form-control'
-                      value={teacherPhone}
-                      required
-                      onChange={e => setTeacherPhone(e.target.value)}
-                    />
+                    <input type='text' className='form-control' required />
                   </div>
                   <div className='form-group'>
                     <label>Email</label>
-                    <input
-                      type='email'
-                      className='form-control'
-                      value={teacherMail}
-                      required
-                      onChange={e => setTeacherMail(e.target.value)}
-                    />
+                    <input type='email' className='form-control' required />
+                  </div>
+                  <div className='form-group'>
+                    <label>Телефон</label>
+                    <input type='text' className='form-control' required />
                   </div>
                 </div>
               </div>
@@ -243,91 +220,9 @@ const Teachers = ({
                 <input
                   type='button'
                   className='btn btn-default'
+                  data-dismiss='modal'
                   value='Отменить'
-                  onClick={() => handleCancelAdd()}
-                />
-                <input
-                  type='submit'
-                  className='btn btn-info'
-                  value='Сохранить'
-                />
-              </div>
-            </form>
-          </div>
-        </div>
-      </div>
-
-      <div
-        className={`modal fade ${updateActive ? 'show' : ''}`}
-        style={{ display: updateActive ? 'block' : 'none' }}
-      >
-        <div className='modal-dialog'>
-          <div className='modal-content'>
-            <form onSubmit={e => handleUpdate(e)}>
-              <div className='modal-header'>
-                <h4 className='modal-title'>Обновить преподавателя</h4>
-                <button
-                  type='button'
-                  className='close'
-                  onClick={() => setUpdateActive(false)}
-                  aria-hidden='true'
-                >
-                  &times;
-                </button>
-              </div>
-              <div className='modal-body'>
-                <div className='custom-modal-form'>
-                  <div className='form-group'>
-                    <label>Изображение</label>
-                    <p>
-                      <img src={teacherAvatar} alt='' width='50' /> Текущее
-                      изображение
-                    </p>
-                    <input
-                      type='file'
-                      id='image'
-                      accept='image/png, image/jpeg'
-                      onChange={e => setTeacherImage(e.target.files[0])}
-                      className='form-control'
-                    />
-                  </div>
-
-                  <div className='form-group'>
-                    <label>Фамилия Имя Отчество</label>
-                    <input
-                      type='text'
-                      className='form-control'
-                      value={teacherName}
-                      onChange={e => setTeacherName(e.target.value)}
-                    />
-                  </div>
-                  <div className='form-group'>
-                    <label>Телефон</label>
-                    <input
-                      type='phone'
-                      className='form-control'
-                      value={teacherPhone}
-                      //   onChange={e => console.log(e.target.value)}
-                      onChange={e => setTeacherPhone(e.target.value)}
-                    />
-                  </div>
-                  <div className='form-group'>
-                    <label>Email</label>
-                    <input
-                      type='email'
-                      className='form-control'
-                      value={teacherMail}
-                      onChange={e => setTeacherMail(e.target.value)}
-                    />
-                  </div>
-                </div>
-              </div>
-              <div className='modal-footer'>
-                <input
-                  type='button'
-                  className='btn btn-default'
-                  value='Отменить'
-                  onClick={() => handleCancelUpdate()}
+                  onClick={() => setAddActive(false)}
                 />
                 <input
                   type='submit'
@@ -359,7 +254,6 @@ const Teachers = ({
           </button>
         </div>
       )}
-
       {teachersData.loaded && (
         <div className='main-body__users'>
           <div className='cards'>
@@ -377,7 +271,6 @@ const Teachers = ({
                 </button>
               </div>
             </div>
-
             <div className='cards'>
               <table className='table table-striped table-hover'>
                 <thead>
@@ -390,15 +283,14 @@ const Teachers = ({
                   </tr>
                 </thead>
                 <tbody>
-                  {teachersList.length > 1 &&
-                    teachersList.map(item => (
-                      <TeacherTableRow
-                        key={item.id}
-                        teacher={item}
-                        update_modal={id => updateRow(id)}
-                        delete_modal={id => deleteRow(id)}
-                      />
-                    ))}
+                  {teachers.map(item => (
+                    <TeacherTableRow
+                      teacher={item}
+                      key={item.id}
+                      update_modal={id => updateRow(id)}
+                      delete_modal={id => deleteRow(id)}
+                    />
+                  ))}
                 </tbody>
               </table>
             </div>
@@ -412,12 +304,10 @@ const Teachers = ({
 const mapStateToProps = state => ({
   isAuthenticated: state.auth.isAuthenticated,
   user: state.auth.user,
+  ids: state.tableReducer.payload,
   teachers_list: state.teachers.teachers_list,
 })
 
 export default connect(mapStateToProps, {
   get_all_teachers,
-  add_teacher,
-  delete_teacher,
-  update_teacher,
 })(Teachers)

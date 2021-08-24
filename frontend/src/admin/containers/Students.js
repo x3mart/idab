@@ -384,7 +384,7 @@ const Students = ({
           <div className='modal-content'>
             <form onSubmit={e => handleUpdate(e)}>
               <div className='modal-header'>
-                <h4 className='modal-title'>Добавить слушателя</h4>
+                <h4 className='modal-title'>Обновить слушателя</h4>
                 <button
                   type='button'
                   className='close'
