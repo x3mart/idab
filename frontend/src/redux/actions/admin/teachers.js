@@ -1,17 +1,12 @@
 import {
   GET_ALL_TEACHERS_LIST_SUCCESS,
   GET_ALL_TEACHERS_LIST_FAIL,
-  GET_ALL_TEACHERS_ID_FAIL,
   TEACHER_ADD_SUCCESS,
   TEACHER_ADD_FAIL,
   TEACHER_UPDATE_SUCCESS,
   TEACHER_UPDATE_FAIL,
   TEACHER_DELETE_SUCCESS,
   TEACHER_DELETE_FAIL,
-  TEACHERS_ID_LIST_ADD,
-  TEACHERS_ID_LIST_REMOVE,
-  TEACHERS_ID_LIST_ADD_ALL,
-  TEACHERS_ID_LIST_REMOVE_ALL,
 } from '../types'
 import axios from "axios";
 
@@ -27,18 +22,9 @@ export const get_all_teachers = () => async dispatch => {
 
     try {
       const res = await axios.get(`${process.env.REACT_APP_API_URL}/api/lk/teachers/`, config);
-      const user_id_list = () => {
-        let list = []
-        if (res) {
-          for (let i = 0; i < res.data.length; i++) {
-            list.push(res.data[i].id)
-          }
-        }
-        return list
-      }
+      
       const data = {
-        teachers_list: res.data,
-        teachers_ids_list: user_id_list()
+        teachers_list: res.data
       }
       dispatch({
         type: GET_ALL_TEACHERS_LIST_SUCCESS,
@@ -56,114 +42,102 @@ export const get_all_teachers = () => async dispatch => {
   }
 }
 
-export const add_student = (student) => async dispatch => {
+export const add_teacher = (teacher) => async dispatch => {
 
-  const {name, email, password, group} = student
+  const {name, email, phone, avatar} = teacher
 
   const config = {
     headers: {
-      'Content-Type': 'application/json',
-      'Authorization': `JWT ${localStorage.getItem('access')}`,
-      'Accept': 'application/json'
-    }
-  };
+      'Content-Type': 'multipart/form-data',
+      Authorization: `JWT ${localStorage.getItem('access')}`,
+    },
+  }
 
-  const body = JSON.stringify({name, email, password, group});
+  const form_data = new FormData()
+  form_data.append('avatar', avatar, avatar.name)
+  form_data.append('name', name)
+  form_data.append('email', email)
+  form_data.append('phone', phone)
 
   try {
-    const res = await axios.post(`${process.env.REACT_APP_API_URL}/api/lk/teachers/`, body, config);
-    const user_id_list = () => {
-      let list = []
-      if (res) {
-        for (let i = 0; i < res.data.length; i++) {
-          list.push(res.data[i].id)
-        }
-      }
-      return list
-    }
-    const data = {
-      teachers_list: res.data,
-      teachers_ids_list: user_id_list()
-    }
+    const res = await axios.post(
+      `${process.env.REACT_APP_API_URL}/api/lk/teachers/`,
+      form_data,
+      config
+    )
+
+    const teacher = res.data
+    
     dispatch({
-      type: GET_ALL_TEACHERS_LIST_SUCCESS,
-      payload: data
+      type: TEACHER_ADD_SUCCESS,
+      payload: teacher,
     })
   } catch (err) {
     dispatch({
-      type: GET_ALL_TEACHERS_LIST_FAIL
+      type: TEACHER_ADD_FAIL,
     })
   }
 }
 
-export const add_id = (id) => {
-  if (typeof id === "number") {
-    return dispatch => {
-      dispatch({
-        type: TEACHERS_ID_LIST_ADD,
-        payload: id
-      })
-    }
-  } else if (typeof id === "object") {
-    return dispatch => {
-      dispatch({
-        type: TEACHERS_ID_LIST_ADD_ALL,
-        payload: id
-      })
-    }
+export const update_teacher = teacher => async dispatch => {
+  const { id, name, email, phone, avatar } = teacher
+
+  const config = {
+    headers: {
+      'Content-Type': 'multipart/form-data',
+      Authorization: `JWT ${localStorage.getItem('access')}`,
+    },
+  }
+
+  const form_data = new FormData()
+  if (avatar) {form_data.append('avatar', avatar, avatar.name)}
+  if (name) {form_data.append('name', name)}
+  if (email) {form_data.append('email', email)}
+  if (phone) {form_data.append('phone', phone)}
+  if (!phone) {form_data.append('phone', '')}
+  
+  try {
+    const res = await axios.patch(
+      `${process.env.REACT_APP_API_URL}/api/lk/teachers/${id}/`,
+      form_data,
+      config
+    )
+
+    const teacher = res.data
+
+    dispatch({
+      type: TEACHER_UPDATE_SUCCESS,
+      payload: teacher,
+    })
+  } catch (err) {
+    dispatch({
+      type: TEACHER_UPDATE_FAIL,
+    })
   }
 }
 
-export const remove_id = (id) => {
-  if (typeof id === "number") {
-    return dispatch => {
-      dispatch({
-        type: TEACHERS_ID_LIST_REMOVE,
-        payload: id
-      })
-    }
-  } else if (typeof id === "object") {
-    return dispatch => {
-      dispatch({
-        type: TEACHERS_ID_LIST_REMOVE_ALL,
-      })
-    }
+export const delete_teacher = id => async dispatch => {
+  const config = {
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `JWT ${localStorage.getItem('access')}`,
+      Accept: 'application/json',
+    },
+  }
+
+  try {
+    const res = await axios.delete(
+      `${process.env.REACT_APP_API_URL}/api/lk/teachers/${id}/`,
+      config
+    )
+
+    dispatch({
+      type: TEACHER_DELETE_SUCCESS,
+      payload: id,
+    })
+  } catch (err) {
+    dispatch({
+      type: TEACHER_DELETE_FAIL,
+    })
   }
 }
-
-// export const add_id = (id) => {
-//   return dispatch => {
-//     dispatch({
-//       type: ADD_ROW_ID,
-//       payload: id
-//     })
-//   }
-// }
-//
-// export const remove_id = (id) => {
-//   return dispatch => {
-//     dispatch({
-//       type: DELETE_ROW_ID,
-//       payload: id
-//     });
-//   };
-// };
-//
-// export const add_all_ids = (ids) => {
-//   return dispatch => {
-//     dispatch({
-//       type: ADD_ALL_IDS,
-//       payload: ids
-//     })
-//   }
-// }
-//
-// export const remove_all_ids = () => {
-//   return dispatch => {
-//     dispatch({
-//       type: DELETE_ALL_IDS
-//     });
-//   };
-// };
-//
-//
