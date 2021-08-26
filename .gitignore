@@ -134,3 +134,5 @@ dmypy.json
 
 #npm
 package-lock.json
+
+sqlite3.db
