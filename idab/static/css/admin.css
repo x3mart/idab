@@ -1,0 +1,35 @@
+:root {
+  --main-brown-color: #5b2732;
+  --main-blue-color: #7099ad;
+  --main-light-blue-color: #bbd6dc;
+}
+
+#header {
+  background-color: white;
+  color: var(--main-brown-color);
+  box-shadow: 0 2px 5px 0 rgb(0 0 0 / 16%), 0 2px 10px 0 rgb(0 0 0 / 12%);
+}
+
+#header a:link, #header a:visited {
+    color: var(--main-brown-color);
+}
+
+#header a:focus, #header a:hover {
+    text-decoration: none;
+    border-bottom-color: var(--main-brown-color);
+    color: var(--main-brown-color);
+}
+
+#branding h1,
+#branding h1 a:link,
+#branding h1 a:visited {
+  color: var(--main-light-blue-color);
+}
+
+div.breadcrumbs {
+  background-color: var(--main-blue-color);
+}
+
+.module caption {
+  background-color: var(--main-blue-color);
+}
