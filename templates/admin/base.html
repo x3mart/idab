@@ -69,10 +69,11 @@
     {% endif %}
 
     <div class="main shifted" id="main">
-      
-      {% block nav-sidebar %}
+      {% if not is_popup and is_nav_sidebar_enabled %}
+        {% block nav-sidebar %}
           {% include "admin/nav_sidebar.html" %}
         {% endblock %}
+      {% endif %}
       <div class="content">
         {% block messages %}
           {% if messages %}
@@ -83,8 +84,8 @@
         {% endblock messages %}
         <!-- Content -->
         <div id="content" class="{% block coltype %}colM{% endblock %}">
-          
-          
+          {% block pretitle %}{% endblock %}
+          {% block content_title %}{% if title %}<h1>{{ title }}</h1>{% endif %}{% endblock %}
           {% block content %}
             {% block object-tools %}{% endblock %}
             {{ content }}
