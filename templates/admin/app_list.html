@@ -16,7 +16,7 @@
             {% endif %}
 
             {% if model.add_url %}
-              <td><a href="{{ model.add_url }}" class="addlink"><span style="color: transparent;">.</span></a></td>
+              <td><a href="{{ model.add_url }}" class="addlink">{% translate 'Add' %}</a></td>
             {% else %}
               <td></td>
             {% endif %}
@@ -25,7 +25,7 @@
               {% if model.view_only %}
                 <td><a href="{{ model.admin_url }}" class="viewlink">{% translate 'View' %}</a></td>
               {% else %}
-                <td><a href="{{ model.admin_url }}" class="changelink"><span style="color: transparent;">.</span></a></td>
+                <td><a href="{{ model.admin_url }}" class="changelink">{% translate 'Change' %}</a></td>
               {% endif %}
             {% elif show_changelinks %}
               <td></td>

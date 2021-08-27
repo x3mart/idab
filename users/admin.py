@@ -56,8 +56,8 @@ class TeacherCreationForm(UserCreationForm):
 class TeacherAdmin(UserAdmin):
     add_form = TeacherCreationForm
     ordering = ('email',)
-    fieldsets = ((None, {'fields':('name', 'email', 'password', 'is_active', 'short_position', 'full_position', 'description', 'link', 'avatar')}),)
-    add_fieldsets = ((None, {'fields':('email', 'name', 'password1', 'password2', 'is_active', 'short_position', 'full_position', 'description', 'link', 'avatar')}),)
+    fieldsets = ((None, {'fields':('name', 'email', 'password', 'is_active', 'is_staff', 'short_position', 'full_position', 'description', 'link', 'avatar', 'groups', 'user_permissions')}),)
+    add_fieldsets = ((None, {'fields':('email', 'name', 'password1', 'password2', 'is_active', 'is_staff', 'short_position', 'full_position', 'description', 'link', 'avatar', 'groups', 'user_permissions', )}),)
     list_display = ('name', 'email', 'is_active', 'on_site')
     list_editable = ('is_active', 'on_site')
     inlines = [
