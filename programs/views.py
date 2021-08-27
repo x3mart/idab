@@ -15,14 +15,20 @@ class LkCategoryViewSet(viewsets.ModelViewSet):
     queryset = Category.objects.all()
     serializer_class = LkCategorySerializer
     permission_classes = [IsAdminOrReadOnlyPermission]
-    lookup_field = 'slug'
+
 
 
 class LkProgramViewSet(viewsets.ModelViewSet):
     queryset = Program.objects.all()
     serializer_class = LkProgramSerializer
     permission_classes = [IsAdminOrReadOnlyPermission]
-    lookup_field = 'slug'
+
+    def get_queryset(self):
+        category = self.request.query_params.get('category')
+        if self.action == 'list' and category is not None:
+            return Program.objects.filter(category=category)
+        return super().get_queryset()
+
 
 
 class LkTrainingGroupBasicViewSet(viewsets.ModelViewSet):
