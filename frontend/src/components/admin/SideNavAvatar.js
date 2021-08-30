@@ -1,15 +1,18 @@
 import React, {useEffect, useState} from "react";
 import {connect} from "react-redux";
+import dummy_avatar from '../../assets/man.svg'
 
 const SideNavAvatar = ({user}) => {
 
-  const [avatar, setAvatar] = useState("https://s3-us-west-2.amazonaws.com/s.cdpn.io/1609106/headshot.png")
+  const [avatar, setAvatar] = useState('')
 
   useEffect(() => {
     if (user !== null && user !== undefined) {
       if (user.avatar !== null && user.avatar !== undefined) {
         setAvatar(user.avatar)
       }
+    } else {
+      setAvatar(dummy_avatar)
     }
   }, [user])
 

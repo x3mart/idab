@@ -2,17 +2,20 @@ import React, {useEffect, useState} from "react";
 import {connect} from "react-redux";
 import {Link} from "react-router-dom";
 import {logout} from "../../redux/actions/auth/auth";
+import dummy_avatar from '../../assets/man.svg'
 
 const AdminHeader = ({user, logout}) => {
 
   const [avatarDropdown, setAvatarDropdown] = useState(false)
-  const [avatar, setAvatar] = useState("https://s3-us-west-2.amazonaws.com/s.cdpn.io/1609106/headshot.png")
+  const [avatar, setAvatar] = useState(null)
 
   useEffect(() => {
     if (user !== null && user !== undefined) {
       if (user.avatar !== null && user.avatar !== undefined) {
         setAvatar(user.avatar)
       }
+    } else {
+      setAvatar(dummy_avatar)
     }
   }, [user])
 
