@@ -7,10 +7,15 @@ import SmallCard from "../../components/admin/SmallCard";
 import Calendar from 'react-big-calendar';
 import moment from "moment";
 import 'react-big-calendar/lib/css/react-big-calendar.css';
+import {load_user} from '../../redux/actions/auth/auth'
 
 require('moment/locale/ru.js');
 
-const Dashboard = ({isAuthenticated, user}) => {
+const Dashboard = ({isAuthenticated, load_user, user}) => {
+
+  useEffect(() => {
+    load_user()
+  })
 
   const localizer = Calendar.momentLocalizer(moment);
 
@@ -82,4 +87,4 @@ const mapStateToProps = state => ({
   user: state.auth.user
 })
 
-export default connect(mapStateToProps,)(Dashboard);
+export default connect(mapStateToProps, {load_user})(Dashboard);
