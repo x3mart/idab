@@ -35,12 +35,10 @@ const Login = ({login, isAuthenticated}) => {
 
   return (
     <div className='classic-form-page' id='login'>
-
       <div
-        className="view"
-        data-test="view"
-        style={{backgroundImage: `url('${bg}')`}}
-
+        className='view'
+        data-test='view'
+        style={{ backgroundImage: `url('${bg}')` }}
       >
         <MDBMask
           className='d-flex justify-content-center align-items-center'
@@ -52,33 +50,34 @@ const Login = ({login, isAuthenticated}) => {
                 <MDBCard>
                   <MDBCardBody>
                     <div className='form-header idab-gradient'>
-                      <h3>
-                        Личный кабинет
-                      </h3>
+                      <h3>Личный кабинет</h3>
                     </div>
-                    <MDBInput
-                      type='email'
-                      label='Email'
-                      icon='envelope'
-                      iconClass='white-text'
-                      onChange={(e) => setEmail(e.target.value)}
-                    />
-                    <MDBInput
-                      type='password'
-                      label='Пароль'
-                      icon='lock'
-                      iconClass='white-text'
-                      onChange={(e) => setPass(e.target.value)}
-                    />
-                    <div className='text-center mt-3 black-text'>
-                      <MDBBtn
-                        className='idab-gradient' size='lg'
-                        type="submit"
-                        onClick={() => handleLogin()}
-                      >
-                        Вход
-                      </MDBBtn>
-                      <hr/>
+                    <div className="input-white-text">
+                      <MDBInput
+                        type='email'
+                        label='Email'
+                        icon='envelope'
+                        iconClass='white-text'
+                        onChange={e => setEmail(e.target.value)}
+                      />
+                      <MDBInput
+                        type='password'
+                        label='Пароль'
+                        icon='lock'
+                        iconClass='white-text'
+                        onChange={e => setPass(e.target.value)}
+                      />
+                      <div className='text-center mt-3 black-text'>
+                        <MDBBtn
+                          className='idab-gradient'
+                          size='lg'
+                          type='submit'
+                          onClick={() => handleLogin()}
+                        >
+                          Вход
+                        </MDBBtn>
+                      </div>
+                      <hr />
                     </div>
                   </MDBCardBody>
                 </MDBCard>
@@ -88,7 +87,7 @@ const Login = ({login, isAuthenticated}) => {
         </MDBMask>
       </div>
     </div>
-  );
+  )
 }
 
 const mapStateToProps = state => ({

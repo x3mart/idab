@@ -12,6 +12,12 @@ import {
   DELETE_LK_CATEGORIES_SUCCESS,
   DELETE_LK_CATEGORIES_FAIL,
   GET_LK_FILTERED_PROGRAMS_SUCCESS,
+  SET_LK_PROGRAM_SUCCESS,
+  SET_LK_PROGRAM_FAIL,
+  UPDATE_LK_PROGRAM_SUCCESS,
+  UPDATE_LK_PROGRAM_FAIL,
+  DELETE_LK_PROGRAM_SUCCESS,
+  DELETE_LK_PROGRAM_FAIL,
 } from '../../actions/types'
 
 const initialState = {
@@ -59,6 +65,26 @@ export default function(state= initialState, action) {
       return {
         ...state,
         lk_programs: state.lk_programs.filter(item => item.category == payload),
+      }
+    case SET_LK_PROGRAM_SUCCESS:
+      return {
+        ...state,
+        lk_programs: [payload, ...state.lk_programs],
+      }
+    case UPDATE_LK_PROGRAM_SUCCESS:
+      return {
+        ...state,
+        lk_programs: state.lk_programs.map(item => {
+          if (item.id === payload.id) {
+            return payload
+          }
+          return item
+        }),
+      }
+    case DELETE_LK_PROGRAM_SUCCESS:
+      return {
+        ...state,
+        lk_programs: state.lk_programs.filter(item => item.id !== payload),
       }
     case GET_SINGLE_LK_CATEGORY_SUCCESS:
       return {
