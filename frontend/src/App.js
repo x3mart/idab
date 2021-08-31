@@ -15,6 +15,7 @@ import Login from "./containers/Login";
 import AdminLayout from './admin/hocs/AdminLayout';
 import Dashboard from './admin/containers/Dashboard'
 import Students from "./admin/containers/Students";
+import Profile from './admin/containers/Profile'
 import Teachers from "./admin/containers/Teachers";
 import AdminPrograms from "./admin/containers/AdminPrograms";
 import Groups from "./admin/containers/Groups";
@@ -50,6 +51,7 @@ const App = () => {
           }>
             <AdminLayout>
               <Switch>
+                <Route path='/dashboard/my-page' component={Profile}/>
                 <Route path='/dashboard/study/students' component={Students}/>
                 <Route path='/dashboard/study/teachers' component={Teachers}/>
                 <Route path='/dashboard/study/programs' component={AdminPrograms}/>
