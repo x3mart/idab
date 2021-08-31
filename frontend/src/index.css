@@ -534,3 +534,8 @@ a {
 .button-back-container:hover .button-back-text {
     opacity: 1;
 }
+
+.modal-body {
+    height: 70vh;
+    overflow: auto;
+}
