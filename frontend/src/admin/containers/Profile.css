@@ -1,0 +1,19 @@
+.st-details input:disabled, select:disabled {
+    border: none;
+    background: transparent;
+    padding: .375rem 0;
+}
+
+.st-details-avatar-wraper {
+    max-width:200px;
+}
+
+.st-details-avatar-input-wraper {
+    width: 100%;
+    max-width: 300px;
+    display: block;
+}
+
+.st-details-input-wraper__min-width-320 {
+    min-width: 320px;
+}
