@@ -4,6 +4,8 @@ import {
   LOGIN_FAIL,
   USER_LOADED_SUCCESS,
   USER_LOADED_FAIL,
+  USER_UPDATE_SUCCESS,
+  USER_UPDATE_FAIL,
   AUTHENTICATED_SUCCESS,
   AUTHENTICATED_FAIL,
   PASSWORD_RESET_SUCCESS,
@@ -42,6 +44,49 @@ export const load_user = () => async dispatch => {
   } else {
     dispatch({
       type: USER_LOADED_FAIL
+    });
+  }
+};
+export const update_user = (data) => async dispatch => {
+  if (localStorage.getItem('access')) {
+    const config = {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+        Authorization: `JWT ${localStorage.getItem('access')}`,
+      },
+    }
+
+    const { name, email, birthday, sex, phone, adress, avatar } = data
+
+    const form_data = new FormData()
+    if(avatar) {
+      form_data.append('avatar', avatar, avatar.name)
+    }
+    form_data.append('name', name)
+    form_data.append('email', email)
+    form_data.append('birthday', birthday)
+    form_data.append('sex', sex)
+    form_data.append('phone', phone)
+    form_data.append('adress', adress)
+
+    try {
+      const res = await axios.patch(
+        `https://idab.mba/auth/users/me/`,
+        form_data, config
+      )
+
+      dispatch({
+        type: USER_UPDATE_SUCCESS,
+        payload: res.data
+      });
+    } catch (err) {
+      dispatch({
+        type: USER_UPDATE_FAIL
+      });
+    }
+  } else {
+    dispatch({
+      type: USER_UPDATE_FAIL
     });
   }
 };
