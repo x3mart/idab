@@ -13,6 +13,7 @@ import {
   load_lk_programs_list,
   add_lk_category,
   update_lk_category,
+  delete_lk_category,
 } from '../../redux/actions/admin/adminPrograms'
 import { isNotEmptyObject } from '../../functions'
 import { MDBSpinner } from 'mdbreact'
@@ -24,6 +25,7 @@ const AdminPrograms = ({
   user,
   add_lk_category,
   update_lk_category,
+  delete_lk_category,
 }) => {
   if (!isAuthenticated) {
     return <Redirect to='/login' />
@@ -50,6 +52,7 @@ const AdminPrograms = ({
   const [categoryIsActive, setCategoryIsActive] = useState(true)
   const [categoryImage, setCategoryImage] = useState(null)
   const [categoryNewImage, setCategoryNewImage] = useState(null)
+  const [activeCategory, setActiveCategory] = useState(null)
 
   useEffect(() => {
     {
@@ -86,6 +89,7 @@ const AdminPrograms = ({
     const category = categoriesList.filter(item => item.id === id)[0]
     setUpdateId(id)
     setCategoryName(category.name)
+    setCategoryImage(category.image)
     setCategoryShortDescription(category.short_description)
     setCategoryFullDescription(category.full_description)
     setCategoryIsActive(category.is_active)
@@ -94,26 +98,34 @@ const AdminPrograms = ({
 
   const handleUpdate = e => {
     e.preventDefault()
-    const category = {
+    let category = {
       id: updateId,
       name: categoryName,
+      short_description: categoryShortDescription,
+      full_description: categoryFullDescription,
+      is_active: categoryIsActive,
     }
-    setUpdateActive(false)
+    category = categoryNewImage
+      ? { image: categoryNewImage, ...category }
+      : category
+
+    console.log(category)
     update_lk_category(category)
     setUpdateId(null)
+    setUpdateActive(false)
   }
 
   const handleAdd = e => {
     e.preventDefault()
     const category = {
       name: categoryName,
+      image: categoryNewImage,
       short_description: categoryShortDescription,
       full_description: categoryFullDescription,
       is_active: categoryIsActive,
     }
-    setUpdateActive(false)
+    setAddActive(false)
     add_lk_category(category)
-    setUpdateId(null)
   }
 
   const handleCancelAdd = () => {
@@ -125,11 +137,28 @@ const AdminPrograms = ({
   }
 
   const handleCancelUpdate = () => {
-    setAddActive(false)
+    setUpdateActive(false)
     setCategoryName('')
     setCategoryShortDescription('')
     setCategoryFullDescription('')
     setCategoryIsActive(true)
+    setCategoryImage(null)
+    setCategoryNewImage(null)
+  }
+
+  const handleDelete = () => {
+    setDeleteActive(false)
+    delete_lk_category(deleteId)
+    setDeleteId(null)
+  }
+
+  const handleCancelDelete = () => {
+    setDeleteActive(false)
+    setDeleteId(null)
+  }
+
+  const setOpened = id => {
+    setActiveCategory(id)
   }
 
   return (
@@ -206,7 +235,6 @@ const AdminPrograms = ({
                     <label>Изображение</label>
                     <input
                       type='file'
-                      id='image'
                       accept='image/png, image/jpeg'
                       onChange={e => setCategoryNewImage(e.target.files[0])}
                       className='form-control'
@@ -240,8 +268,6 @@ const AdminPrograms = ({
                       <input
                         class='form-check-input'
                         type='checkbox'
-                        value=''
-                        required
                         id='flexCheckDefault'
                         checked={categoryIsActive}
                         onChange={e => setCategoryIsActive(e.target.checked)}
@@ -311,7 +337,7 @@ const AdminPrograms = ({
                       type='file'
                       id='image'
                       accept='image/png, image/jpeg'
-                      onChange={e => setCategoryImage(e.target.files[0])}
+                      onChange={e => setCategoryNewImage(e.target.files[0])}
                       className='form-control'
                     />
                   </div>
@@ -343,8 +369,6 @@ const AdminPrograms = ({
                       <input
                         class='form-check-input'
                         type='checkbox'
-                        value=''
-                        required
                         id='flexCheckDefault'
                         checked={categoryIsActive}
                         onChange={e => setCategoryIsActive(e.target.checked)}
@@ -427,6 +451,8 @@ const AdminPrograms = ({
                       categoriesList.map(item => (
                         <ProgramTableRow
                           key={item.id}
+                          setOpened={id => setOpened(id)}
+                          active={activeCategory}
                           category={item}
                           update_modal={id => updateRow(id)}
                           delete_modal={id => deleteRow(id)}
@@ -455,4 +481,5 @@ export default connect(mapStateToProps, {
   load_lk_programs_list,
   add_lk_category,
   update_lk_category,
+  delete_lk_category,
 })(AdminPrograms)

@@ -1,25 +1,41 @@
 import React, { Fragment, useEffect, useState } from 'react'
 import { connect } from 'react-redux'
 import '../../admin/containers/Students.css'
-import dummy_avatar from '../../assets/man.svg'
-import { load_lk_programs_list } from '../../redux/actions/admin/adminPrograms'
+import ProgramModal from './ProgramModal'
+import DeleteModal from './DeleteModal'
+import {
+  load_lk_programs_list,
+  add_lk_program,
+  update_lk_program,
+  delete_lk_program,
+  delete_lk_category,
+  update_lk_category,
+  add_lk_category,
+} from '../../redux/actions/admin/adminPrograms'
 
-import { CKEditor } from '@ckeditor/ckeditor5-react'
-import ClassicEditor from '@ckeditor/ckeditor5-build-classic'
-
-const ProgramTableRow = ({ programs_list, ...props }) => {
-  const { category, update_modal, delete_modal, load_lk_programs_list } = props
+const ProgramTableRow = ({
+  programs_list,
+  load_lk_programs_list,
+  add_lk_program,
+  update_lk_program,
+  delete_lk_program,
+  delete_lk_category,
+  update_lk_category,
+  add_lk_category,
+  ...props
+}) => {
+  const { category, update_modal, active, setOpened } = props
 
   const { id, name } = category
 
-  const [programVisible, setProgramVisible] = useState(null)
   const [programsList, setProgramsList] = useState([])
-  const [addActive, setAddActive] = useState(false)
-  const [programName, setProgramName] = useState('')
-  const [programShortDescription, setProgramShortDescription] = useState('')
-  const [programFullDescription, setProgramFullDescription] = useState('')
-  const [programIsActive, setProgramIsActive] = useState(true)
-  const [categoryId, setCategoryId] = useState(null)
+  const [deleteId, setDeleteId] = useState(null)
+  const [deleteActive, setDeleteActive] = useState(false)
+  const [activeCategory, setActiveCategory] = useState(null)
+
+  const [modalActive, setModalActive] = useState(false)
+  const [data, setData] = useState({})
+  const [dataType, setDataType] = useState('')
 
   useEffect(() => {
     load_lk_programs_list()
@@ -27,141 +43,98 @@ const ProgramTableRow = ({ programs_list, ...props }) => {
 
   useEffect(() => {
     if (programs_list) {
-      setProgramsList(programs_list)
+      setProgramsList(programs_list.filter(item => item.category === id))
     }
   }, [programs_list])
 
-  const groupToggle = id => {
-    if (id !== programVisible) {
-      if (programsList && programsList.length > 0) {
-        setProgramsList(programsList.filter(item => item.category == id))
-      }
-      setProgramVisible(id)
+  useEffect(() => {
+    setOpened(activeCategory)
+  }, [activeCategory])
+
+  const openCategory = id => {
+    if (activeCategory === id) {
+      setActiveCategory(null)
     } else {
-      setProgramsList(programs_list)
-      setProgramVisible('')
+      setActiveCategory(id)
     }
   }
 
-  const addModal = (id) => {
-    setAddActive(true)
-    setCategoryId(id)
+  const closeModal = () => {
+    setModalActive(false)
   }
 
-  const handleAdd = e => {
-    e.preventDefault()
-    const program = {
-      name: programName,
-      short_description: programShortDescription,
-      full_description: programFullDescription,
-      is_active: programIsActive,
-      category: categoryId,
+  const openModal = (id, action, type) => {
+    setDataType(type)
+    if (action === 'add') {
+      setData({ category_id: id })
+    } else if (action === 'update') {
+      setData(programsList.filter(item => item.id === id)[0])
     }
-    setAddActive(false)
-    add_lk_program(program)
+    setModalActive(true)
   }
 
-  const handleCancelAdd = () => {
-    setAddActive(false)
-    setProgramName('')
-    setProgramShortDescription('')
-    setProgramFullDescription('')
-    setProgramIsActive(true)
-    setCategoryId(null)
+  const handleModal = (content, type) => {
+    setModalActive(false)
+
+    if (type === 'специализация') {
+      if (content.id) {
+        update_lk_program(content)
+      } else {
+        add_lk_program(content)
+      }
+    } else if (type === 'программа') {
+      if (content.id) {
+        update_lk_category(content)
+      } else {
+        add_lk_category(content)
+      }
+    }
+  }
+
+  const closeDelete = () => {
+    setDeleteActive(false)
+  }
+
+  const openDelete = (id, type) => {
+    setDataType(type)
+    setDeleteId(id)
+    setDeleteActive(true)
+  }
+
+  const handleDelete = (contentId, contentType) => {
+    setDeleteActive(false)
+    if (contentType === 'специализация') {
+      delete_lk_program(contentId)
+    } else if (contentType === 'программа') {
+      delete_lk_category(contentId)
+    }
   }
 
   return (
     <Fragment>
-      <div
-        className={`modal fade ${addActive ? 'show' : ''}`}
-        style={{ display: addActive ? 'block' : 'none' }}
-      >
-        <div className='modal-dialog'>
-          <div className='modal-content'>
-            <form onSubmit={e => handleAdd(e)}>
-              <div className='modal-header'>
-                <h4 className='modal-title'>Добавить специализацию</h4>
-                <button
-                  type='button'
-                  className='close'
-                  onClick={() => setAddActive(false)}
-                  aria-hidden='true'
-                >
-                  &times;
-                </button>
-              </div>
-              <div className='modal-body'>
-                <div className='custom-modal-form'>
-                  <div className='form-group'>
-                    <label>Название специализации</label>
-                    <input
-                      type='text'
-                      className='form-control'
-                      value={programName}
-                      required
-                      onChange={e => setProgramName(e.target.value)}
-                    />
-                  </div>
-                  <div className='form-group'>
-                    <label>Короткое описание специализации</label>
-                    <input
-                      type='text'
-                      className='form-control'
-                      value={programShortDescription}
-                      required
-                      onChange={e => setProgramShortDescription(e.target.value)}
-                    />
-                  </div>
-                  <div className='form-group'>
-                    <label>Полное описание специализации</label>
-                    <CKEditor
-                      editor={ClassicEditor}
-                      data={programFullDescription}
-                      onChange={(event, editor) => {
-                        const data = editor.getData()
-                        setProgramFullDescription(data)
-                      }}
-                    />
-                  </div>
-                  <div className='form-group'>
-                    <div class='form-check'>
-                      <input
-                        class='form-check-input'
-                        type='checkbox'
-                        value=''
-                        required
-                        id='flexCheckDefault'
-                        checked={programIsActive}
-                        onChange={e => setProgramIsActive(e.target.checked)}
-                      />
-                      <label class='form-check-label' for='flexCheckDefault'>
-                        Активная специализация
-                      </label>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <div className='modal-footer'>
-                <input
-                  type='button'
-                  className='btn btn-default'
-                  value='Отменить'
-                  onClick={() => handleCancelAdd()}
-                />
-                <input
-                  type='submit'
-                  className='btn btn-info'
-                  value='Сохранить'
-                />
-              </div>
-            </form>
-          </div>
-        </div>
-      </div>
+      {deleteActive && (
+        <DeleteModal
+          id={deleteId}
+          handleDelete={(contentId, contentType) =>
+            handleDelete(contentId, contentType)
+          }
+          closeDelete={() => closeDelete()}
+          type={dataType}
+        />
+      )}
+
+      {modalActive && (
+        <ProgramModal
+          data={data}
+          handleData={(content, type) => handleModal(content, type)}
+          closeModal={() => closeModal()}
+          type={dataType}
+        />
+      )}
 
       <tr>
         <td>
-          <div onClick={() => groupToggle(id)} style={{ cursor: 'pointer' }}>
+          <div onClick={() => openCategory(id)} style={{ cursor: 'pointer' }}>
             {name}
           </div>
         </td>
@@ -169,7 +142,7 @@ const ProgramTableRow = ({ programs_list, ...props }) => {
           <a
             className='add'
             data-toggle='modal'
-            onClick={() => addModal(id)}
+            onClick={() => openModal(id, 'add', 'специализация')}
           >
             <i className='material-icons' data-toggle='tooltip' title='Add'>
               &#xE145;
@@ -187,7 +160,7 @@ const ProgramTableRow = ({ programs_list, ...props }) => {
           <a
             className='delete'
             data-toggle='modal'
-            onClick={() => delete_modal(id)}
+            onClick={() => openDelete(id, 'программа')}
           >
             <i className='material-icons' data-toggle='tooltip' title='Delete'>
               &#xE872;
@@ -195,8 +168,8 @@ const ProgramTableRow = ({ programs_list, ...props }) => {
           </a>
         </td>
       </tr>
-      {programVisible === id &&
-        programsList.length > 0 &&
+
+      {active === id &&
         programsList.map(item => (
           <tr key={item.id}>
             <td style={{ paddingLeft: '40px' }}>{item.name}</td>
@@ -204,7 +177,7 @@ const ProgramTableRow = ({ programs_list, ...props }) => {
               <a
                 className='edit'
                 data-toggle='modal'
-                onClick={() => program_update_modal(item.id)}
+                onClick={() => openModal(item.id, 'update', 'специализация')}
               >
                 <i
                   className='material-icons'
@@ -217,7 +190,7 @@ const ProgramTableRow = ({ programs_list, ...props }) => {
               <a
                 className='delete'
                 data-toggle='modal'
-                onClick={() => program_delete_modal(item.id)}
+                onClick={() => openDelete(item.id, 'специализация')}
               >
                 <i
                   className='material-icons'
@@ -240,4 +213,10 @@ const mapStateToProps = state => ({
 
 export default connect(mapStateToProps, {
   load_lk_programs_list,
+  add_lk_program,
+  update_lk_program,
+  delete_lk_program,
+  delete_lk_category,
+  update_lk_category,
+  add_lk_category,
 })(ProgramTableRow)
