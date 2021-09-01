@@ -1,4 +1,4 @@
-.st-details input:disabled, select:disabled {
+.st-details input:disabled, select:disabled, textarea:disabled {
     border: none;
     background: transparent;
     padding: .375rem 0;
