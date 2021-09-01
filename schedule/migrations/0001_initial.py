@@ -21,7 +21,7 @@ class Migration(migrations.Migration):
             fields=[
                 ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
                 ('room', models.CharField(max_length=50, verbose_name='Аудитория')),
-                ('traning_day', models.DateField(verbose_name='Дата занятий')),
+                ('training_day', models.DateField(verbose_name='Дата занятий')),
                 ('start_time', models.TimeField(verbose_name='Начало занятий')),
                 ('end_time', models.TimeField(verbose_name='Окончание занятий')),
                 ('guest_star', models.CharField(blank=True, max_length=150, null=True, verbose_name='Преподаватель на замену')),

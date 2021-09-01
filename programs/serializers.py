@@ -36,13 +36,12 @@ class LkTrainingGroupBasicSerializer(serializers.ModelSerializer):
 class LkTrainingGroupSerializer(serializers.ModelSerializer):
     students = ShorStudentSerializer(many=True, read_only=True)
     name = serializers.CharField(source='basic.name', read_only=True)
-    category = serializers.CharField(source='basic.program.category.name', read_only=True)
-    program = serializers.CharField(source='basic.program.name', read_only=True)
+    category = serializers.CharField(source='basic.category.name', read_only=True)
     courses_blocks = ShorCoursesBlockSerializer(many=True, read_only=True, source='basic.program.courses_blocks')
     
     class Meta:
         model = TrainingGroup
-        fields = ['id', 'category', 'program', 'name', 'start_date', 'graduation_date', 'students', 'basic', 'courses_blocks']
+        fields = ['id', 'category', 'name', 'start_date', 'graduation_date', 'students', 'basic', 'courses_blocks']
         extra_kwargs = {
             'basic': {'write_only': True},
         }

@@ -77,7 +77,7 @@ class Program(models.Model):
 
 class TrainingGroupBasic(models.Model):
     name = models.CharField(max_length=255, verbose_name='Учебная группа')
-    program = models.ForeignKey('Program', on_delete=models.PROTECT, null=True)
+    category = models.ForeignKey('Category', on_delete=models.PROTECT, null=True, related_name='training_groups')
     is_active = models.BooleanField(default=True)
 
     def __str__(self):

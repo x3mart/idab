@@ -3,7 +3,7 @@ from .models import Schedule
 
 # Register your models here.
 class ScheduleAdmin(admin.ModelAdmin):
-    list_display = ('traning_day', 'start_time', 'end_time', 'training_group', 'course', 'teacher', 'room',)
+    list_display = ('training_day', 'start_time', 'end_time', 'training_group', 'course', 'teacher', 'room',)
 
 
 

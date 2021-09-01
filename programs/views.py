@@ -43,7 +43,7 @@ class LkTrainingGroupViewSet(viewsets.ModelViewSet):
     permission_classes = [IsAdminOrReadOnlyPermission]
 
     def get_queryset(self):
-        program = self.request.query_params.get('program')
-        if self.action == 'list' and program is not None:
-            return TrainingGroup.objects.filter(basic__program=program)
+        category = self.request.query_params.get('category')
+        if self.action == 'list' and category is not None:
+            return TrainingGroup.objects.filter(basic__category=category)
         return super().get_queryset()
