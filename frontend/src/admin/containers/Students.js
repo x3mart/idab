@@ -14,10 +14,12 @@ import {
   update_student,
   sort_students,
 } from '../../redux/actions/admin/students'
+import {load_user} from '../../redux/actions/auth/auth'
 import { isNotEmptyObject } from '../../functions'
 import { MDBSpinner } from 'mdbreact'
 
 const Students = ({
+  load_user,
   isAuthenticated,
   user,
   get_all_students,
@@ -84,6 +86,12 @@ const Students = ({
   useEffect(() => {
     get_all_students()
     load_specialities()
+  }, [])
+
+  useEffect(() => {
+    if (!user) {
+      load_user()
+    }
   }, [])
 
   useEffect(() => {
@@ -652,4 +660,5 @@ export default connect(mapStateToProps, {
   delete_student,
   update_student,
   sort_students,
+  load_user,
 })(Students)

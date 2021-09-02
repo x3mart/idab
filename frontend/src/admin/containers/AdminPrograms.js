@@ -15,10 +15,12 @@ import {
   update_lk_category,
   delete_lk_category,
 } from '../../redux/actions/admin/adminPrograms'
+import { load_user } from '../../redux/actions/auth/auth'
 import { isNotEmptyObject } from '../../functions'
 import { MDBSpinner } from 'mdbreact'
 
 const AdminPrograms = ({
+  load_user,
   load_lk_categories_list,
   categories_list,
   isAuthenticated,
@@ -70,6 +72,12 @@ const AdminPrograms = ({
       }
     }
   }, [categories_list, categoriesList])
+
+  useEffect(() => {
+    if (!user) {
+      load_user()
+    }
+  }, [])
 
   const handleReload = () => {
     setCategoriesData({ loaded: false, pending: true, error: false })
@@ -482,4 +490,5 @@ export default connect(mapStateToProps, {
   add_lk_category,
   update_lk_category,
   delete_lk_category,
+  load_user,
 })(AdminPrograms)

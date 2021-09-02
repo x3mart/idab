@@ -5,7 +5,13 @@ import { load_user, update_user } from '../../redux/actions/auth/auth'
 import { Redirect } from 'react-router-dom'
 import dummy_avatar from '../../assets/man.svg'
 
-const Profile = ({ load_user, update_user, user, isAuthenticated }) => {
+const Profile = ({
+  load_user,
+  update_user,
+  user,
+  isAuthenticated,
+  ...props
+}) => {
   if (!isAuthenticated) {
     return <Redirect to='/login' />
   }
@@ -20,7 +26,15 @@ const Profile = ({ load_user, update_user, user, isAuthenticated }) => {
   const [adress, setAdress] = useState('')
   const [avatar, setAvatar] = useState('')
   const [avatarNew, setAvatarNew] = useState('')
+  const [company, setCompany] = useState('')
+  const [position, setPosition] = useState('')
+  const [short_position, setShort_position] = useState('')
+  const [full_position, setFull_position] = useState('')
+  const [description, setDescription] = useState('')
+  const [link, setLink] = useState('')
+  const [on_site, setOn_site] = useState(true)
   const [disabled, setDisabled] = useState(true)
+  const [passChange, setPassChange] = useState(false)
 
   useEffect(() => {
     load_user()
@@ -35,10 +49,23 @@ const Profile = ({ load_user, update_user, user, isAuthenticated }) => {
       setPhone(user.phone)
       setAdress(user.adress)
       setAvatar(user.avatar)
+      setCompany(user.company)
+      setPosition(user.position)
+      setShort_position(user.short_position)
+      setFull_position(user.full_position)
+      setDescription(user.description)
+      setLink(user.link)
+      setOn_site(user.on_site)
     }
   }, [user])
 
-  const handleSubmit = () => {
+  const handleSex = (e) => {
+      console.log(e.target.value)
+      setSex(e.target.value)
+  }
+
+  const handleUserUpdate = () => {
+    setDisabled(true)
     let data = {
       name: name,
       email: email,
@@ -48,14 +75,32 @@ const Profile = ({ load_user, update_user, user, isAuthenticated }) => {
       adress: adress,
     }
     data = avatarNew ? { avatar: avatarNew, ...data } : data
-
+    data = company ? { company: company, ...data } : data
+    data = position ? { position: position, ...data } : data
+    data = short_position ? { short_position: short_position, ...data } : data
+    data = full_position ? { full_position: full_position, ...data } : data
+    data = description ? { description: description, ...data } : data
+    data = link ? { link: link, ...data } : data
+    data = on_site ? { on_site: on_site, ...data } : data
+    console.log(data)
     update_user(data)
+  }
+
+  const handleDisabled = () => {
+    if (passChange) {
+      setPassChange(false)
+      setDisabled(true)
+    } else {
+      setDisabled(!disabled)
+    }
   }
 
   return (
     <div className='mt-5 container-fluid st-details'>
-      <h2 className='text-center mb-5'>Персональная информация</h2>
-      <form className='row' onSubmit={() => handleSubmit()}>
+      <h2 className='text-center mb-5'>
+        {passChange ? 'Сменить пароль' : 'Персональная информация'}
+      </h2>
+      <div className='row'>
         <div className='col-xl-3 mb-5'>
           <div className='mx-auto st-details-avatar-wraper'>
             <img
@@ -64,18 +109,20 @@ const Profile = ({ load_user, update_user, user, isAuthenticated }) => {
               alt=''
             />
           </div>
-          <div className='custom-file mt-3 mx-auto st-details-avatar-input-wraper'>
-            <input
-              name='avatar'
-              type='file'
-              className='custom-file-input'
-              id='inputGroupFile01'
-              onChange={e => setAvatarNew(e.target.files[0])}
-            />
-            <label className='custom-file-label' for='inputGroupFile01'>
-              выбрать фото
-            </label>
-          </div>
+          {!disabled && (
+            <div className='custom-file mt-3 mx-auto st-details-avatar-input-wraper'>
+              <input
+                name='avatar'
+                type='file'
+                className='custom-file-input'
+                id='inputGroupFile01'
+                onChange={e => setAvatarNew(e.target.files[0])}
+              />
+              <label className='custom-file-label' for='inputGroupFile01'>
+                выбрать фото
+              </label>
+            </div>
+          )}
           {user && user.is_student && (
             <Fragment>
               <div className='text-center mt-3'>
@@ -86,204 +133,367 @@ const Profile = ({ load_user, update_user, user, isAuthenticated }) => {
               </div>
             </Fragment>
           )}
-        </div>
-        <div className='col-xl-9 row'>
-          <div className='form-group px-3'>
-            <label for='exampleInputEmail1'>Email</label>
-            <input
-              disabled={disabled}
-              name='email'
-              type='email'
-              className='form-control'
-              id='exampleInputEmail1'
-              aria-describedby='emailHelp'
-              placeholder='введите email'
-              onChange={e => setEmail(e.target.value)}
-            />
-            {/* <small id='emailHelp' className='form-text text-danger'>
-              Такой email уже существует
-            </small> */}
-          </div>
-          <div className='form-group px-3 st-details-input-wraper__min-width-320'>
-            <label for='inputName'>Полное имя</label>
-            <input
-              disabled={disabled}
-              name='name'
-              type='text'
-              className='form-control'
-              id='inputName'
-              aria-describedby='namelHelp'
-              placeholder='Ваше имя'
-              onChange={e => setName(e.target.value)}
-            />
-            {/* <small id='nameHelp' className='form-text text-danger'>
-              Какаято ошибка с именем
-            </small> */}
-          </div>
-          <div className='form-group px-3'>
-            <label for='exampleInputPhone'>Телефон</label>
-            <input
-              disabled={disabled}
-              name='phone'
-              type='text'
-              className='form-control'
-              id='exampleInputPhone'
-              aria-describedby='phoneHelp'
-              placeholder='+70000000000'
-              onChange={e => setphone(e.target.value)}
-            />
-            {/* <small id='phoneHelp' className='form-text text-danger'>
-              Не верный формат телефона
-            </small> */}
-          </div>
-          <div className='form-group px-3'>
-            <label for='exampleInputBirthdate'>Дата рождения</label>
-            <input
-              disabled={disabled}
-              name='birthday'
-              type='date'
-              className='form-control'
-              id='exampleInputBirthdate'
-              aria-describedby='birthdateHelp'
-              onChange={e => setBirthday(e.target.value)}
-              placeholder=''
-            />
-            {/* <small id='birthdateHelp' className='form-text text-danger'></small> */}
-          </div>
-          <div className='form-group px-3'>
-            <label for='exampleInputEmail1'>Пол</label>
-            <select
-              disabled={disabled}
-              name='sex'
-              className='form-control'
-              onChange={e => setEmail(e.target.name)}
-            >
-              <option value='male'>Мужчина</option>
-              <option value='female'>Женщина</option>
-            </select>
-            {/* <small className='form-text text-muted'></small> */}
-          </div>
-          <div className='form-group px-3 w-75'>
-            <label for='exampleInputAdress'>Адрес</label>
-            <input
-              disabled={disabled}
-              name='adress'
-              type='text'
-              className='form-control'
-              id='exampleInputAdress'
-              aria-describedby='adresslHelp'
-              placeholder='Ваш адрес'
-              onChange={e => setAdress(e.target.value)}
-            />
-            {/* <small id='adresslHelp' className='form-text text-danger'>
-              Error message.
-            </small> */}
-          </div>
-          <div className='form-group px-3 st-details-input-wraper__min-width-320'>
-            <label for='exampleInputCompany'>Место работы</label>
-            <input
-              disabled={disabled}
-              name='company'
-              type='text'
-              className='form-control'
-              id='exampleInputCompany'
-              aria-describedby='companyHelp'
-              placeholder='Компания'
-            />
-            <small id='companyHelp' className='form-text text-danger'>
-              Error message.
-            </small>
-          </div>
-          <div className='form-group px-3 st-details-input-wraper__min-width-320'>
-            <label for='exampleInputPosition'>Должность</label>
-            <input
-              disabled={disabled}
-              name='position'
-              type='text'
-              className='form-control'
-              id='exampleInputPosition'
-              aria-describedby='positionHelp'
-              placeholder='Должность'
-            />
-            <small id='positionHelp' className='form-text text-danger'>
-              Error message.
-            </small>
+          <div className='flex-column justify-content-center  d-xl-flex d-none'>
+            {!passChange && (
+              <button
+                type='button'
+                className={`btn my-3 ${
+                  disabled ? 'btn-primary' : 'btn-danger'
+                }`}
+                onClick={() => handleDisabled()}
+              >
+                {disabled ? 'Редактировать' : 'Отменить'}
+              </button>
+            )}
+
+            {!disabled && (
+              <button
+                type='button'
+                className='btn btn-info'
+                onClick={() => handleUserUpdate()}
+              >
+                Сохранить
+              </button>
+            )}
+            {disabled && (
+              <button
+                type='button'
+                onClick={() => setPassChange(!passChange)}
+                className={`btn my-3 ${passChange ? 'btn-danger' : 'btn-info'}`}
+              >
+                {!passChange ? 'Смена пароля' : 'Отменить'}
+              </button>
+            )}
+            {passChange && (
+              <button type='button' className='btn btn-info'>
+                Сохранить
+              </button>
+            )}
           </div>
         </div>
-        <div className='row justify-content-center mx-auto'>
+
+        {!passChange && (
+          <Fragment>
+            <div className='col-xl-9 row'>
+              <div className='form-group px-3'>
+                <label for='exampleInputEmail1'>Email</label>
+                <input
+                  disabled={disabled}
+                  name='email'
+                  type='email'
+                  className='form-control'
+                  id='exampleInputEmail1'
+                  aria-describedby='emailHelp'
+                  placeholder='введите email'
+                  onChange={e => setEmail(e.target.value)}
+                />
+                {/* <small id='emailHelp' className='form-text text-danger'>
+                Такой email уже существует
+                </small> */}
+              </div>
+              <div className='form-group px-3 st-details-input-wraper__min-width-320'>
+                <label for='inputName'>Полное имя</label>
+                <input
+                  disabled={disabled}
+                  name='name'
+                  type='text'
+                  className='form-control'
+                  id='inputName'
+                  aria-describedby='namelHelp'
+                  placeholder='Ваше имя'
+                  onChange={e => setName(e.target.value)}
+                />
+                {/* <small id='nameHelp' className='form-text text-danger'>
+                Какаято ошибка с именем
+                </small> */}
+              </div>
+              <div className='form-group px-3'>
+                <label for='exampleInputPhone'>Телефон</label>
+                <input
+                  disabled={disabled}
+                  name='phone'
+                  type='text'
+                  className='form-control'
+                  id='exampleInputPhone'
+                  aria-describedby='phoneHelp'
+                  placeholder='+70000000000'
+                  onChange={e => setPhone(e.target.value)}
+                />
+                {/* <small id='phoneHelp' className='form-text text-danger'>
+                        Не верный формат телефона
+                    </small> */}
+              </div>
+              <div className='form-group px-3'>
+                <label for='exampleInputBirthdate'>Дата рождения</label>
+                <input
+                  disabled={disabled}
+                  name='birthday'
+                  type='date'
+                  className='form-control'
+                  id='exampleInputBirthdate'
+                  aria-describedby='birthdateHelp'
+                  onChange={e => setBirthday(e.target.value)}
+                  placeholder=''
+                />
+                {/* <small id='birthdateHelp' className='form-text text-danger'></small> */}
+              </div>
+              <div className='form-group px-3'>
+                <label>Пол</label>
+                {user && user.sex}
+                {!disabled && (
+                  <select
+                    name='sex'
+                    className='form-control'
+                    value={sex}
+                    onChange={handleSex}
+                  >
+                    <option value='male'>Мужчина</option>
+                    <option value='female'>Женщина</option>
+                  </select>
+                )}
+                {/* <small className='form-text text-muted'></small> */}
+              </div>
+              <div className='form-group px-3 w-75'>
+                <label for='exampleInputAdress'>Адрес</label>
+                <input
+                  disabled={disabled}
+                  name='adress'
+                  type='text'
+                  className='form-control'
+                  id='exampleInputAdress'
+                  aria-describedby='adresslHelp'
+                  placeholder='Ваш адрес'
+                  onChange={e => setAdress(e.target.value)}
+                />
+                {/* <small id='adresslHelp' className='form-text text-danger'>
+                        Error message.
+                    </small> */}
+              </div>
+            </div>
+
+            {user && user.is_student && (
+              <Fragment>
+                <div className='form-group px-3 st-details-input-wraper__min-width-320'>
+                  <label for='exampleInputCompany'>Место работы</label>
+                  <input
+                    disabled={disabled}
+                    name='company'
+                    type='text'
+                    className='form-control'
+                    id='exampleInputCompany'
+                    aria-describedby='companyHelp'
+                    placeholder='Компания'
+                    onChange={e => setCompany(e.target.value)}
+                  />
+                  {/* <small id='companyHelp' className='form-text text-danger'>
+              Error message.
+            </small> */}
+                </div>
+                <div className='form-group px-3 st-details-input-wraper__min-width-320'>
+                  <label for='exampleInputPosition'>Должность</label>
+                  <input
+                    disabled={disabled}
+                    name='position'
+                    type='text'
+                    className='form-control'
+                    id='exampleInputPosition'
+                    aria-describedby='positionHelp'
+                    placeholder='Должность'
+                    onChange={e => setPosition(e.target.value)}
+                  />
+                  {/* <small id='positionHelp' className='form-text text-danger'>
+              Error message.
+            </small> */}
+                </div>
+              </Fragment>
+            )}
+
+            {user && user.is_teacher && (
+              <Fragment>
+                <div className='form-group px-3 st-details-input-wraper__min-width-320'>
+                  <label for='inputShortPosition'>Должность кратко</label>
+                  <input
+                    disabled={disabled}
+                    name='short_position'
+                    type='text'
+                    className='form-control'
+                    id='inputShortPosition'
+                    aria-describedby='shortPositionHelp'
+                    placeholder='Краткое название должности'
+                    onChange={e => setShort_position(e.target.value)}
+                  />
+                  {/* <small id='shortPositionHelp' className='form-text text-danger'>
+            Error message.
+          </small> */}
+                </div>
+                <div className='form-group px-3 st-details-input-wraper__min-width-320'>
+                  <label for='inputFullPosition'>Должность</label>
+                  <input
+                    disabled={disabled}
+                    name='full_position'
+                    type='text'
+                    className='form-control'
+                    id='inputFullPosition'
+                    aria-describedby='fullPositionHelp'
+                    placeholder='Полное название должности'
+                    onChange={e => setFull_position(e.target.value)}
+                  />
+                  {/* <small id='fullPositionHelp' className='form-text text-danger'>
+            Error message.
+          </small> */}
+                </div>
+                <div className='form-group px-3 st-details-input-wraper__min-width-320'>
+                  <label for='inputLink'>Персональная страница</label>
+                  <input
+                    disabled={disabled}
+                    name='link'
+                    type='text'
+                    className='form-control'
+                    id='inputLink'
+                    aria-describedby='linkHelp'
+                    placeholder='Ссылка на персональный сайт'
+                    onChange={e => setDescription(e.target.value)}
+                  />
+                  {/* <small id='linkHelp' className='form-text text-danger'>
+            Error message.
+          </small> */}
+                </div>
+                <div className='form-group px-3 w-100'>
+                  <label for='descriptionTextarea'>Описание</label>
+                  <textarea
+                    disabled={disabled}
+                    className='form-control'
+                    id='exampleFormControlTextarea1'
+                    rows='3'
+                    onChange={e => setLink(e.target.value)}
+                  ></textarea>
+                </div>
+                {!disabled && (
+                  <div className='px-3'>
+                    <div className='form-check'>
+                      <input
+                        className='form-check-input'
+                        type='checkbox'
+                        value=''
+                        checked={on_site}
+                        id='onSiteCheck'
+                        onChange={e => setOn_site(e.target.checked)}
+                      />
+                      <label className='form-check-label' for='onSiteCheck'>
+                        Показывать на сайте
+                      </label>
+                    </div>
+                  </div>
+                )}
+              </Fragment>
+            )}
+          </Fragment>
+        )}
+
+        {passChange && (
+          <div className='col-xl-9 row'>
+            <div className='mx-auto'>
+              <div className='my-5'>
+                <div className='row justify-content-center'>
+                  <div className='form-group px-3'>
+                    <label for='exampleInputCurentPassword'>
+                      Текущий пароль
+                    </label>
+                    <input
+                      required
+                      name='current_password'
+                      type='password'
+                      className='form-control'
+                      id='exampleInputCurentPassword'
+                      aria-describedby='currentPassworddHelp'
+                      placeholder='Password'
+                    />
+                    <small
+                      id='currentPassworddHelp'
+                      className='form-text text-danger'
+                    >
+                      Error message.
+                    </small>
+                  </div>
+                  <div className='form-group px-3'>
+                    <label for='exampleInputNewPassword'>Новый пароль</label>
+                    <input
+                      required
+                      name='new_password'
+                      type='password'
+                      className='form-control'
+                      id='exampleInputNewPassword'
+                      aria-describedby='newPasswordHelp'
+                      placeholder='Password'
+                    />
+                    <small
+                      id='newPasswordHelp'
+                      className='form-text text-danger'
+                    >
+                      Error message.
+                    </small>
+                  </div>
+                  <div className='form-group px-3'>
+                    <label for='exampleInputReNewPassword'>
+                      Новый пароль еще раз
+                    </label>
+                    <input
+                      required
+                      name='re_new_password'
+                      type='password'
+                      className='form-control'
+                      id='exampleInputReNewPassword'
+                      aria-describedby='reNewPasswordHelp'
+                      placeholder='Password'
+                    />
+                    <small
+                      id='reNewPasswordHelp'
+                      className='form-text text-danger'
+                    >
+                      Error message.
+                    </small>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+      </div>
+
+      <div className='row justify-content-center mx-auto d-xl-none'>
+        {!passChange && (
           <button
             type='button'
-            className='btn btn-primary my-5'
+            className={`btn my-5 ${disabled ? 'btn-primary' : 'btn-danger'}`}
             onClick={() => setDisabled(!disabled)}
           >
-            Редактировать
+            {disabled ? 'Редактировать' : 'Отменить'}
           </button>
-          <button type='submit' className='btn btn-info my-5 ml-5'>
-            Сохранить
-          </button>
-        </div>
-      </form>
-      <hr />
+        )}
 
-      <div>
-        <h2 className='text-center mt-5'>Сменить пароль</h2>
-        <form className='my-5'>
-          <div className='row justify-content-center'>
-            <div className='form-group px-3'>
-              <label for='exampleInputCurentPassword'>Текущий пароль</label>
-              <input
-                required
-                name='current_password'
-                type='password'
-                className='form-control'
-                id='exampleInputCurentPassword'
-                aria-describedby='currentPassworddHelp'
-                placeholder='Password'
-              />
-              <small
-                id='currentPassworddHelp'
-                className='form-text text-danger'
-              >
-                Error message.
-              </small>
-            </div>
-            <div className='form-group px-3'>
-              <label for='exampleInputNewPassword'>Новый пароль</label>
-              <input
-                required
-                name='new_password'
-                type='password'
-                className='form-control'
-                id='exampleInputNewPassword'
-                aria-describedby='newPasswordHelp'
-                placeholder='Password'
-              />
-              <small id='newPasswordHelp' className='form-text text-danger'>
-                Error message.
-              </small>
-            </div>
-            <div className='form-group px-3'>
-              <label for='exampleInputReNewPassword'>
-                Новый пароль еще раз
-              </label>
-              <input
-                required
-                name='re_new_password'
-                type='password'
-                className='form-control'
-                id='exampleInputReNewPassword'
-                aria-describedby='reNewPasswordHelp'
-                placeholder='Password'
-              />
-              <small id='reNewPasswordHelp' className='form-text text-danger'>
-                Error message.
-              </small>
-            </div>
-          </div>
-          <button type='submit' className='btn btn-info my-5 mx-auto d-block'>
+        {!disabled && (
+          <button
+            type='button'
+            className='btn btn-info my-5 ml-5'
+            onClick={() => handleUserUpdate()}
+          >
             Сохранить
           </button>
-        </form>
+        )}
+        {disabled && (
+          <button
+            type='button'
+            onClick={() => setPassChange(!passChange)}
+            className={`btn my-5 ${passChange ? 'btn-danger' : 'btn-info'}`}
+          >
+            {!passChange ? 'Смена пароля' : 'Отменить'}
+          </button>
+        )}
+        {passChange && (
+          <button type='button' className='btn btn-info my-5 ml-5'>
+            Сохранить
+          </button>
+        )}
       </div>
     </div>
   )
