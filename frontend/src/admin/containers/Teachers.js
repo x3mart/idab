@@ -10,10 +10,12 @@ import {
   delete_teacher,
   update_teacher,
 } from '../../redux/actions/admin/teachers'
+import { load_user } from '../../redux/actions/auth/auth'
 import { isNotEmptyObject } from '../../functions'
 import { MDBSpinner } from 'mdbreact'
 
 const Teachers = ({
+  load_user,
   isAuthenticated,
   user,
   get_all_teachers,
@@ -62,6 +64,12 @@ const Teachers = ({
 
   useEffect(() => {
     get_all_teachers()
+  }, [])
+
+  useEffect(() => {
+    if (!user) {
+      load_user()
+    }
   }, [])
 
   const updateRow = id => {
@@ -420,4 +428,5 @@ export default connect(mapStateToProps, {
   add_teacher,
   delete_teacher,
   update_teacher,
+  load_user,
 })(Teachers)
