@@ -1,61 +1,64 @@
 import React, { Fragment, useEffect, useState } from 'react'
 import { connect } from 'react-redux'
 import '../../admin/containers/Students.css'
-import ProgramModal from './ProgramModal'
+import GroupModal from './GroupModal'
 import DeleteModal from './DeleteModal'
 import {
-  load_lk_programs_list,
-  add_lk_program,
-  update_lk_program,
-  delete_lk_program,
-  delete_lk_category,
-  update_lk_category,
-  add_lk_category,
-} from '../../redux/actions/admin/adminPrograms'
+  load_basic_groups_list,
+  add_basic_group,
+  update_basic_group,
+  delete_basic_group,
+  load_groups_list,
+  add_group,
+  update_group,
+  delete_group,
+} from '../../redux/actions/admin/groups'
 
-const ProgramTableRow = ({
-  programs_list,
-  load_lk_programs_list,
-  add_lk_program,
-  update_lk_program,
-  delete_lk_program,
-  delete_lk_category,
-  update_lk_category,
-  add_lk_category,
+const GroupTableRow = ({
+  load_basic_groups_list,
+  update_basic_group,
+  add_basic_group,
+  delete_basic_group,
+  load_groups_list,
+  groups_list,
+  add_group,
+  update_group,
+  delete_group,
   ...props
 }) => {
-  const { category, update_modal, active, setOpened } = props
+  const { base_program, update_modal, delete_modal, active, setOpened } = props
 
-  const { id, name } = category
+  const { id, name } = base_program
 
-  const [programsList, setProgramsList] = useState([])
+  const [groupsList, setGroupsList] = useState([])
   const [deleteId, setDeleteId] = useState(null)
   const [deleteActive, setDeleteActive] = useState(false)
-  const [activeCategory, setActiveCategory] = useState(null)
+  const [activeGroup, setActiveGroup] = useState('')
+  const [action, setAction] = useState('')
 
   const [modalActive, setModalActive] = useState(false)
   const [data, setData] = useState({})
-  const [dataType, setDataType] = useState('')
+  // const [dataType, setDataType] = useState('')
 
   useEffect(() => {
-    load_lk_programs_list()
+    load_groups_list()
   }, [])
 
   useEffect(() => {
-    if (programs_list) {
-      setProgramsList(programs_list.filter(item => item.category === id))
+    if (groups_list) {
+      setGroupsList(groups_list.filter(item => item.name === base_program.name))
     }
-  }, [programs_list])
+  }, [groups_list])
 
   useEffect(() => {
-    setOpened(activeCategory)
-  }, [activeCategory])
+    setOpened(activeGroup)
+  }, [activeGroup])
 
-  const openCategory = id => {
-    if (activeCategory === id) {
-      setActiveCategory(null)
+  const openBaseGroup = name => {
+    if (activeGroup === name) {
+      setActiveGroup(null)
     } else {
-      setActiveCategory(id)
+      setActiveGroup(name)
     }
   }
 
@@ -63,31 +66,22 @@ const ProgramTableRow = ({
     setModalActive(false)
   }
 
-  const openModal = (id, action, type) => {
-    setDataType(type)
-    if (action === 'add') {
-      setData({ category_id: id })
-    } else if (action === 'update') {
-      setData(programsList.filter(item => item.id === id)[0])
+  const openModal = (id, action) => {
+    if (action === 'update') {
+      setData(groupsList.filter(item => item.id === id)[0])
+    } else {
+      setData(base_program)
     }
+    setAction(action)
     setModalActive(true)
   }
 
-  const handleModal = (content, type) => {
+  const handleModal = content => {
     setModalActive(false)
-
-    if (type === 'специализация') {
-      if (content.id) {
-        update_lk_program(content)
-      } else {
-        add_lk_program(content)
-      }
-    } else if (type === 'программа') {
-      if (content.id) {
-        update_lk_category(content)
-      } else {
-        add_lk_category(content)
-      }
+    if (content.id) {
+      update_group(content)
+    } else {
+      add_group(content)
     }
   }
 
@@ -103,10 +97,10 @@ const ProgramTableRow = ({
 
   const handleDelete = (contentId, contentType) => {
     setDeleteActive(false)
-    if (contentType === 'специализация') {
-      delete_lk_program(contentId)
-    } else if (contentType === 'программа') {
-      delete_lk_category(contentId)
+    if (contentType === 'группа') {
+      delete_group(contentId)
+    } else if (contentType === 'базовая группа') {
+      delete_basic_group(contentId)
     }
   }
 
@@ -124,17 +118,19 @@ const ProgramTableRow = ({
       )}
 
       {modalActive && (
-        <ProgramModal
+        <GroupModal
           data={data}
-          handleData={(content, type) => handleModal(content, type)}
+          handleData={content => handleModal(content)}
           closeModal={closeModal}
-          type={dataType}
+          base={base_program}
+          action={action}
+          // type={dataType}
         />
       )}
 
       <tr>
         <td>
-          <div onClick={() => openCategory(id)} style={{ cursor: 'pointer' }}>
+          <div onClick={() => openBaseGroup(id)} style={{ cursor: 'pointer' }}>
             {name}
           </div>
         </td>
@@ -142,7 +138,7 @@ const ProgramTableRow = ({
           <a
             className='add'
             data-toggle='modal'
-            onClick={() => openModal(id, 'add', 'специализация')}
+            onClick={() => openModal(id, 'add')}
           >
             <i className='material-icons' data-toggle='tooltip' title='Add'>
               &#xE145;
@@ -160,7 +156,7 @@ const ProgramTableRow = ({
           <a
             className='delete'
             data-toggle='modal'
-            onClick={() => openDelete(id, 'программа')}
+            onClick={() => delete_modal(id)}
           >
             <i className='material-icons' data-toggle='tooltip' title='Delete'>
               &#xE872;
@@ -170,14 +166,16 @@ const ProgramTableRow = ({
       </tr>
 
       {active === id &&
-        programsList.map(item => (
+        groupsList.map(item => (
           <tr key={item.id}>
-            <td style={{ paddingLeft: '40px' }}>{item.name}</td>
+            <td
+              style={{ paddingLeft: '40px' }}
+            >{`${item.name} ${item.start_date}-${item.graduation_date}`}</td>
             <td>
               <a
                 className='edit'
                 data-toggle='modal'
-                onClick={() => openModal(item.id, 'update', 'специализация')}
+                onClick={() => openModal(item.id, 'update')}
               >
                 <i
                   className='material-icons'
@@ -190,7 +188,7 @@ const ProgramTableRow = ({
               <a
                 className='delete'
                 data-toggle='modal'
-                onClick={() => openDelete(item.id, 'специализация')}
+                onClick={() => openDelete(item.id, 'группа')}
               >
                 <i
                   className='material-icons'
@@ -208,15 +206,16 @@ const ProgramTableRow = ({
 }
 
 const mapStateToProps = state => ({
-  programs_list: state.adminPrograms.lk_programs,
+  groups: state.groups.groups,
 })
 
 export default connect(mapStateToProps, {
-  load_lk_programs_list,
-  add_lk_program,
-  update_lk_program,
-  delete_lk_program,
-  delete_lk_category,
-  update_lk_category,
-  add_lk_category,
-})(ProgramTableRow)
+  load_basic_groups_list,
+  add_basic_group,
+  update_basic_group,
+  delete_basic_group,
+  load_groups_list,
+  add_group,
+  update_group,
+  delete_group,
+})(GroupTableRow)
