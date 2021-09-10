@@ -14,8 +14,10 @@ require('moment/locale/ru.js');
 const Dashboard = ({isAuthenticated, load_user, user}) => {
 
   useEffect(() => {
-    load_user()
-  })
+    if(!user){
+      load_user()
+    }
+  }, [])
 
   const localizer = Calendar.momentLocalizer(moment);
 

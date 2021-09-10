@@ -11,6 +11,7 @@ import tableReducer from "./admin/tables";
 import students from "./admin/students";
 import teachers from "./admin/teachers";
 import adminPrograms from './admin/adminPrograms'
+import groups from './admin/groups'
 
 export default combineReducers({
   home,
@@ -25,4 +26,5 @@ export default combineReducers({
   students,
   teachers,
   adminPrograms,
+  groups,
 })
