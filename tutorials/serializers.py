@@ -6,27 +6,27 @@ from rest_framework import serializers
 class LkTutorialSerializer(serializers.ModelSerializer):
     class Meta:
         model = Tutorial
-        exclude = ('groups', 'courses')
+        exclude = ('training_groups', 'courses')
     
     def create(self, validated_data):
         request = self.context['request']
-        groups = request.data.get('groups')
-        if groups is not None:
-            groups = TrainingGroupBasic.objects.get(pk=groups)
+        training_groups = request.data.get('training_groups')
+        if training_groups is not None:
+            training_groups = TrainingGroupBasic.objects.get(pk=training_groups)
         else:
             raise serializers.ValidationError({
-                'groups': 'Обязательное поле!'
+                'training_groups': 'Обязательное поле!'
             })
         tutorial = Tutorial(**validated_data)
-        tutorial.groups = groups
+        tutorial.training_groups = training_groups
         tutorial.save()
         return tutorial
 
     def update(self, instance, validated_data):
         tutorial = super().update(instance, validated_data)
         request = self.context['request']
-        groups = request.data.get('groups')
-        if groups is not None:
-            groups = TrainingGroupBasic.objects.get(pk=groups)
-            tutorial.groups.add(groups)
+        training_groups = request.data.get('training_groups')
+        if training_groups is not None:
+            training_groups = TrainingGroupBasic.objects.get(pk=training_groups)
+            tutorial.training_groups.add(training_groups)
         return tutorial 
