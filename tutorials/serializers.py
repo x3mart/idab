@@ -18,8 +18,8 @@ class LkTutorialSerializer(serializers.ModelSerializer):
                 'training_groups': 'Обязательное поле!'
             })
         tutorial = Tutorial(**validated_data)
-        tutorial.training_groups = training_groups
         tutorial.save()
+        tutorial.training_groups.add(training_groups)
         return tutorial
 
     def update(self, instance, validated_data):

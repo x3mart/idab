@@ -19,7 +19,7 @@ class LkTutorialViewSet(viewsets.ModelViewSet):
     permission_classes = [TutorialPermission]
 
     def get_queryset(self):
-        if self.request.user.is_student:
+        if self.request.auth and self.request.user.is_student:
             student = Student.objects.get(pk=self.request.user.id)
             return Tutorial.objects.filter(groups=student.training_group)
         return super().get_queryset()
