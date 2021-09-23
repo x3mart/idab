@@ -3,8 +3,8 @@ from .models import Schedule
 
 # Register your models here.
 class ScheduleAdmin(admin.ModelAdmin):
-    # list_display = ('start_date', 'end_date', 'training_group', 'course', 'teacher', 'room',)
-    pass
+    list_display = ('start_date', 'end_date', 'training_group', 'course', 'teacher', 'room',)
+    
 
 
 
