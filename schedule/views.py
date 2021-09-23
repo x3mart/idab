@@ -19,4 +19,4 @@ class LkScheduleViewSet(viewsets.ModelViewSet):
 
     def get_queryset(self):
         month_ago = datetime.today() - timedelta(days=30)
-        return Schedule.objects.filter(training_day__gte=month_ago)
+        return Schedule.objects.filter(start_date__gte=month_ago)
