@@ -8,7 +8,7 @@ from courses.models import Course
 
 class LkScheduleSerializer(serializers.ModelSerializer):
     teacher = serializers.CharField(read_only=True, source='teacher.name')
-    training_group = serializers.CharField(read_only=True)
+    training_group = serializers.IntegerField(read_only=True, source='training_group.id')
     course = serializers.CharField(read_only=True)
     class Meta:
         model = Schedule
