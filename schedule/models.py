@@ -12,7 +12,7 @@ class Schedule(models.Model):
     checkpoint = models.ForeignKey('checkpoints.Checkpoint', on_delete=models.CASCADE, verbose_name='Контрольная точка', null=True, blank=True)
 
     def __str__(self):
-        return str(self.training_day) + ' - ' + self.training_group.basic.name
+        return str(self.start_date) + ' - ' + self.training_group.basic.name
 
     class Meta:
         verbose_name = 'Занятие'
