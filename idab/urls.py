@@ -38,6 +38,7 @@ urlpatterns = [
     path("api/", include("tutorials.urls")),
     path("api/", include("schedule.urls")),
     path("api/", include("tasks.urls")),
+    path("api/", include("library.urls")),
     # ckeditor
     path('ckeditor/', include('ckeditor_uploader.urls')),
     # Token Access Refresh
