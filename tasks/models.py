@@ -10,6 +10,9 @@ import os
 def get_tasks_file_path(instance, filename):
     name, extension = os.path.splitext(filename)
     return 'tasks/{0}/{1}{2}'.format(slugify(unidecode(instance.name)), slugify(unidecode(name)), extension)
+def get_tasks_file_path(instance, filename):
+    name, extension = os.path.splitext(filename)
+    return 'solutions/{0}/{1}{2}'.format(slugify(unidecode(instance.student.name)), slugify(unidecode(name)), extension)
 
 
 class Task(models.Model):

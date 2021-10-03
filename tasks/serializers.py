@@ -3,7 +3,7 @@ from rest_framework import serializers
 from django.template.loader import render_to_string
 from django.core.mail import send_mail
 from users.serializers import LkStudentSerializer, LkTeacherSerializer
-from .models import Task
+from .models import Solution, Task
 from users.models import Teacher, Student
 
 
@@ -55,3 +55,33 @@ class LkTaskSerializer(serializers.ModelSerializer):
             validated_data['teacher']=teacher
         task = super().update(instance, validated_data)
         return task 
+
+class LkSolutionSerializer(serializers.ModelSerializer):
+    student = LkTeacherSerializer(read_only=True, many=False)
+    task = serializers.CharField(read_only=True, source='task.name')
+    class Meta:
+        model = Solution
+        fields = '__all__'
+    
+    def create(self, validated_data):
+        request = self.context['request']
+        student = request.data.get('student')
+        if student is not None:
+            print(student)
+            student = Student.objects.get(pk=int(student))
+            validated_data['student']=student
+        else:
+            raise serializers.ValidationError({
+                'student': 'Обязательное поле!'
+            })
+        task = request.data.get('task')
+        if task is not None:
+            task = Task.objects.get(pk=task)
+            validated_data['task']=task
+        else:
+            raise serializers.ValidationError({
+                'task': 'Обязательное поле!'
+            })
+        solution = Solution(**validated_data)
+        solution.save()
+        return solution
