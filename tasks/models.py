@@ -18,7 +18,7 @@ class Task(models.Model):
     name = models.CharField(max_length=255, verbose_name='Название')
     description = models.TextField(verbose_name='Описание', null=True, blank=True)
     file = models.FileField(max_length=255, upload_to=get_tasks_file_path, verbose_name='Вложение', null=True, blank=True)
-    mark = models.PositiveIntegerField(verbose_name='Отметка', null=True)
+    
 
     class Meta:
         verbose_name = 'Задание'
@@ -33,6 +33,7 @@ class Solution(models.Model):
     task = models.ForeignKey('Task', on_delete=models.CASCADE, related_name='solutions', verbose_name='Решение')
     description = models.TextField(verbose_name='Описание', null=True, blank=True)
     file = models.FileField(max_length=255, upload_to=get_tasks_file_path, verbose_name='Вложение', null=True, blank=True)
+    mark = models.PositiveIntegerField(verbose_name='Отметка', null=True)
 
     class Meta:
         verbose_name = 'Решение'

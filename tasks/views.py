@@ -14,3 +14,9 @@ class LkTaskViewSet(viewsets.ModelViewSet):
     queryset = Task.objects.all()
     serializer_class = LkTaskSerializer
     permission_classes = [AllowAny]
+
+
+# class LkSolutionViewSet(viewsets.ModelViewSet):
+#     queryset = Task.objects.all()
+#     serializer_class = LkTaskSerializer
+#     permission_classes = [AllowAny]
