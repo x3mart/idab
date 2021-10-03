@@ -12,7 +12,7 @@ def get_tasks_file_path(instance, filename):
 
 
 class Task(models.Model):
-    student = models.ForeignKey('users.Student', on_delete=models.CASCADE, related_name='tasks', verbose_name='Студент')
+    students = models.ManyToManyField('users.Student', related_name='tasks', verbose_name='Студент')
     teacher = models.ForeignKey('users.Teacher', on_delete=models.CASCADE, related_name='tasks', verbose_name='Преподаватель')
     name = models.CharField(max_length=255, verbose_name='Название')
     description = models.TextField(verbose_name='Описание', null=True, blank=True)
