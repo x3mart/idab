@@ -41,6 +41,14 @@ class LkSolutionViewSet(viewsets.ModelViewSet):
     serializer_class = LkSolutionSerializer
     permission_classes = [SolutionPermission]
 
+    def get_queryset(self):
+        user = self.request.user
+        if user.is_student:
+            return Solution.objects.filter(student__pk=user.id)
+        if user.is_teacher:
+            return Solution.objects.filter(task__teacher__pk=user.id)
+        return None
+
     def perform_update(self, serializer):
         if not self.request.user.is_teacher and self.request.data.get('mark'):
             self.request.data.pop('mark')
