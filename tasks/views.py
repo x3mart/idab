@@ -1,7 +1,7 @@
 from rest_framework import viewsets
 from rest_framework.permissions import AllowAny, BasePermission, SAFE_METHODS
 from .serializers import LkTaskSerializer
-from .models import Schedule
+from .models import Task
 
 class TaskPermission(BasePermission):
     def has_permission(self, request, view):
@@ -10,7 +10,7 @@ class TaskPermission(BasePermission):
         return request.auth and (request.user.is_staff or request.user.is_teacher)
 
 
-class LkScheduleViewSet(viewsets.ModelViewSet):
-    queryset = Schedule.objects.all()
+class LkTaskViewSet(viewsets.ModelViewSet):
+    queryset = Task.objects.all()
     serializer_class = LkTaskSerializer
-    permission_classes = [TaskPermission]
+    permission_classes = [AllowAny]

@@ -1,5 +1,6 @@
 from typing import Text
 from django.db import models
+from django.db.models import fields
 from django.template.defaultfilters import slugify
 from unidecode import unidecode
 import os
@@ -17,7 +18,7 @@ class Task(models.Model):
     name = models.CharField(max_length=255, verbose_name='Название')
     description = models.TextField(verbose_name='Описание', null=True, blank=True)
     file = models.FileField(max_length=255, upload_to=get_tasks_file_path, verbose_name='Вложение', null=True, blank=True)
-    grade = models.PositiveIntegerField(verbose_name='Отметка', null=True)
+    mark = models.PositiveIntegerField(verbose_name='Отметка', null=True)
 
     class Meta:
         verbose_name = 'Задание'

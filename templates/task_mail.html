@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Задание для {{ student.name }}</title>
+</head>
+<body>
+    <h2>{{ task.name }}</h2>
+<p>
+    {% if task.description %}
+    {{ task.description|safe }}
+    {% endif %}
+    <hr>
+    {% if task.file %}
+    https://idab.mba{{ task.file.url }}
+    {% endif %}
+    <hr>
+            
+    Не забывайте о сроках, <br>
+    {{ teacher.name }} <br>
+    www.idab.mba
+</p>
+</body>
+</html>
