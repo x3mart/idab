@@ -1,6 +1,8 @@
 from datetime import datetime, timedelta
 from rest_framework import viewsets
 from rest_framework.permissions import AllowAny, BasePermission, SAFE_METHODS
+
+from users.models import Student
 from .serializers import LkScheduleSerializer
 from .models import Schedule
 
@@ -19,4 +21,12 @@ class LkScheduleViewSet(viewsets.ModelViewSet):
 
     def get_queryset(self):
         month_ago = datetime.today() - timedelta(days=30)
-        return Schedule.objects.filter(start_date__gte=month_ago)
+        schedule = Schedule.objects.filter(start_date__gte=month_ago)
+        user = self.request.user
+        if user.is_teacher:
+            schedule = schedule.filter(teacher__pk=user.id)
+        if user.is_student:
+            user = Student.objects.filter(pk=user.id)
+            user.training_groups =user.values_list('training_group__id', flat=True)
+            schedule  = schedule.filter(training_group__in=user.training_groups)
+        return schedule
