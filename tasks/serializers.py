@@ -20,7 +20,6 @@ class LkTaskSerializer(serializers.ModelSerializer):
         teacher = request.data.get('teacher')
         if students is not None:
             students = list(map(int, students.split()))
-            print(students)
             students = Student.objects.filter(id__in=students)
         else:
             raise serializers.ValidationError({
@@ -67,7 +66,6 @@ class LkSolutionSerializer(serializers.ModelSerializer):
         request = self.context['request']
         student = request.data.get('student')
         if student is not None:
-            print(student)
             student = Student.objects.get(pk=int(student))
             validated_data['student']=student
         else:
