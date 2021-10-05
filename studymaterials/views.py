@@ -19,6 +19,7 @@ class LkStudyMaterialViewSet(viewsets.ModelViewSet):
     def get_queryset(self):
         user = self.request.user
         if user.is_student:
-            user = Student.objects.get(pk=user.id)
-            return StudyMaterial.objects.filter(training_groups__in=user.training_group)
+            user = Student.objects.filter(pk=user.id)
+            user.training_groups =user.values_list('training_group__id', flat=True)
+            return StudyMaterial.objects.filter(training_groups__in=user.training_groups)
         return super().get_queryset()
