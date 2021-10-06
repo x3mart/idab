@@ -104,7 +104,7 @@ class LkTaskStudentSerializer(serializers.ModelSerializer):
         fields = ('id', 'name')
     
     def get_solution(self, obj):
-        solution = Solution.objects.filter(student_id=obj.id).filter(task=self.context['task'])
+        solution = Solution.objects.filter(student_id=obj.id).filter(task=self.context['task']).first()
         if solution:
             return LkSolutionSerializer(solution).data
         return None

@@ -92,6 +92,7 @@ class TrainingGroup(models.Model):
     basic = models.ForeignKey('TrainingGroupBasic', on_delete=models.PROTECT, null=True, verbose_name='Название группы')
     start_date = models.DateField(null=True, blank=True, verbose_name='Начало обучения')
     graduation_date = models.DateField(null=True, blank=True, verbose_name='Окончание обучения')
+    slack_id = models.CharField(max_length=50, null=True, blank=True)
     # is_active = models.BooleanField(default=True)
 
     def __str__(self):
@@ -101,3 +102,5 @@ class TrainingGroup(models.Model):
         verbose_name = 'Группа'
         verbose_name_plural = 'Группы'
         ordering = ['-id']
+    
+    
