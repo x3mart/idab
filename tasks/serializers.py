@@ -101,7 +101,7 @@ class LkTaskStudentSerializer(serializers.ModelSerializer):
     solution = serializers.SerializerMethodField()
     class Meta:
         model = Student
-        fields = '__all__'
+        fields = ('id', 'name')
     
     def get_solution(self, obj):
         solution = Solution.objects.filter(student_id=obj.id).filter(task=self.context['task'])
