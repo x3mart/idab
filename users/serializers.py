@@ -28,15 +28,22 @@ class MyUserCreateSerializer(BaseUserRegistrationSerializer):
 class TrainingGroupSerializer(serializers.ModelSerializer):
     program = serializers.CharField(source='basic.program.name', read_only=True)
     basic = serializers.CharField(source='basic.name', read_only=True)
+    progress = serializers.SerializerMethodField(read_only=True)
     class Meta:
         model = TrainingGroup
         fields = '__all__'
         depth = 0
+    
+    def get_progress(self, obj):
+        if int((obj.graduation_date - datetime.date.today()).days) <= 0:
+            return 100
+        if int((datetime.date.today() - obj.start_date).days) <= 0:
+            return 0
+        return int(((obj.graduation_date - obj.start_date).days/(datetime.date.today() - obj.start_date).days)*100)
 
 
 class LkStudentSerializer(serializers.ModelSerializer):
     training_group = TrainingGroupSerializer(read_only=True, many=True)
-    progress = serializers.SerializerMethodField(read_only=True)
     password = serializers.CharField(write_only=True, min_length=8, required=False)
     # re_password = serializers.CharField(write_only=True, min_length=8)
     class Meta:
@@ -46,13 +53,6 @@ class LkStudentSerializer(serializers.ModelSerializer):
         extra_kwargs = {
             'password': {'write_only': True, 'required': False},
         }
-    
-    def get_progress(self, obj):
-        if obj.training_group is not None:
-            if obj.training_group.graduation_date - datetime.date.today() <= 0:
-                return 100
-            return int(((obj.training_group.graduation_date - obj.training_group.start_date).days/(datetime.date.today() - obj.training_group.start_date).days)*100)
-        return 0
 
     def create(self, validated_data):
         request = self.context['request']
