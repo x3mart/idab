@@ -1,7 +1,10 @@
+from attendances.models import Attendance
 from programs.models import TrainingGroup
 from rest_framework import serializers
+
+from programs.serializers import LkTrainingGroupSerializer
 from .models import Schedule
-from users.models import Teacher
+from users.models import Student, Teacher
 from checkpoints.models import Checkpoint
 from courses.models import Course
 
@@ -65,4 +68,32 @@ class LkScheduleSerializer(serializers.ModelSerializer):
         if checkpoint is None:
             validated_data['checkpoint']=None
         schedule = super().update(instance, validated_data)
-        return schedule 
+        return schedule
+
+
+class ScheduleStudentAttendanceSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Student
+        fields = ['id']
+    
+    def get_attendance(self, obj):
+        return obj.attendances.filter()
+
+class ScheduleAttendanceSerializer(serializers.ModelSerializer):
+    training_group = LkTrainingGroupSerializer(read_only=True, many=False)
+    visited_students = ScheduleStudentAttendanceSerializer(read_only=True, many=True)
+
+    class Meta:
+        model = Schedule
+        fields = '__all__'
+    
+    def update(self, instance, validated_data):
+        request = self.context['request']
+        students = request.data.get('students')
+        validated_data.clear()
+        schedule = super().update(instance, validated_data)
+        students = Student.objects.filter(pk__in=students)
+        for student in students:
+            schedule.visited_students.add(student)
+        return schedule
+

@@ -1,9 +1,9 @@
 from datetime import datetime, timedelta
 from rest_framework import viewsets
 from rest_framework.permissions import AllowAny, BasePermission, SAFE_METHODS
-
+from rest_framework.decorators import action
 from users.models import Student
-from .serializers import LkScheduleSerializer
+from .serializers import LkScheduleSerializer, ScheduleAttendanceSerializer
 from .models import Schedule
 
 # Create your views here.
@@ -30,3 +30,16 @@ class LkScheduleViewSet(viewsets.ModelViewSet):
             user.training_groups =user.values_list('training_group__id', flat=True)
             schedule  = schedule.filter(training_group__in=user.training_groups)
         return schedule
+    
+    def get_serializer(self, *args, **kwargs):
+        if self.action == 'attendances':
+            print(self.action)
+            return ScheduleAttendanceSerializer(*args, **kwargs, context={'request':self.request})
+        return super().get_serializer(*args, **kwargs)
+
+    @action(["get", "patch"], detail=True)
+    def attendances(self, request, *args, **kwargs):
+        if request.method == "GET":
+            return self.retrieve(request, *args, **kwargs)
+        if request.method == "PATCH":
+            return self.partial_update(request, *args, **kwargs)
