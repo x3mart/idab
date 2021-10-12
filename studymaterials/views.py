@@ -21,5 +21,5 @@ class LkStudyMaterialViewSet(viewsets.ModelViewSet):
         if user.is_student:
             user = Student.objects.filter(pk=user.id)
             user.training_groups =user.values_list('training_group__id', flat=True)
-            return StudyMaterial.objects.filter(training_groups__in=user.training_groups)
+            return StudyMaterial.objects.filter(training_groups__in=user.training_groups).filter(is_active=True)
         return super().get_queryset()

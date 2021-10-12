@@ -13,6 +13,7 @@ class StudyMaterial(models.Model):
     name = models.CharField(max_length=255, verbose_name='Название')
     description = models.TextField(verbose_name='Описание', null=True, blank=True)
     file = models.FileField(max_length=255, verbose_name='Вложение', upload_to=get_study_material_file_path)
+    is_active = models.BooleanField(default=True)
 
     class Meta:
         verbose_name = 'Учебный материал'

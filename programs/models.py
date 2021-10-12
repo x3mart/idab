@@ -103,4 +103,7 @@ class TrainingGroup(models.Model):
         verbose_name_plural = 'Группы'
         ordering = ['-id']
     
-    
+    def save(self, *args, **kwargs):
+        if not self.pk or not self.slack_id:
+            pass
+        super(TrainingGroup, self).save(*args, **kwargs)
