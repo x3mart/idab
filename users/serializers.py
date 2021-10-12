@@ -51,7 +51,7 @@ class LkStudentSerializer(serializers.ModelSerializer):
         if obj.training_group is not None:
             if obj.training_group.graduation_date - datetime.date.today() <= 0:
                 return 100
-            return int(((obj.training_group.graduation_date - obj.training_group.start_date).days/(datetime.date.today() - obj.training_group.start_date).days*100))
+            return int(((obj.training_group.graduation_date - obj.training_group.start_date).days/(datetime.date.today() - obj.training_group.start_date).days)*100)
         return 0
 
     def create(self, validated_data):
