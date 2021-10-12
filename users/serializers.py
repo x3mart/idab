@@ -39,7 +39,7 @@ class TrainingGroupSerializer(serializers.ModelSerializer):
             return 100
         if int((datetime.date.today() - obj.start_date).days) <= 0:
             return 0
-        return int(((obj.graduation_date - obj.start_date).days/(datetime.date.today() - obj.start_date).days)*100)
+        return int(((datetime.date.today() - obj.start_date).days/(obj.graduation_date - obj.start_date).days)*100)
 
 
 class LkStudentSerializer(serializers.ModelSerializer):
