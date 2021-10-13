@@ -1,7 +1,8 @@
 from rest_framework import viewsets
+from rest_framework.decorators import action
 from rest_framework.permissions import AllowAny, BasePermission, SAFE_METHODS
 from .models import Program, TrainingGroup, Category, TrainingGroupBasic
-from .serializers import LkCategorySerializer, LkProgramSerializer, LkTrainingGroupBasicSerializer, LkTrainingGroupSerializer
+from .serializers import LkCategorySerializer, LkProgramSerializer, LkTrainingGroupBasicSerializer, LkTrainingGroupSerializer, TrainingGroupAttendaceSerializer
 
 # Create your views here.
 class IsAdminOrReadOnlyPermission(BasePermission):
@@ -47,3 +48,12 @@ class LkTrainingGroupViewSet(viewsets.ModelViewSet):
         if self.action == 'list' and category is not None:
             return TrainingGroup.objects.filter(basic__category=category)
         return super().get_queryset()
+    
+    def get_serializer(self, *args, **kwargs):
+        if self.action == 'attendances':
+            return TrainingGroupAttendaceSerializer(*args, **kwargs)
+        return super().get_serializer(*args, **kwargs)
+    
+    @action(["get"], detail=True)
+    def attendances(self, request, *args, **kwargs):
+        return self.retrieve(request, *args, **kwargs)

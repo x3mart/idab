@@ -1,7 +1,6 @@
-from attendances.models import Attendance
+from django.db.models import fields
 from programs.models import TrainingGroup
 from rest_framework import serializers
-
 from programs.serializers import LkTrainingGroupSerializer
 from .models import Schedule
 from users.models import Student, Teacher
@@ -71,14 +70,6 @@ class LkScheduleSerializer(serializers.ModelSerializer):
         return schedule
 
 
-class ScheduleStudentAttendanceSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Student
-        fields = ['id']
-    
-    def get_attendance(self, obj):
-        return obj.attendances.filter()
-
 class ScheduleAttendanceSerializer(serializers.ModelSerializer):
     training_group = LkTrainingGroupSerializer(read_only=True, many=False)
     visited_students = serializers.SerializerMethodField(read_only=True)
@@ -99,6 +90,5 @@ class ScheduleAttendanceSerializer(serializers.ModelSerializer):
     
     def get_visited_students(self, obj):
         students = obj.visited_students.values_list('id', flat=True)
-        print(students)
         return students
 

@@ -8,7 +8,7 @@ class Schedule(models.Model):
     course = models.ForeignKey('courses.Course', on_delete=models.CASCADE, verbose_name='Название урока', null=True, blank=True)
     teacher = models.ForeignKey('users.Teacher', on_delete=models.CASCADE, verbose_name='Преподаватель', null=True, blank=True)
     guest_star = models.CharField(max_length=150, verbose_name='Преподаватель на замену', null=True, blank=True)
-    training_group = models.ForeignKey('programs.TrainingGroup', on_delete=models.CASCADE, verbose_name='Группа', null=True, blank=True)
+    training_group = models.ForeignKey('programs.TrainingGroup', on_delete=models.CASCADE, verbose_name='Группа', null=True, blank=True, related_name='schedule')
     checkpoint = models.ForeignKey('checkpoints.Checkpoint', on_delete=models.CASCADE, verbose_name='Контрольная точка', null=True, blank=True)
     visited_students = models.ManyToManyField("users.Student", verbose_name="Посетившие студенты", through='attendances.Attendance', null=True, blank=True)
 
