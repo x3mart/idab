@@ -1,8 +1,8 @@
 from django.contrib import admin
-from .models import Checkpoint, CheckpointsName, Grade, StudentCheckpoint
+from .models import Checkpoint, CheckpointsName, CheckpointMark
 
 
 admin.site.register(CheckpointsName)
 admin.site.register(Checkpoint)
-admin.site.register(Grade)
-admin.site.register(StudentCheckpoint)
+admin.site.register(CheckpointMark)
+

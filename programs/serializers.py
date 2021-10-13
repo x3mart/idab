@@ -44,7 +44,7 @@ class LkTrainingGroupSerializer(serializers.ModelSerializer):
     
     class Meta:
         model = TrainingGroup
-        fields = ['id', 'category', 'basic', 'name', 'start_date', 'graduation_date', 'students', 'courses_blocks', 'attendances']
+        fields = ['id', 'category', 'basic', 'name', 'start_date', 'graduation_date', 'students', 'courses_blocks']
         extra_kwargs = {
             'basic': {'write_only': True},
         }

@@ -1,10 +1,11 @@
 from django.db.models import fields
+from checkpoints.serializers import CheckpointMarkSerializer, CheckpointSerializer, CheckpointsNameSerializer
 from programs.models import TrainingGroup
 from rest_framework import serializers
 from programs.serializers import LkTrainingGroupSerializer
 from .models import Schedule
 from users.models import Student, Teacher
-from checkpoints.models import Checkpoint
+from checkpoints.models import Checkpoint, CheckpointsName
 from courses.models import Course
 
 
@@ -12,9 +13,15 @@ class LkScheduleSerializer(serializers.ModelSerializer):
     teacher = serializers.CharField(read_only=True, source='teacher.name')
     training_group = serializers.IntegerField(read_only=True, source='training_group.id')
     course = serializers.CharField(read_only=True)
+    checkpoint_names = serializers.SerializerMethodField(read_only=True,)
+    checkpoint = CheckpointSerializer(read_only=True)
     class Meta:
         model = Schedule
         fields = '__all__'
+
+    def get_checkpoint_names(self, obj):
+        checkpoint_names = CheckpointsName.objects.all()
+        return CheckpointsNameSerializer(checkpoint_names, many=True).data
     
     def create(self, validated_data):
         request = self.context['request']
@@ -45,7 +52,9 @@ class LkScheduleSerializer(serializers.ModelSerializer):
         schedule.teacher=teacher
         schedule.course=course
         if checkpoint is not None:
-            checkpoint = Checkpoint.objects.get(pk=checkpoint)
+            basic = checkpoint['basic']
+            decription = checkpoint['description']
+            checkpoint = Checkpoint.objects.create(basic=basic, decription=decription)
             schedule.checkpoint=checkpoint
         schedule.save()
         return schedule
@@ -62,10 +71,19 @@ class LkScheduleSerializer(serializers.ModelSerializer):
             teacher = Teacher.objects.get(pk=teacher)
             validated_data['teacher']=teacher
         if checkpoint is not None:
-            checkpoint = Checkpoint.objects.get(pk=checkpoint)
-            validated_data['checkpoint']=checkpoint
-        if checkpoint is None:
-            validated_data['checkpoint']=None
+            name = checkpoint['name']
+            decription = checkpoint.get('description')
+            # try:
+            #     basic = CheckpointsName.objects.get(name=name)
+            #     print(basic)
+            #     # checkpoint = Checkpoint.objects.get(schedule=instance)
+            #     # checkpoint.basic = basic
+            #     # checkpoint.basic = decription
+            #     # checkpoint.save()
+            #     validated_data.pop('checkpoint')
+            # except:
+            #     checkpoint = Checkpoint.objects.create(basic=basic, decription=decription)
+            #     validated_data['checkpoint']=checkpoint
         schedule = super().update(instance, validated_data)
         return schedule
 
@@ -73,15 +91,21 @@ class LkScheduleSerializer(serializers.ModelSerializer):
 class ScheduleAttendanceSerializer(serializers.ModelSerializer):
     training_group = LkTrainingGroupSerializer(read_only=True, many=False)
     visited_students = serializers.SerializerMethodField(read_only=True)
+    checkpoint_names = serializers.SerializerMethodField(read_only=True,)
 
     class Meta:
         model = Schedule
         fields = '__all__'
     
+    def get_checkpoint_names(self, obj):
+        checkpoint_names = CheckpointsName.objects.all()
+        return CheckpointsNameSerializer(checkpoint_names, many=True).data
+    
     def update(self, instance, validated_data):
         request = self.context['request']
         students = request.data.get('students')
         validated_data.clear()
+        instance.visited_students.clear()
         schedule = super().update(instance, validated_data)
         students = Student.objects.filter(pk__in=students)
         for student in students:
@@ -92,3 +116,29 @@ class ScheduleAttendanceSerializer(serializers.ModelSerializer):
         students = obj.visited_students.values_list('id', flat=True)
         return students
 
+
+class ScheduleCheckpointSerializer(serializers.ModelSerializer):
+    training_group = LkTrainingGroupSerializer(read_only=True, many=False)
+    students_marks = serializers.SerializerMethodField(read_only=True)
+
+    class Meta:
+        model = Schedule
+        fields = '__all__'
+    
+    
+    def update(self, instance, validated_data):
+        request = self.context['request']
+        students_marks = request.data.get('students_marks')
+        validated_data.clear()
+        instance.checkpoint.chekpoint_marks.all().delete()
+        schedule = super().update(instance, validated_data)
+        for students_mark in students_marks:
+            student = Student.objects.filter(pk=students_mark['student']).first()
+            instance.checkpoint.student = student
+            instance.checkpoint.chekpoint_marks.create(mark=students_mark['mark'], student=student)
+            instance.checkpoint.save()
+        return schedule
+    
+    def get_students_marks(self, obj):
+        students_marks = obj.checkpoint.chekpoint_marks.all()
+        return CheckpointMarkSerializer(students_marks, many=True).data
