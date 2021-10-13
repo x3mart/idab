@@ -81,7 +81,7 @@ class ScheduleStudentAttendanceSerializer(serializers.ModelSerializer):
 
 class ScheduleAttendanceSerializer(serializers.ModelSerializer):
     training_group = LkTrainingGroupSerializer(read_only=True, many=False)
-    visited_students = ScheduleStudentAttendanceSerializer(read_only=True, many=True)
+    visited_students = serializers.SerializerMethodField(read_only=True)
 
     class Meta:
         model = Schedule
@@ -96,4 +96,9 @@ class ScheduleAttendanceSerializer(serializers.ModelSerializer):
         for student in students:
             schedule.visited_students.add(student)
         return schedule
+    
+    def get_visited_students(self, obj):
+        students = obj.visited_students.values_list('id', flat=True)
+        print(students)
+        return students
 

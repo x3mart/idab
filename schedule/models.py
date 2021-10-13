@@ -18,4 +18,5 @@ class Schedule(models.Model):
     class Meta:
         verbose_name = 'Занятие'
         verbose_name_plural = 'Рассписание'
+
     

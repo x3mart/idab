@@ -1,3 +1,5 @@
+from schedule.models import Schedule
+from schedule.serializers import LkScheduleSerializer
 from utils.image_crop import create_avatar
 from djoser.serializers import UserCreateSerializer as BaseUserRegistrationSerializer
 from django.contrib.auth import get_user_model
@@ -45,6 +47,7 @@ class TrainingGroupSerializer(serializers.ModelSerializer):
 class LkStudentSerializer(serializers.ModelSerializer):
     training_group = TrainingGroupSerializer(read_only=True, many=True)
     password = serializers.CharField(write_only=True, min_length=8, required=False)
+    schedule_for_today = serializers.SerializerMethodField(read_only=True,)
     # re_password = serializers.CharField(write_only=True, min_length=8)
     class Meta:
         exclude = ['is_superuser', 'is_staff', 'groups', 'user_permissions']
@@ -88,9 +91,16 @@ class LkStudentSerializer(serializers.ModelSerializer):
         if validated_data.get('avatar'):
             create_avatar(student.avatar)
         return student
+    
+    def get_schedule_for_today(self, obj):
+        training_group = obj.training_group.first()
+        schedule = Schedule.objects.filter(training_group=training_group).filter(start_date__date=datetime.date.today())
+        return LkScheduleSerializer(schedule, many=True).data
 
 
 class LkTeacherSerializer(serializers.ModelSerializer):
+    schedule_for_today = serializers.SerializerMethodField(read_only=True,)
+
     class Meta:
         model = Teacher
         exclude = ['is_superuser', 'is_staff', 'groups', 'user_permissions']
@@ -116,3 +126,7 @@ class LkTeacherSerializer(serializers.ModelSerializer):
         if validated_data.get('avatar'):
             create_avatar(teacher.avatar)
         return teacher
+    
+    def get_schedule_for_today(self, obj):
+        schedule = Schedule.objects.filter(teacher=obj).filter(start_date__date__lt=datetime.date.today())
+        return LkScheduleSerializer(schedule, many=True).data
