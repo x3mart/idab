@@ -148,5 +148,5 @@ class LkTeacherSerializer(serializers.ModelSerializer):
         return teacher
     
     def get_schedule_for_today(self, obj):
-        schedule = Schedule.objects.filter(teacher=obj).filter(start_date__date__lt=datetime.date.today())
+        schedule = Schedule.objects.filter(teacher=obj).filter(start_date__date=datetime.date.today())
         return LkScheduleSerializer(schedule, many=True).data
