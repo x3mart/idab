@@ -9,6 +9,7 @@ from rest_framework import serializers
 from .models import Student, User, Teacher
 from programs.models import TrainingGroup
 import datetime
+from djoser.serializers import UserSerializer as MeSerializer
 
 User = get_user_model()
 
@@ -17,14 +18,33 @@ def mail_to_new_user(user, password):
     message = 'Уважаемый, {}. \n Вам предоставлен доступ в личный кабинет ИДАБ, \n https://idab.mba/login \n email: {}, \n пароль: {}'.format(user.name, user.email, password)
     send_mail(subject, message, 'idab.guu@gmail.com',['viperovm@gmail.com', 'x3mart@gmail.com', user.email])
 
+
+class StaffSerializer(MeSerializer):
+    schedule_for_today = serializers.SerializerMethodField(read_only=True,)
+
+    class Meta(MeSerializer.Meta):
+        model = User
+        fields = '__all__'
+
+
+    def get_schedule_for_today(self, obj):
+        training_group = obj.training_group.first()
+        schedule = Schedule.objects.filter(training_group=training_group).filter(start_date__date=datetime.date.today())
+        return LkScheduleSerializer(schedule, many=True).data
+
+
 class MyUserCreateSerializer(BaseUserRegistrationSerializer):
+    schedule_for_today = serializers.SerializerMethodField(read_only=True,)
     class Meta(BaseUserRegistrationSerializer.Meta):
         model = User
         fields = '__all__'
         depth = 0
         extra_kwargs = {'password': {'write_only': True},
-        'traning_group': {'write_only': True, 'required': False}
         }
+    
+    def get_schedule_for_today(self, obj):
+        schedule = Schedule.objects.filter(start_date__date=datetime.date.today())
+        return LkScheduleSerializer(schedule, many=True).data
 
 
 class TrainingGroupSerializer(serializers.ModelSerializer):

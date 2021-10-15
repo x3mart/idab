@@ -43,7 +43,7 @@ urlpatterns = [
     path("api/", include("slack.urls")),
     # ckeditor
     path('ckeditor/', include('ckeditor_uploader.urls')),
-    # Token Access Refresh
+    # Token Access Create/Refresh
     path('auth/jwt/create/', MyTokenObtainPairView.as_view(), name='lk_login'),
     path('auth/jwt/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
 ]
