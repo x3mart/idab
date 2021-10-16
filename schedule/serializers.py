@@ -103,7 +103,7 @@ class ScheduleAttendanceSerializer(serializers.ModelSerializer):
     
     def update(self, instance, validated_data):
         request = self.context['request']
-        students = request.data.get('students')
+        students = list(map(int, request.data.get('visited_students').split(',')))
         validated_data.clear()
         instance.visited_students.clear()
         schedule = super().update(instance, validated_data)
