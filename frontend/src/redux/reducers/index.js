@@ -12,6 +12,10 @@ import students from "./admin/students";
 import teachers from "./admin/teachers";
 import adminPrograms from './admin/adminPrograms'
 import groups from './admin/groups'
+import schedule from './admin/schedule'
+import library from './admin/library'
+import study_materials from './admin/study_materials'
+import tasks from './admin/tasks'
 
 export default combineReducers({
   home,
@@ -27,4 +31,8 @@ export default combineReducers({
   teachers,
   adminPrograms,
   groups,
+  schedule,
+  library,
+  study_materials,
+  tasks,
 })

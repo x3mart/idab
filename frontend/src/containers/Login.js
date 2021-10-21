@@ -15,11 +15,9 @@ import './Login.css';
 import bg from '../assets/login_bg.jpg'
 import {connect} from "react-redux";
 import {login} from "../redux/actions/auth/auth";
-import {Redirect} from 'react-router-dom'
+import { Redirect, Link } from 'react-router-dom'
 
-const Login = ({login, isAuthenticated}) => {
-
-  console.log(isAuthenticated)
+const Login = ({ login, isAuthenticated, error_text }) => {
 
   const [email, setEmail] = useState('')
   const [pass, setPass] = useState('')
@@ -29,9 +27,8 @@ const Login = ({login, isAuthenticated}) => {
   }
 
   if (isAuthenticated) {
-      return <Redirect to='/dashboard/main'/>
-    }
-
+    return <Redirect to='/dashboard/main' />
+  }
 
   return (
     <div className='classic-form-page' id='login'>
@@ -52,7 +49,7 @@ const Login = ({login, isAuthenticated}) => {
                     <div className='form-header idab-gradient'>
                       <h3>Личный кабинет</h3>
                     </div>
-                    <div className="input-white-text">
+                    <div className='input-white-text'>
                       <MDBInput
                         type='email'
                         label='Email'
@@ -67,6 +64,11 @@ const Login = ({login, isAuthenticated}) => {
                         iconClass='white-text'
                         onChange={e => setPass(e.target.value)}
                       />
+                      {error_text && (
+                        <div className='text-center mt-3 danger-text'>
+                          {error_text}
+                        </div>
+                      )}
                       <div className='text-center mt-3 black-text'>
                         <MDBBtn
                           className='idab-gradient'
@@ -78,6 +80,11 @@ const Login = ({login, isAuthenticated}) => {
                         </MDBBtn>
                       </div>
                       <hr />
+                      <div className='d-flex justify-content-center'>
+                        <Link to='/reset' className='text-white'>
+                        Забыли пароль?
+                        </Link>
+                      </div>
                     </div>
                   </MDBCardBody>
                 </MDBCard>
@@ -91,7 +98,8 @@ const Login = ({login, isAuthenticated}) => {
 }
 
 const mapStateToProps = state => ({
-  isAuthenticated: state.auth.isAuthenticated
+  isAuthenticated: state.auth.isAuthenticated,
+  error_text: state.auth.error
 })
 
 export default connect(mapStateToProps, {login})(Login);

@@ -1,30 +1,22 @@
 import React, {useEffect, useState} from "react";
-import {connect} from "react-redux";
 import dummy_avatar from '../../assets/man.svg'
 
 const SideNavAvatar = ({user}) => {
 
   const [avatar, setAvatar] = useState('')
+  const [name,setName] = useState('')
 
   useEffect(() => {
     if (user !== null && user !== undefined) {
       if (user.avatar !== null && user.avatar !== undefined) {
         setAvatar(user.avatar)
+      } else {
+        setAvatar(dummy_avatar)
       }
-    } else {
-      setAvatar(dummy_avatar)
-    }
-  }, [user])
-
-  const[name,setName] = useState('')
-
-
-  useEffect(() => {
-    if (user !== null && user !== undefined) {
       if (user.name !== null && user.name !== undefined) {
         setName(user.name)
       }
-    }
+    } 
   }, [user])
 
   return (
@@ -38,8 +30,4 @@ const SideNavAvatar = ({user}) => {
   )
 }
 
-const mapStateToProps = state => ({
-  user: state.auth.user
-})
-
-export default connect(mapStateToProps, )(SideNavAvatar)
+export default SideNavAvatar

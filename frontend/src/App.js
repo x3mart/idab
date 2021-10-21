@@ -9,10 +9,13 @@ import {
 import { Provider } from 'react-redux'
 import store from './store'
 
+
+
 import './index.css'
 import Layout from './hocs/Layout'
 import Home from './containers/Home'
 import About from './containers/About'
+import ResetPasswordConfirm from './containers/ResetPasswordConfirm'
 import Programs from './containers/Programs'
 import Events from './containers/Events'
 import Contacts from './containers/Contacts'
@@ -25,18 +28,26 @@ import Teachers from './admin/containers/Teachers'
 import AdminPrograms from './admin/containers/AdminPrograms'
 import Groups from './admin/containers/Groups'
 import Subjects from './admin/containers/Subjects'
-import Materials from './admin/containers/Materials'
+// import Materials from './admin/containers/Materials'
 import Schedule from './admin/containers/Schedule'
 import Admittance from './admin/containers/Admittance'
 import Milestones from './admin/containers/Milestones'
 import Library from './admin/containers/Library'
-import Reflective from './admin/containers/Reflective'
+import Tasks from './admin/containers/Tasks'
+import StudyMaterials from './admin/containers/StudyMaterials'
+import PassReset from './containers/PassReset'
+// import Test from './admin/containers/Test'
 
 const App = () => {
   return (
     <Provider store={store}>
       <Router>
         <Switch>
+          <Route
+            exact
+            path='/password/reset/confirm/:uid/:token'
+            component={ResetPasswordConfirm}
+          />
           <Route
             path={[
               '/dashboard/main',
@@ -50,7 +61,7 @@ const App = () => {
               '/dashboard/study/admittance',
               '/dashboard/study/milestones',
               '/dashboard/study/library',
-              '/dashboard/study/reflective',
+              '/dashboard/study/Tasks',
               '/dashboard/my-page',
             ]}
           >
@@ -67,7 +78,7 @@ const App = () => {
                 <Route path='/dashboard/study/subjects' component={Subjects} />
                 <Route
                   path='/dashboard/study/materials'
-                  component={Materials}
+                  component={StudyMaterials}
                 />
                 <Route path='/dashboard/study/schedule' component={Schedule} />
                 <Route
@@ -79,11 +90,9 @@ const App = () => {
                   component={Milestones}
                 />
                 <Route path='/dashboard/study/library' component={Library} />
-                <Route
-                  path='/dashboard/study/reflective'
-                  component={Reflective}
-                />
+                <Route path='/dashboard/study/tasks' component={Tasks} />
                 <Route path='/dashboard/main' component={Dashboard} />
+                {/* <Route path='/dashboard/main' component={Test} /> */}
               </Switch>
             </AdminLayout>
           </Route>
@@ -94,6 +103,7 @@ const App = () => {
               '/events',
               '/contacts',
               '/login',
+              '/reset',
               '/',
             ]}
           >
@@ -105,6 +115,7 @@ const App = () => {
                 <Route path='/events' component={Events} />
                 <Route path='/contacts' component={Contacts} />
                 <Route path='/login' component={Login} />
+                <Route path='/reset' component={PassReset} />
               </Switch>
             </Layout>
           </Route>

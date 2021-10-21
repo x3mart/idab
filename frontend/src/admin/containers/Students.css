@@ -208,6 +208,10 @@ table.table .avatar {
   transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
 }
 
+.multiselect {
+  height: 120px!important;
+}
+
 .custom-modal-form .form-select:focus {
   color: #495057;
   background-color: #fff;
@@ -237,4 +241,14 @@ table.table .avatar {
 
 .header-reset-button button {
   margin: 5px 0;
+}
+
+.header-reset {
+  margin: 0!important;
+  border: 1px solid #ff3547 !important;
+  border-radius: 4px;
+  padding-top: 9px!important; 
+  padding-bottom: 9px!important; 
+  width: 100%;
+  background-color: transparent!important;
 }

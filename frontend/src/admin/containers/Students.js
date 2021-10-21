@@ -14,9 +14,16 @@ import {
   update_student,
   sort_students,
 } from '../../redux/actions/admin/students'
-import {load_user} from '../../redux/actions/auth/auth'
-import { isNotEmptyObject } from '../../functions'
+
+import {
+  load_basic_groups_list,
+  load_groups_list,
+} from '../../redux/actions/admin/groups'
+
+import { load_user } from '../../redux/actions/auth/auth'
+import { isNotEmptyObject, proper_date } from '../../functions'
 import { MDBSpinner } from 'mdbreact'
+import AddStudent from './components/AddStudent'
 
 const Students = ({
   load_user,
@@ -35,7 +42,13 @@ const Students = ({
   delete_student,
   update_student,
   sort_students,
+  load_basic_groups_list,
+  load_groups_list,
+  basic_groups_list,
+  groups_list,
 }) => {
+
+
   if (!isAuthenticated) {
     return <Redirect to='/login' />
   }
@@ -66,13 +79,11 @@ const Students = ({
 
   useEffect(() => {
     {
-      console.log(1)
       let timer = setTimeout(
         () => setStudentsData({ loaded: false, pending: false, error: true }),
         10000
       )
       if (Array.isArray(sorted_list) && sorted_list.length > 0) {
-        console.log(2)
         setStudentsList(sorted_list)
         setStudentsData({ loaded: true, pending: false, error: false })
         clearTimeout(timer)
@@ -86,6 +97,8 @@ const Students = ({
   useEffect(() => {
     get_all_students()
     load_specialities()
+    load_basic_groups_list()
+    load_groups_list()
   }, [])
 
   useEffect(() => {
@@ -124,6 +137,7 @@ const Students = ({
 
   const handleProgramsSelect = e => {
     setSelectedProgram(e.target.value)
+    sort_students(e.target.value)
   }
 
   const handleGroupSelect = e => {
@@ -132,8 +146,9 @@ const Students = ({
 
   const handleGroupSelectHeader = e => {
     setSelectedGroupHeader(e.target.value)
-    sort_students(e.target.value)
+    // sort_students(e.target.value)
   }
+
   const handleGroupResetHeader = () => {
     setSelectedSpeciality('')
     setSelectedProgram('')
@@ -152,17 +167,12 @@ const Students = ({
 
   const handleUpdate = e => {
     e.preventDefault()
-    // const oldStudent = studentsList.filter(item => item.id === updateId)[0]
     const student = {
       id: updateId,
       name: studentName,
       email: studentMail,
       phone: studentPhone,
       training_group: selectedGroup,
-      // training_group:
-      //   oldStudent.training_group && oldStudent.training_group.id !== selectedGroup
-      //     ? selectedGroup
-      //     : oldStudent.training_group.id,
     }
     setUpdateActive(false)
     update_student(student)
@@ -223,6 +233,11 @@ const Students = ({
     setStudentPhone('')
   }
 
+  const handleReset = () => {
+    setSelectedSpeciality('')
+    setSelectedProgram('')
+  }
+
   return (
     <Fragment>
       <div
@@ -264,127 +279,6 @@ const Students = ({
       </div>
 
       <div
-        className={`modal fade ${addActive ? 'show' : ''}`}
-        style={{ display: addActive ? 'block' : 'none' }}
-      >
-        <div className='modal-dialog'>
-          <div className='modal-content'>
-            <form onSubmit={e => studentAdd(e)}>
-              <div className='modal-header'>
-                <h4 className='modal-title'>Добавить слушателя</h4>
-                <button
-                  type='button'
-                  className='close'
-                  onClick={() => setAddActive(false)}
-                  aria-hidden='true'
-                >
-                  &times;
-                </button>
-              </div>
-              <div className='modal-body'>
-                <div className='custom-modal-form'>
-                  <div className='form-group'>
-                    <select
-                      className='form-select'
-                      aria-label='Выберите специализацию'
-                      onChange={event => handleSpecialitiesSelect(event)}
-                    >
-                      <option selected>Выберите специализацию</option>
-
-                      {specialitiesList &&
-                        specialitiesList.map(item => (
-                          <option key={item.id} value={item.slug}>
-                            {item.name}
-                          </option>
-                        ))}
-                    </select>
-                  </div>
-                  {selectedSpeciality.length > 0 && (
-                    <div className='form-group'>
-                      <select
-                        className='form-select'
-                        aria-label='Выберите программу'
-                        onChange={event => handleProgramsSelect(event)}
-                      >
-                        <option selected>Выберите программу</option>
-                        {programsList &&
-                          programsList.map(item => (
-                            <option key={item.id} value={item.id}>
-                              {item.name}
-                            </option>
-                          ))}
-                      </select>
-                    </div>
-                  )}
-
-                  {selectedProgram.length > 0 && (
-                    <div className='form-group'>
-                      <select
-                        className='form-select'
-                        aria-label='Выберите группу'
-                        onChange={event => handleGroupSelect(event)}
-                      >
-                        <option selected>Выберите группу</option>
-                        {groupsList &&
-                          groupsList.map(item => (
-                            <option key={item.id} value={item.id}>
-                              {item.name}
-                            </option>
-                          ))}
-                      </select>
-                    </div>
-                  )}
-                  <div className='form-group'>
-                    <label>Фамилия Имя Отчество</label>
-                    <input
-                      type='text'
-                      className='form-control'
-                      value={studentName}
-                      required
-                      onChange={e => setStudentName(e.target.value)}
-                    />
-                  </div>
-                  <div className='form-group'>
-                    <label>Телефон</label>
-                    <input
-                      type='phone'
-                      className='form-control'
-                      value={studentPhone}
-                      required
-                      onChange={e => setStudentPhone(e.target.value)}
-                    />
-                  </div>
-                  <div className='form-group'>
-                    <label>Email</label>
-                    <input
-                      type='email'
-                      className='form-control'
-                      value={studentMail}
-                      required
-                      onChange={e => setStudentMail(e.target.value)}
-                    />
-                  </div>
-                </div>
-              </div>
-              <div className='modal-footer'>
-                <input
-                  type='button'
-                  className='btn btn-default'
-                  value='Отменить'
-                  onClick={() => handleCancelAdd()}
-                />
-                <input
-                  type='submit'
-                  className='btn btn-info'
-                  value='Сохранить'
-                />
-              </div>
-            </form>
-          </div>
-        </div>
-      </div>
-
-      <div
         className={`modal fade ${updateActive ? 'show' : ''}`}
         style={{ display: updateActive ? 'block' : 'none' }}
       >
@@ -407,14 +301,14 @@ const Students = ({
                   <div className='form-group'>
                     <select
                       className='form-select'
-                      aria-label='Выберите специализацию'
+                      aria-label='Выберите программу'
                       onChange={event => handleSpecialitiesSelect(event)}
                     >
-                      <option selected>Выберите специализацию</option>
+                      <option selected>Выберите программу</option>
 
                       {specialitiesList &&
                         specialitiesList.map(item => (
-                          <option key={item.id} value={item.slug}>
+                          <option key={item.id} value={item.id}>
                             {item.name}
                           </option>
                         ))}
@@ -427,13 +321,15 @@ const Students = ({
                         aria-label='Выберите программу'
                         onChange={event => handleProgramsSelect(event)}
                       >
-                        <option selected>Выберите программу</option>
-                        {programsList &&
-                          programsList.map(item => (
-                            <option key={item.id} value={item.id}>
-                              {item.name}
-                            </option>
-                          ))}
+                        <option selected>Выберите группу</option>
+                        {basic_groups_list &&
+                          basic_groups_list
+                            .filter(item => item.category == selectedSpeciality)
+                            .map(item => (
+                              <option key={item.id} value={item.id}>
+                                {item.name}
+                              </option>
+                            ))}
                       </select>
                     </div>
                   )}
@@ -445,13 +341,17 @@ const Students = ({
                         aria-label='Выберите группу'
                         onChange={event => handleGroupSelect(event)}
                       >
-                        <option selected>Выберите группу</option>
-                        {groupsList &&
-                          groupsList.map(item => (
-                            <option key={item.id} value={item.id}>
-                              {item.name}
-                            </option>
-                          ))}
+                        <option selected>Выберите поток</option>
+                        {groups_list &&
+                          groups_list
+                            .filter(item => item.basic == selectedProgram)
+                            .map(item => (
+                              <option key={item.id} value={item.id}>
+                                {`${proper_date(item.start_date)}-${proper_date(
+                                  item.graduation_date
+                                )}`}
+                              </option>
+                            ))}
                       </select>
                     </div>
                   )}
@@ -526,18 +426,22 @@ const Students = ({
         <div className='main-body__users'>
           <div className='cards'>
             <div className='cards__header table-title'>
-              <div className='cards__header-title admin-text-light'>
-                Управление <strong>слушателями</strong>
-              </div>
-              <div>
-                <button
-                  className='btn btn-success'
-                  onClick={() => setAddActive(true)}
-                >
-                  <i className='material-icons'>&#xE147;</i>{' '}
-                  <span>Добавить слушателя</span>
-                </button>
-              </div>
+              {user && user.is_teacher ? (
+                <div className='cards__header-title admin-text-light'>
+                  Слушатели
+                </div>
+              ) : (
+                <div className='cards__header-title admin-text-light'>
+                  Управление <strong>слушателями</strong>
+                </div>
+              )}
+              {user && user.is_teacher ? (
+                <div></div>
+              ) : (
+                <div>
+                  <AddStudent />
+                </div>
+              )}
             </div>
 
             <div className='custom-modal-form student-table-header'>
@@ -545,14 +449,14 @@ const Students = ({
                 <div className='form-group'>
                   <select
                     className='form-select'
-                    aria-label='Выберите специализацию'
+                    aria-label='Выберите программу'
                     onChange={event => handleSpecialitiesSelect(event)}
                   >
-                    <option selected>Выберите специализацию</option>
+                    <option selected>Выберите программу</option>
 
                     {specialitiesList &&
                       specialitiesList.map(item => (
-                        <option key={item.id} value={item.slug}>
+                        <option key={item.id} value={item.id}>
                           {item.name}
                         </option>
                       ))}
@@ -564,77 +468,94 @@ const Students = ({
                   <div className='form-group'>
                     <select
                       className='form-select'
-                      aria-label='Выберите программу'
+                      aria-label='Выберите группу'
+                      // onChange={event => handleGroupSelectHeader(event)}
                       onChange={event => handleProgramsSelect(event)}
                     >
-                      <option selected>Выберите программу</option>
-                      {programsList &&
-                        programsList.map(item => (
-                          <option key={item.id} value={item.id}>
-                            {item.name}
-                          </option>
-                        ))}
+                      <option selected>Выберите группу</option>
+                      {basic_groups_list &&
+                        basic_groups_list
+                          .filter(item => item.category == selectedSpeciality)
+                          .map(item => (
+                            <option key={item.id} value={item.name}>
+                              {item.name}
+                            </option>
+                          ))}
                     </select>
                   </div>
                 </div>
               )}
               {selectedProgram.length > 0 && (
                 <div className='column first'>
-                  <div className='form-group'>
-                    <select
-                      className='form-select'
-                      aria-label='Выберите группу'
-                      onChange={event => handleGroupSelectHeader(event)}
-                    >
-                      <option selected>Выберите группу</option>
-                      {groupsList &&
-                        groupsList.map(item => (
-                          <option key={item.id} value={item.id}>
-                            {item.name}
-                          </option>
-                        ))}
-                    </select>
-                  </div>
+                  <button
+                    className='btn btn-outline-danger header-reset'
+                    type='button'
+                    onClick={() => handleReload()}
+                  >
+                    Сбросить
+                  </button>
                 </div>
               )}
             </div>
-            {selectedGroupHeader > 0 && (
-              <div className="header-reset-button">
-                <button
-                  className='btn btn-outline-danger'
-                  type='button'
-                  onClick={() => handleReload()}
-                >
-                  Сбросить
-                </button>
+
+            {user && user.is_teacher && selectedProgram.length > 0 && (
+              <div className='cards'>
+                <table className='table table-striped table-hover'>
+                  <thead>
+                    <tr>
+                      <th>Фото</th>
+                      <th>Группа</th>
+                      <th>Имя</th>
+                      <th>Почта</th>
+                      <th>Телефон</th>
+                      {user && !user.is_teacher && <th>Действия</th>}
+                    </tr>
+                  </thead>
+
+                  <tbody>
+                    {studentsList.length > 0 &&
+                      studentsList.map(item => (
+                        <StudentTableRow
+                          key={item.id}
+                          user={user}
+                          student={item}
+                          update_modal={id => updateRow(id)}
+                          delete_modal={id => deleteRow(id)}
+                        />
+                      ))}
+                  </tbody>
+                </table>
               </div>
             )}
+            {user && !user.is_teacher && (
+              <div className='cards'>
+                <table className='table table-striped table-hover'>
+                  <thead>
+                    <tr>
+                      <th>Фото</th>
+                      <th>Группа</th>
+                      <th>Имя</th>
+                      <th>Почта</th>
+                      <th>Телефон</th>
+                      {user && !user.is_teacher && <th>Действия</th>}
+                    </tr>
+                  </thead>
 
-            <div className='cards'>
-              <table className='table table-striped table-hover'>
-                <thead>
-                  <tr>
-                    <th>Фото</th>
-                    <th>Группа</th>
-                    <th>Имя</th>
-                    <th>Почта</th>
-                    <th>Телефон</th>
-                    <th>Действия</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {studentsList.length > 1 &&
-                    studentsList.map(item => (
-                      <StudentTableRow
-                        key={item.id}
-                        student={item}
-                        update_modal={id => updateRow(id)}
-                        delete_modal={id => deleteRow(id)}
-                      />
-                    ))}
-                </tbody>
-              </table>
-            </div>
+                  <tbody>
+                    {studentsList.length > 0 &&
+                      studentsList.map(item => (
+                        <StudentTableRow
+                          key={item.id}
+                          user={user}
+                          student={item}
+                          update_modal={id => updateRow(id)}
+                          delete_modal={id => deleteRow(id)}
+                        />
+                      ))}
+                  </tbody>
+                </table>
+              </div>
+            )}
           </div>
         </div>
       )}
@@ -649,6 +570,8 @@ const mapStateToProps = state => ({
   specialities: state.students.specialities,
   programs: state.students.programs,
   groups: state.students.groups,
+  basic_groups_list: state.groups.basic_groups,
+  groups_list: state.groups.groups,
 })
 
 export default connect(mapStateToProps, {
@@ -661,4 +584,6 @@ export default connect(mapStateToProps, {
   update_student,
   sort_students,
   load_user,
+  load_basic_groups_list,
+  load_groups_list,
 })(Students)

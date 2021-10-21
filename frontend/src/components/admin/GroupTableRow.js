@@ -13,6 +13,7 @@ import {
   update_group,
   delete_group,
 } from '../../redux/actions/admin/groups'
+import { proper_date } from '../../functions'
 
 const GroupTableRow = ({
   load_basic_groups_list,
@@ -20,7 +21,7 @@ const GroupTableRow = ({
   add_basic_group,
   delete_basic_group,
   load_groups_list,
-  groups_list,
+  groups,
   add_group,
   update_group,
   delete_group,
@@ -33,32 +34,32 @@ const GroupTableRow = ({
   const [groupsList, setGroupsList] = useState([])
   const [deleteId, setDeleteId] = useState(null)
   const [deleteActive, setDeleteActive] = useState(false)
-  const [activeGroup, setActiveGroup] = useState('')
+  const [activeGroup, setActiveGroup] = useState(null)
   const [action, setAction] = useState('')
 
   const [modalActive, setModalActive] = useState(false)
   const [data, setData] = useState({})
-  // const [dataType, setDataType] = useState('')
+  const [dataType, setDataType] = useState('')
 
   useEffect(() => {
     load_groups_list()
   }, [])
 
   useEffect(() => {
-    if (groups_list) {
-      setGroupsList(groups_list.filter(item => item.name === base_program.name))
+    if (groups) {
+      setGroupsList(groups.filter(item => item.name === base_program.name))
     }
-  }, [groups_list])
+  }, [groups])
 
   useEffect(() => {
     setOpened(activeGroup)
   }, [activeGroup])
 
-  const openBaseGroup = name => {
-    if (activeGroup === name) {
+  const openBaseGroup = id => {
+    if (activeGroup === id) {
       setActiveGroup(null)
     } else {
-      setActiveGroup(name)
+      setActiveGroup(id)
     }
   }
 
@@ -69,6 +70,7 @@ const GroupTableRow = ({
   const openModal = (id, action) => {
     if (action === 'update') {
       setData(groupsList.filter(item => item.id === id)[0])
+      setData({ ...data, basic: base_program.id})
     } else {
       setData(base_program)
     }
@@ -95,13 +97,9 @@ const GroupTableRow = ({
     setDeleteActive(true)
   }
 
-  const handleDelete = (contentId, contentType) => {
+  const handleDelete = (contentId) => {
     setDeleteActive(false)
-    if (contentType === 'группа') {
-      delete_group(contentId)
-    } else if (contentType === 'базовая группа') {
-      delete_basic_group(contentId)
-    }
+    delete_group(contentId)
   }
 
   return (
@@ -109,8 +107,9 @@ const GroupTableRow = ({
       {deleteActive && (
         <DeleteModal
           id={deleteId}
-          handleDelete={(contentId, contentType) =>
-            handleDelete(contentId, contentType)
+          name="Удаление потока"
+          handleDelete={(contentId) =>
+            handleDelete(contentId)
           }
           closeDelete={closeDelete}
           type={dataType}
@@ -170,9 +169,9 @@ const GroupTableRow = ({
           <tr key={item.id}>
             <td
               style={{ paddingLeft: '40px' }}
-            >{`${item.name} ${item.start_date}-${item.graduation_date}`}</td>
+            >{`${item.name} ${proper_date(item.start_date)}-${proper_date(item.graduation_date)}`}</td>
             <td>
-              <a
+              {/* <a
                 className='edit'
                 data-toggle='modal'
                 onClick={() => openModal(item.id, 'update')}
@@ -184,7 +183,7 @@ const GroupTableRow = ({
                 >
                   &#xE254;
                 </i>
-              </a>
+              </a> */}
               <a
                 className='delete'
                 data-toggle='modal'

@@ -15,7 +15,6 @@ const CategorySection = (props) => {
 
   const [category, setCategory] = useState({})
 
-  console.log(category_slug)
 
   const image_block = useRef(null)
   const [width, setWidth] = useState(0)

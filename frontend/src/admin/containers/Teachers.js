@@ -315,7 +315,6 @@ const Teachers = ({
                       type='phone'
                       className='form-control'
                       value={teacherPhone}
-                      //   onChange={e => console.log(e.target.value)}
                       onChange={e => setTeacherPhone(e.target.value)}
                     />
                   </div>

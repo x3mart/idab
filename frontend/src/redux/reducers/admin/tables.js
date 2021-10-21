@@ -33,7 +33,6 @@ const tableReducer = (state = initialState, action) => {
         id_list.splice(i,1)
       }
       // return id_list
-      console.log(id_list)
 break
     case DELETE_ALL_IDS:
       return clearList(id_list)
@@ -41,7 +40,6 @@ break
       return id_list
   }
 
-  console.log(id_list)
 
 }
 

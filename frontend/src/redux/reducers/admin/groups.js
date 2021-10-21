@@ -49,7 +49,7 @@ export default function(state= initialState, action) {
     case DELETE_BASIC_GROUP_SUCCESS:
       return {
         ...state,
-        basic_groups: state.basic_groups.filter(item => item.id !== payload),
+        basic_groups: state.basic_groups.filter(item => item.id != payload),
       }
     case GET_LK_GROUPS_SUCCESS:
       return {
