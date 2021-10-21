@@ -1,8 +1,8 @@
 from rest_framework.response import Response
 from schedule.models import Schedule
-from schedule.serializers import ScheduleAttendanceSerializer
-from .models import Student, Teacher
+from schedule.serializers import LkScheduleSerializer
 from programs.models import TrainingGroup
+from users.models import Student, Teacher
 from .serializers import LkStudentSerializer, LkTeacherSerializer
 from rest_framework.permissions import AllowAny, BasePermission, SAFE_METHODS
 from rest_framework import viewsets
@@ -58,7 +58,7 @@ class LkStudentViewSet(viewsets.ModelViewSet):
             user = Student.objects.filter(pk=user.id)
             user.training_groups =user.values_list('training_group__id', flat=True)
             schedule  = schedule.filter(training_group__in=user.training_groups)
-        return Response(ScheduleAttendanceSerializer(schedule, many=True).data, status=200)
+        return Response(LkScheduleSerializer(schedule, many=True).data, status=200)
 
 
 class LkTeacherViewSet(viewsets.ModelViewSet):
