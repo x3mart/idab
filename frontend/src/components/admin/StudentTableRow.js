@@ -3,11 +3,9 @@ import '../../admin/containers/Students.css'
 import dummy_avatar from '../../assets/man.svg'
 import students from '../../redux/reducers/admin/students'
 
-const StudentTableRow = props => {
-  const { student, update_modal, delete_modal } = props
-
+const StudentTableRow = ({ student, update_modal, delete_modal, user }) => {
   const { id, avatar, name, email, phone, training_group } = student
-  
+
   return (
     <tr>
       <td>
@@ -20,26 +18,28 @@ const StudentTableRow = props => {
       <td>{name}</td>
       <td>{email}</td>
       <td>{phone}</td>
-      <td>
-        <a
-          className='edit'
-          data-toggle='modal'
-          onClick={() => update_modal(id)}
-        >
-          <i className='material-icons' data-toggle='tooltip' title='Edit'>
-            &#xE254;
-          </i>
-        </a>
-        <a
-          className='delete'
-          data-toggle='modal'
-          onClick={() => delete_modal(id)}
-        >
-          <i className='material-icons' data-toggle='tooltip' title='Delete'>
-            &#xE872;
-          </i>
-        </a>
-      </td>
+      {user && !user.is_teacher && (
+        <td>
+          <a
+            className='edit'
+            data-toggle='modal'
+            onClick={() => update_modal(id)}
+          >
+            <i className='material-icons' data-toggle='tooltip' title='Edit'>
+              &#xE254;
+            </i>
+          </a>
+          <a
+            className='delete'
+            data-toggle='modal'
+            onClick={() => delete_modal(id)}
+          >
+            <i className='material-icons' data-toggle='tooltip' title='Delete'>
+              &#xE872;
+            </i>
+          </a>
+        </td>
+      )}
     </tr>
   )
 }

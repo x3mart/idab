@@ -29,8 +29,35 @@ export const load_user = () => async dispatch => {
       },
     }
 
+    function parseJwt(token) {
+      var base64Url = token.split('.')[1]
+      var base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/')
+      var jsonPayload = decodeURIComponent(
+        atob(base64)
+          .split('')
+          .map(function (c) {
+            return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2)
+          })
+          .join('')
+      )
+
+      return JSON.parse(jsonPayload)
+    }
+
+    const user = parseJwt(localStorage.getItem('access'))
+
     try {
-      const res = await axios.get(`https://idab.mba/auth/users/me/`, config)
+      const res = await axios.get(
+        `${
+          user.is_student
+            ? 'https://idab.mba/api/lk/students/' + user.user_id + '/'
+            : user.is_teacher
+            ? 'https://idab.mba/api/lk/teachers/' + user.user_id + '/'
+            : 'https://idab.mba/auth/users/me/'
+        }`,
+        config
+      )
+      // const res = await axios.get(`https://idab.mba/auth/users/me/`, config)
 
       dispatch({
         type: USER_LOADED_SUCCESS,
@@ -161,7 +188,6 @@ export const checkAuthenticated = () => async dispatch => {
         config
       )
 
-      console.log(res.data.code)
 
       if (res.data.code !== 'token_not_valid') {
         dispatch({
@@ -210,6 +236,7 @@ export const login = (email, password) => async dispatch => {
   } catch (err) {
     dispatch({
       type: LOGIN_FAIL,
+      payload: err.response.data.detail,
     })
   }
 }
@@ -276,14 +303,16 @@ export const reset_password = email => async dispatch => {
   const body = JSON.stringify({ email })
 
   try {
-    await axios.post(
+    const res = await axios.post(
       `https://idab.mba/auth/users/reset_password/`,
       body,
       config
     )
 
+
     dispatch({
       type: PASSWORD_RESET_SUCCESS,
+      payload: res.status
     })
   } catch (err) {
     dispatch({

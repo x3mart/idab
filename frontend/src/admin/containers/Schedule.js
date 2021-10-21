@@ -1,11 +1,25 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react'
+import { connect } from 'react-redux'
+import { Redirect } from 'react-router-dom'
+import { load_user } from '../../redux/actions/auth/auth'
+import ScheduleComponent from './ScheduleComponent'
 
-const Schedule = () => {
-  return (
-    <div>
+const Schedule = ({  user }) => {
 
-    </div>
-  );
-};
+  useEffect(() => {
+    if (!user) {
+      load_user()
+    }
+  }, [])
 
-export default Schedule;
+
+  return <ScheduleComponent />
+}
+
+const mapStateToProps = state => ({
+  user: state.auth.user,
+})
+
+export default connect(mapStateToProps, {
+  load_user,
+})(Schedule)

@@ -41,7 +41,6 @@ class PExtended extends React.Component {
   }
 
   toggle = item => {
-    console.log(item);
     this.setState({
       [item]: !this.state[item]
     });

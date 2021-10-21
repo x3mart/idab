@@ -337,45 +337,44 @@ const Groups = ({
         </div>
       </div>
 
-      {basicGroupsData.pending && (
-        <div className='w-100 h-50 d-flex justify-content-center align-items-center'>
-          <MDBSpinner big />
-        </div>
-      )}
-
-      {basicGroupsData.error && (
-        <div className='w-100 h-50 d-flex flex-column justify-content-center align-items-center'>
-          <h2>Что-то пошло не так...</h2>
-          <h4>Попробуйте обновить страницу</h4>
-          <button
-            className='btn btn-outline-blue-grey'
-            type='button'
-            onClick={() => handleReload()}
-          >
-            Обновить
-          </button>
-        </div>
-      )}
-
-      {basicGroupsData.loaded && (
-        <Fragment>
-          <div className='main-body__users'>
-            <div className='cards'>
-              <div className='cards__header table-title'>
-                <div className='cards__header-title admin-text-light'>
-                  Управление <strong>группами</strong>
-                </div>
-                <div>
-                  <button
-                    className='btn btn-success'
-                    onClick={() => setAddActive(true)}
-                  >
-                    <i className='material-icons'>&#xE147;</i>{' '}
-                    <span>Добавить базовую группу</span>
-                  </button>
-                </div>
+      <Fragment>
+        <div className='main-body__users'>
+          <div className='cards'>
+            <div className='cards__header table-title'>
+              <div className='cards__header-title admin-text-light'>
+                Управление <strong>группами</strong>
               </div>
+              <div>
+                <button
+                  className='btn btn-success'
+                  onClick={() => setAddActive(true)}
+                >
+                  <i className='material-icons'>&#xE147;</i>{' '}
+                  <span>Добавить базовую группу</span>
+                </button>
+              </div>
+            </div>
 
+            {basicGroupsData.pending && (
+              <div className='w-100 h-50 d-flex justify-content-center align-items-center my-5'>
+                <MDBSpinner big />
+              </div>
+            )}
+
+            {basicGroupsData.error && (
+              <div className='w-100 h-50 d-flex flex-column justify-content-center align-items-center my-5'>
+                <h2>Нет ни одной базовой группы</h2>
+                <h4>Добавьте базовую группу, или обновите страницу</h4>
+                <button
+                  className='btn btn-outline-blue-grey'
+                  type='button'
+                  onClick={() => handleReload()}
+                >
+                  Обновить
+                </button>
+              </div>
+            )}
+            {basicGroupsData.loaded && (
               <div className='cards'>
                 <table className='table table-striped table-hover'>
                   <thead>
@@ -385,7 +384,7 @@ const Groups = ({
                     </tr>
                   </thead>
                   <tbody>
-                    {basicGroupsList.length > 1 &&
+                    {basicGroupsList.length > 0 &&
                       basicGroupsList.map(item => (
                         <GroupTableRow
                           key={item.id}
@@ -399,10 +398,10 @@ const Groups = ({
                   </tbody>
                 </table>
               </div>
-            </div>
+            )}
           </div>
-        </Fragment>
-      )}
+        </div>
+      </Fragment>
     </Fragment>
   )
 }

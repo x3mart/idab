@@ -1,0 +1,22 @@
+.event-content {
+    display: flex;
+    flex-direction: column;
+}
+.event-content-text {
+    padding: 10px 0;
+}
+.event-content-teacher {
+    display: block;
+    font-size: 12px;
+    font-style: italic;
+}
+.event-content-row {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    
+}
+.event-content-row-room, .event-content-row-checkpoint {
+    font-size: 8px;
+}
