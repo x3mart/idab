@@ -245,16 +245,11 @@ export const update_attendance =
         config
       )
 
-      // console.log(res.data)
-
-      const data = {
-        ...obj,
-        student: student_id,
-      }
+      const res = { ...obj, student: student_id }
 
       dispatch({
         type: UPDATE_ATTENDANCE_SUCCESS,
-        payload: res.data,
+        payload: res,
       })
     } catch (err) {
       dispatch({

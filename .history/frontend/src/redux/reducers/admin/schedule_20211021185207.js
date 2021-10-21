@@ -62,16 +62,8 @@ export default function (state = initialState, action) {
     case UPDATE_ATTENDANCE_SUCCESS:
       return {
         ...state,
-        schedule: payload,
-        // schedule: state.schedule.map(event => {
-        //   if(event.id == payload.schedule){
-        //     payload.attendance
-        //       ? event.attendance.push(payload.student)
-        //       : event.attendance.filter(f => f != payload.student)
-        //       return event
-        //     } else return event
-        // }
-        // ),
+        schedule: pa
+        ),
       }
     case GET_SCHEDULE_FAIL:
     case SET_SCHEDULE_FAIL:

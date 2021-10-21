@@ -248,8 +248,9 @@ export const update_attendance =
       // console.log(res.data)
 
       const data = {
-        ...obj,
-        student: student_id,
+        schedule
+attendance
+student
       }
 
       dispatch({

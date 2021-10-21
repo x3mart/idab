@@ -130,11 +130,11 @@ const Admittance = ({
   const handleUpdateAttendance = (student_id, schedule_id, bool) => {
     setButtonDisabled(true)
 
-    setTimeout(() => setButtonDisabled(false), 1000)
+    let timer = setTimeout(() => setButtonDisabled(false), 1500)
 
     let obj = { schedule: schedule_id, attendance: !bool }
     update_attendance(student_id, obj)
-    // load_schedule()
+    load_schedule()
     
   }
 
@@ -254,7 +254,7 @@ const Admittance = ({
                                       )
                                         ? 'check-circle text-success'
                                         : 'times-circle text-danger'
-                                    } ${buttonDisabled ? 'button-disabled' : ''}`}
+                                    }`}
                                   ></i>
                                 </td>
                               ))}

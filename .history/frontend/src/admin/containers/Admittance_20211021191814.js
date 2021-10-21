@@ -130,11 +130,11 @@ const Admittance = ({
   const handleUpdateAttendance = (student_id, schedule_id, bool) => {
     setButtonDisabled(true)
 
-    setTimeout(() => setButtonDisabled(false), 1000)
+    let timer = setTimeout(() => setButtonDisabled(false), 1500)
 
     let obj = { schedule: schedule_id, attendance: !bool }
     update_attendance(student_id, obj)
-    // load_schedule()
+    load_schedule()
     
   }
 
@@ -240,7 +240,7 @@ const Admittance = ({
                               data.map(event => (
                                 <td key={event.id}>
                                   <i
-                                    style={{ cursor: 'pointer' }}
+                                  style={{cursor:'pointer', pointerEvents: `${disabledButton}`}}
                                     onClick={() =>
                                       handleUpdateAttendance(
                                         item.id,
@@ -249,12 +249,10 @@ const Admittance = ({
                                       )
                                     }
                                     className={`far fa-${
-                                      event.visited_students.includes(
-                                        item.id
-                                      )
+                                      event.visited_students.includes(item.id)
                                         ? 'check-circle text-success'
                                         : 'times-circle text-danger'
-                                    } ${buttonDisabled ? 'button-disabled' : ''}`}
+                                    }`}
                                   ></i>
                                 </td>
                               ))}

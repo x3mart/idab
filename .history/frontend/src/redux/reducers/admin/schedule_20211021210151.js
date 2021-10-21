@@ -62,7 +62,7 @@ export default function (state = initialState, action) {
     case UPDATE_ATTENDANCE_SUCCESS:
       return {
         ...state,
-        schedule: payload,
+        // schedule: payload,
         // schedule: state.schedule.map(event => {
         //   if(event.id == payload.schedule){
         //     payload.attendance

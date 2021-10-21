@@ -254,7 +254,7 @@ export const update_attendance =
 
       dispatch({
         type: UPDATE_ATTENDANCE_SUCCESS,
-        payload: res.data,
+        payload: data,
       })
     } catch (err) {
       dispatch({
