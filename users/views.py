@@ -1,6 +1,6 @@
 from rest_framework.response import Response
-
 from schedule.models import Schedule
+from schedule.serializers import ScheduleAttendanceSerializer
 from .models import Student, Teacher
 from programs.models import TrainingGroup
 from .serializers import LkStudentSerializer, LkTeacherSerializer
@@ -10,6 +10,7 @@ from rest_framework import serializers
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from rest_framework_simplejwt.views import TokenObtainPairView
 from rest_framework.decorators import action
+from datetime import datetime, timedelta, date
 
 
 class LkUserPermission(BasePermission):
@@ -48,7 +49,16 @@ class LkStudentViewSet(viewsets.ModelViewSet):
             schedule.visited_students.add(student)
         else:
             schedule.visited_students.remove(student)
-        return Response('Ok', status=200)
+        month_ago = date.today() - timedelta(days=30)
+        schedule = Schedule.objects.filter(start_date__date__gte=month_ago).filter(start_date__date__lte=date.today())
+        user = self.request.user
+        if user.is_teacher:
+            schedule = schedule.filter(teacher__pk=user.id)
+        if user.is_student:
+            user = Student.objects.filter(pk=user.id)
+            user.training_groups =user.values_list('training_group__id', flat=True)
+            schedule  = schedule.filter(training_group__in=user.training_groups)
+        return Response(ScheduleAttendanceSerializer(schedule, many=True).data, status=200)
 
 
 class LkTeacherViewSet(viewsets.ModelViewSet):
