@@ -1,8 +1,8 @@
 import React from "react";
 
-const SmallCard = ({iconBG, icon, title, titleStrong, subtitle}) => {
+const SmallCard = ({iconBG, icon, title, titleStrong, subtitle, cName}) => {
   return (
-    <div className="overviewCard">
+    <div className={`overviewCard${cName ? ' ' + cName : ''}`}>
       <div className={`overviewCard-icon overviewCard-icon--${iconBG}`}>
         <i className={`fas fa-${icon}`}/>
       </div>

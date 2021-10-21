@@ -57,6 +57,40 @@ export const get_all_students = () => async dispatch => {
     })
   }
 }
+export const get_student = id => async dispatch => {
+  if (localStorage.getItem('access')) {
+    const config = {
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `JWT ${localStorage.getItem('access')}`,
+        Accept: 'application/json',
+      },
+    }
+
+    try {
+      // const res = await axios.get(`${process.env.REACT_APP_API_URL}/api/lk/st/`, config);
+      const res = await axios.get(
+        `${process.env.REACT_APP_API_URL}/api/lk/students/`,
+        config
+      )
+      const data = {
+        students_list: res.data,
+      }
+      dispatch({
+        type: GET_ALL_STUDENTS_LIST_SUCCESS,
+        payload: data,
+      })
+    } catch (err) {
+      dispatch({
+        type: GET_ALL_STUDENTS_LIST_FAIL,
+      })
+    }
+  } else {
+    dispatch({
+      type: GET_ALL_STUDENTS_LIST_FAIL,
+    })
+  }
+}
 
 export const add_student = student => async dispatch => {
   const { name, email, phone, training_group } = student
@@ -78,14 +112,16 @@ export const add_student = student => async dispatch => {
       config
     )
     const student = res.data
-
+    const status = res.status
+    
     dispatch({
       type: STUDENT_ADD_SUCCESS,
-      payload: student,
+      payload: { student: student, status: status },
     })
   } catch (err) {
     dispatch({
       type: STUDENT_ADD_FAIL,
+      payload: err.response.data.detail,
     })
   }
 }
@@ -233,10 +269,9 @@ export const load_groups = id => async dispatch => {
   }
 }
 
-export const sort_students = id => dispatch => {
-  
+export const sort_students = name => dispatch => {
   dispatch({
-      type: SORT_STUDENTS_SUCCESS,
-      payload: id,
-    })
+    type: SORT_STUDENTS_SUCCESS,
+    payload: name,
+  })
 }

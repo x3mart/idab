@@ -117,7 +117,6 @@ const AdminPrograms = ({
       ? { image: categoryNewImage, ...category }
       : category
 
-    console.log(category)
     update_lk_category(category)
     setUpdateId(null)
     setUpdateActive(false)

@@ -4,7 +4,7 @@ import { CKEditor } from '@ckeditor/ckeditor5-react'
 import ClassicEditor from '@ckeditor/ckeditor5-build-classic'
 import { isNotEmptyObject } from '../../functions'
 
-const DeleteModal = ({ id, type, handleDelete, closeDelete }) => {
+const DeleteModal = ({ id, type, handleDelete, closeDelete, name }) => {
 
   const handleAction = () => {
     handleDelete(id, type)
@@ -17,9 +17,11 @@ const DeleteModal = ({ id, type, handleDelete, closeDelete }) => {
           <div className='modal-content'>
             <div className='modal-header'>
               <h4 className='modal-title'>
-                {`Удаление ${
-                  type === 'программа' ? 'программы' : 'специализации'
-                }`}
+                {name
+                  ? name
+                  : `Удаление ${
+                      type === 'программа' ? 'программы' : 'специализации'
+                    }`}
               </h4>
               <button
                 type='button'

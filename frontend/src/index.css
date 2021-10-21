@@ -543,3 +543,62 @@ a {
 .input-white-text .form-control {
     color: #fff;
 }
+
+/* .scheduler_default_corner_inner {
+    width: 79px!important;
+    z-index: 1;
+    background: rgb(243, 243, 243)!important;
+} */
+
+.height-auto {
+    height: auto!important;
+}
+
+.table-scroll {
+	position:relative;
+	width:100%;
+	margin:auto;
+	overflow:hidden;
+}
+.table-wrap {
+	width:100%;
+	overflow:auto;
+  
+}
+.table-scroll table {
+	width:100%;
+	margin:auto;
+	border-collapse:separate;
+	border-spacing:0;
+}
+.table-scroll th, .table-scroll td {
+	padding:5px 10px;
+	border-bottom:1px solid #dee2e6;
+	background:#fff;
+	white-space:nowrap;
+	vertical-align:top;
+}
+.table-scroll thead, .table-scroll tfoot {
+	background:#f9f9f9;
+}
+.clone {
+	position:absolute;
+	top:0;
+	left:0;
+	pointer-events:none;
+}
+.clone th, .clone td {
+	visibility:hidden
+}
+.clone td, .clone th {
+	border-color:transparent
+}
+.clone tbody th {
+	visibility:visible;
+}
+.clone .fixed-side {
+	border-bottom:1px solid #dee2e6;
+	background:#fff;
+	visibility:visible;
+}
+.clone thead, .clone tfoot{background:transparent;}

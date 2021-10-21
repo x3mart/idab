@@ -25,6 +25,8 @@ const initialState = {
   specialities: [],
   programs: [],
   groups: [],
+  error: '',
+  status: null,
 }
 
 export default function (state = initialState, action) {
@@ -40,8 +42,14 @@ export default function (state = initialState, action) {
     case STUDENT_ADD_SUCCESS:
       return {
         ...state,
-        students_list: [payload, ...state.students_list],
-        sorted_list: [payload, ...state.sorted_list],
+        students_list: [payload.student, ...state.students_list],
+        sorted_list: [payload.student, ...state.sorted_list],
+        status: payload.status
+      }
+    case STUDENT_ADD_FAIL:
+      return {
+        ...state,
+        error: payload,
       }
     case STUDENT_UPDATE_SUCCESS:
       return {
@@ -67,19 +75,16 @@ export default function (state = initialState, action) {
       }
     case SORT_STUDENTS_SUCCESS:
       const getSort = payload => {
-          if(state.sort_value == null && !payload){
-            console.log(1)
-            return state.students_list
-          } else if (payload && payload == state.sort_value) {
-            console.log(2)
-            return state.sorted_list
-          } else if (payload && payload != state.sort_value) {
-            console.log(3)
-            return state.students_list.filter(item =>
-              item.training_group.some(group => group.id == payload)
-            )
-          }
+        if (state.sort_value == null && !payload) {
+          return state.students_list
+        } else if (payload && payload == state.sort_value) {
+          return state.sorted_list
+        } else if (payload && payload != state.sort_value) {
+          return state.students_list.filter(item =>
+            item.training_group.some(group => group.basic == payload)
+          )
         }
+      }
       return {
         ...state,
         sort_value: payload,
@@ -88,7 +93,6 @@ export default function (state = initialState, action) {
 
     //     item.training_group.map(group => {
     //     if(group.length > 0){
-    //       console.log(group)
     //       if(group.id === payload) {
     //         return item.id
     //       }
@@ -115,7 +119,6 @@ export default function (state = initialState, action) {
         groups: payload.groups,
       }
     case GET_ALL_STUDENTS_LIST_FAIL:
-    case STUDENT_ADD_FAIL:
       return {
         state,
       }

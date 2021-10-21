@@ -89,7 +89,7 @@ export const update_basic_group = basic_group => async dispatch => {
     },
   }
 
-  const { name, category } = basic_group
+  const { id, name, category } = basic_group
 
   const form_data = new FormData()
   form_data.append('name', name)
@@ -112,7 +112,7 @@ export const update_basic_group = basic_group => async dispatch => {
     })
   }
 }
-export const delete_basic_group = (id) => async dispatch => {
+export const delete_basic_group = id => async dispatch => {
   const config = {
     headers: {
       'Content-Type': 'application/json',
@@ -176,12 +176,12 @@ export const add_group = group => async dispatch => {
     },
   }
 
-  const { start_date, graduation_date, basic_id } = group
+  const { start_date, graduation_date, basic } = group
 
   const form_data = new FormData()
   form_data.append('start_date', start_date)
   form_data.append('graduation_date', graduation_date)
-  form_data.append('basic', basic_id)
+  form_data.append('basic', basic)
 
   try {
     const res = await axios.post(

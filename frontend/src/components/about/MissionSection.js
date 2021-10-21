@@ -60,11 +60,6 @@ const MissionSection = ({page}) => {
     }
   })
 
-  console.log('subsections: ', subsections)
-  console.log('image: ', image)
-  console.log('text: ', text)
-  console.log('sub1: ', sub1)
-  console.log('sub2: ', sub2)
 
   return (
     <React.Fragment>
