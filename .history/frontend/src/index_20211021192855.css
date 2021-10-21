@@ -605,6 +605,6 @@ a {
 
 
 .button-disabled {
-    color: #7099AD!important;
+    color: #7099AD!;
     pointer-events: none;
 }

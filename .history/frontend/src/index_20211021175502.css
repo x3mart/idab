@@ -602,9 +602,3 @@ a {
 	visibility:visible;
 }
 .clone thead, .clone tfoot{background:transparent;}
-
-
-.button-disabled {
-    color: #7099AD!important;
-    pointer-events: none;
-}

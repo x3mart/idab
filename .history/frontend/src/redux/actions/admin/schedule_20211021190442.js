@@ -247,10 +247,7 @@ export const update_attendance =
 
       // console.log(res.data)
 
-      const data = {
-        ...obj,
-        student: student_id,
-      }
+      
 
       dispatch({
         type: UPDATE_ATTENDANCE_SUCCESS,
