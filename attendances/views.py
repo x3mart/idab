@@ -20,7 +20,7 @@ def export_attendance_xls(request):
     if user.is_teacher:
         training_groups = training_groups.filter(schedule__teacher=user)
     for training_group in training_groups:   
-        ws = wb.add_sheet(f'{training_group.basic.name} {training_group.start_date:%Y-%m-%d}   {training_group.graduation_date:%Y-%m-%d}')
+        ws = wb.add_sheet((f'{training_group.basic.name} {training_group.start_date:%Y-%m-%d}   {training_group.graduation_date:%Y-%m-%d}').replace(',', ''))
         row_num = 0
         font_style = xlwt.easyxf('font: colour black, bold True; align: wrap on, vert centre, horiz center;')
         schedules = Schedule.objects.filter(training_group=training_group).order_by('-start_date')
