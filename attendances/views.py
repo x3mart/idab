@@ -20,6 +20,10 @@ class ExportAttendanceXls(APIView):
             training_groups = training_groups.filter(students__in=[user,])
         if user.is_teacher:
             training_groups = training_groups.filter(schedule__teacher=user)
+        if not training_groups.exists():
+            ws = wb.add_sheet('-')
+            wb.save(response)
+            return response
         for training_group in training_groups:   
             ws = wb.add_sheet((f'{training_group.basic.name} {training_group.start_date:%Y-%m} {training_group.graduation_date:%Y-%m}').replace(',', ''))
             row_num = 0
@@ -30,7 +34,10 @@ class ExportAttendanceXls(APIView):
                 columns.append(f'{schedule.course.name} {schedule.start_date:%D}')
             for col_num in range(len(columns)):
                 ws.write(row_num, col_num, columns[col_num], font_style)
-            rows = Student.objects.filter(training_group=training_group)
+            if user.is_student:
+                rows = [user,]
+            else:
+                rows = Student.objects.filter(training_group=training_group)
             for row in rows:
                 row_num += 1
                 for col_num in range(len(columns)):
