@@ -17,7 +17,7 @@ class ExportAttendanceXls(APIView):
         training_groups = TrainingGroup.objects.all()
         wb = xlwt.Workbook(encoding='utf-8')
         if user.is_student:
-            training_groups = training_groups.filter(students_in=[user,])
+            training_groups = training_groups.filter(students__in=[user,])
         if user.is_teacher:
             training_groups = training_groups.filter(schedule__teacher=user)
         for training_group in training_groups:   
