@@ -1,8 +1,8 @@
 from django.conf.urls import url
 from django.urls import path
 
-from .views import export_attendance_xls
+from .views import ExportAttendanceXls
 
 urlpatterns = [
-    url(r'^export/xls/$', export_attendance_xls, name='export_users_xls'),
+    path('export/xls/', ExportAttendanceXls.as_view(), name='export_users_xls'),
 ]
