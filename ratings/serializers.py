@@ -28,7 +28,7 @@ class StudentRatingSerializer(serializers.ModelSerializer):
     training_group = serializers.CharField(read_only=True, source='training_group.basic.name')
     class Meta:
         model = Student
-        fields = ['id', 'name', 'training_group', 'schedule_count', 'attendace_count', 'attendace_rating', 'checkpoints_count', 'completed_checkpoints', 'completed_checkpoints_marks_avg', 'checkpoints_rating', 'tasks_count', 'solutions_count', 'solutions_mark_avg', 'tasks_rating',]
+        fields = ['id', 'name', 'training_group', 'schedule_count', 'attendace_count', 'attendace_rating', 'checkpoints_count', 'completed_checkpoints', 'completed_checkpoints_marks_avg', 'checkpoints_rating', 'tasks_count', 'solutions_count', 'solutions_mark_avg', 'tasks_rating', 'training_group']
     
     def get_schedule_count(self, obj):
         return obj.training_group.first().schedule_count
