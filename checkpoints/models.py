@@ -30,7 +30,7 @@ class CheckpointMark(models.Model):
     mark = models.PositiveIntegerField(verbose_name='Баллы')
 
     def __str__(self):
-        return self.student.name + ' - ' + str(self.value)
+        return self.student.name + ' - ' + str(self.mark)
 
     class Meta:
         verbose_name = 'Оценка КТ студента'

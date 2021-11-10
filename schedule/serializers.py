@@ -41,7 +41,7 @@ class LkScheduleSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError({
                 'teacher': 'Обязательное поле!'
             })
-        if course is not None:
+        if course:
             course = Course.objects.get(pk=course)
         else:
             raise serializers.ValidationError({
@@ -51,7 +51,7 @@ class LkScheduleSerializer(serializers.ModelSerializer):
         schedule.training_group=training_group
         schedule.teacher=teacher
         schedule.course=course
-        if checkpoint is not None:
+        if checkpoint:
             basic = checkpoint['basic']
             decription = checkpoint['description']
             checkpoint = Checkpoint.objects.create(basic=basic, decription=decription)
@@ -64,26 +64,18 @@ class LkScheduleSerializer(serializers.ModelSerializer):
         training_group = request.data.get('training_group')
         teacher = request.data.get('teacher')
         checkpoint = request.data.get('checkpoint')
-        if training_group is not None:
+        if training_group:
             training_group = TrainingGroup.objects.get(pk=training_group)
             validated_data['training_groups']=training_group
-        if teacher is not None:
+        if teacher:
             teacher = Teacher.objects.get(pk=teacher)
             validated_data['teacher']=teacher
-        if checkpoint is not None:
-            name = checkpoint['name']
-            decription = checkpoint.get('description')
-            # try:
-            #     basic = CheckpointsName.objects.get(name=name)
-            #     print(basic)
-            #     # checkpoint = Checkpoint.objects.get(schedule=instance)
-            #     # checkpoint.basic = basic
-            #     # checkpoint.basic = decription
-            #     # checkpoint.save()
-            #     validated_data.pop('checkpoint')
-            # except:
-            #     checkpoint = Checkpoint.objects.create(basic=basic, decription=decription)
-            #     validated_data['checkpoint']=checkpoint
+        if checkpoint:
+            pass
+            # basic = checkpoint['basic']
+            # decription = checkpoint.get('description')
+            # checkpoint = Checkpoint.objects.create(basic=basic, decription=decription)
+            # validated_data['checkpoint']=checkpoint
         schedule = super().update(instance, validated_data)
         return schedule
 
