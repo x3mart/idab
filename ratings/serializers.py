@@ -25,10 +25,13 @@ class StudentRatingSerializer(serializers.ModelSerializer):
     solutions_mark_avg = serializers.IntegerField()
     tasks_rating = serializers.IntegerField()
     # chekpoint_marks = CheckpointMarkSerializer(read_only=True, many=True)
-    training_group = serializers.CharField(read_only=True, source='training_group.basic.name')
+    training_group = serializers.SerializerMethodField()
     class Meta:
         model = Student
         fields = ['id', 'name', 'training_group', 'schedule_count', 'attendace_count', 'attendace_rating', 'checkpoints_count', 'completed_checkpoints', 'completed_checkpoints_marks_avg', 'checkpoints_rating', 'tasks_count', 'solutions_count', 'solutions_mark_avg', 'tasks_rating', 'training_group']
+    
+    def get_training_group(self, obj):
+        return obj.training_group.first().basic.name
     
     def get_schedule_count(self, obj):
         return obj.training_group.first().schedule_count

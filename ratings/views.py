@@ -27,5 +27,3 @@ class RatingView(APIView):
         prefetched_training_group = Prefetch('training_group', training_group)
         students = Student.objects.prefetch_related(prefetched_training_group).prefetch_related('chekpoint_marks').annotate(attendace_count=Count('attendances'), checkpoints_sum=Sum('chekpoint_marks__mark'), completed_checkpoints=Count('chekpoint_marks'), completed_checkpoints_marks_avg=Avg('chekpoint_marks__mark')).annotate(tasks_count=Count('tasks'), solutions_mark_avg=Avg('solutions__mark'), solutions_count=Count('solutions'), solutions_sum=Sum('solutions__mark')).annotate(tasks_rating=Case(When(tasks_count__gt=0, then=F('solutions_sum')/F('tasks_count')), default=0))
         return Response(StudentRatingSerializer(students, many=True).data, status=200)
-
-        
