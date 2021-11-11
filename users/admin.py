@@ -39,7 +39,7 @@ class MyUserAdmin(UserAdmin):
             'classes': ('wide',),
             'fields': ('email', 'name', 'password1', 'password2', 'avatar', 'is_superuser', 'is_staff', 'is_active'),
         }),
-    list_display = ('name', 'email', 'is_superuser', 'is_staff', 'is_active',)
+    list_display = ('name', 'email', 'is_superuser', 'is_staff', 'is_teacher', 'is_student', 'is_active',)
 
 
 class CourseInline(admin.TabularInline):
@@ -52,6 +52,7 @@ class TeacherCreationForm(UserCreationForm):
     class Meta:
         model = Teacher
         fields = ('email', 'name', 'is_active', 'short_position', 'full_position', 'description', 'link', 'avatar')
+    
 
 class TeacherAdmin(UserAdmin):
     add_form = TeacherCreationForm
@@ -63,6 +64,11 @@ class TeacherAdmin(UserAdmin):
     inlines = [
         CourseInline,
     ]
+
+    def save_model(self, request, obj, form, change):
+        if not obj.is_teacher:
+            obj.is_teacher = True
+        return super().save_model(request, obj, form, change)
 
 
 class ManagerAdmin(admin.ModelAdmin):

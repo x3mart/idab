@@ -17,8 +17,8 @@ class Rating(models.Model):
     tasks_rating = models.IntegerField(default=0)
 
     class Meta:
-        verbose_name='Райтинг'
-        verbose_name_plural='Райтинги'
+        verbose_name='Рейтинг'
+        verbose_name_plural='Рейтинги'
     
     def __str__(self):
         return self.student.name
