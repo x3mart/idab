@@ -9,6 +9,7 @@ import xlwt
 from django.utils import timezone
 from rest_framework.views import APIView
 from django.db.models import Count, Case, When, IntegerField
+from ratings.models import Rating
 from ratings.serializers import StudentRatingSerializer
 from schedule.models import Schedule
 from programs.models import TrainingGroup
@@ -21,9 +22,5 @@ class RatingView(APIView):
         user  = request.user
         if user.is_anonymous:
             return HttpResponseForbidden()
-        schedule = Schedule.objects.prefetch_related('checkpoint')
-        prefetched_schedule = Prefetch('schedule', schedule)
-        training_group = TrainingGroup.objects.prefetch_related(prefetched_schedule).prefetch_related('basic').annotate(schedule_count=Count('schedule', filter=Q(schedule__start_date__lte=timezone.now())), checkpoints_count=Count('schedule', filter=(Q(schedule__start_date__lte=timezone.now()) & ~Q(schedule__checkpoint__isnull=True))))
-        prefetched_training_group = Prefetch('training_group', training_group)
-        students = Student.objects.prefetch_related(prefetched_training_group).prefetch_related('chekpoint_marks').annotate(attendace_count=Count('attendances'), checkpoints_sum=Sum('chekpoint_marks__mark'), completed_checkpoints=Count('chekpoint_marks'), completed_checkpoints_marks_avg=Avg('chekpoint_marks__mark')).annotate(tasks_count=Count('tasks'), solutions_mark_avg=Avg('solutions__mark'), solutions_count=Count('solutions'), solutions_sum=Sum('solutions__mark')).annotate(tasks_rating=Case(When(tasks_count__gt=0, then=F('solutions_sum')/F('tasks_count')), default=0))
-        return Response(StudentRatingSerializer(students, many=True).data, status=200)
+        rating = Rating.objects.all()
+        return Response(StudentRatingSerializer(rating, many=True).data, status=200)

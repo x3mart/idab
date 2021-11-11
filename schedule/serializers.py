@@ -98,10 +98,10 @@ class ScheduleAttendanceSerializer(serializers.ModelSerializer):
         students = request.data.get('visited_students')
         validated_data.clear()
         instance.visited_students.clear()
-        schedule = super().update(instance, validated_data)
         students = Student.objects.filter(pk__in=students)
         for student in students:
-            schedule.visited_students.add(student)
+            instance.visited_students.add(student)
+        schedule = super().update(instance, validated_data)
         return schedule
     
     def get_visited_students(self, obj):

@@ -45,7 +45,7 @@ class ExportAttendanceXls(APIView):
                         value = row.name
                         font_style = xlwt.easyxf('font: colour black, bold False;')
                     else:
-                        if schedules[col_num -1].attendances.filter(student=row).exists():
+                        if row.id in schedules[col_num -1].visited_students.values_list('id', flat=True):
                             value = 'да'
                             font_style = xlwt.easyxf('font: colour green, bold False;')
                         else:

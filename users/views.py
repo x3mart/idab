@@ -34,7 +34,7 @@ class LkStudentViewSet(viewsets.ModelViewSet):
 
     def get_queryset(self):
         training_group = self.request.query_params.get('training_group')
-        if self.action == 'list' and training_group is not None:
+        if self.action == 'list' and training_group:
             return Student.objects.filter(training_group=training_group)
         return super().get_queryset()
     
