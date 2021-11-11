@@ -2,7 +2,7 @@ from django.db import models
 
 # Create your models here.
 class Rating(models.Model):
-    student = models.ForeignKey('users.Student', on_delete=models.CASCADE, related_name='rating', verbose_name='Студент')
+    student = models.OneToOneField('users.Student', on_delete=models.CASCADE, related_name='rating', verbose_name='Студент')
     schedule_count = models.IntegerField(default=0)
     attendances_count = models.IntegerField(default=0)
     attendances_rating_prc = models.IntegerField(default=0)

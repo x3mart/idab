@@ -28,14 +28,14 @@ class LkUserPermission(BasePermission):
     
     
 class LkStudentViewSet(viewsets.ModelViewSet):
-    queryset = Student.objects.all()
+    queryset = Student.objects.prefetch_related('rating').all()
     serializer_class = LkStudentSerializer
     permission_classes = [LkUserPermission]
 
     def get_queryset(self):
         training_group = self.request.query_params.get('training_group')
         if self.action == 'list' and training_group:
-            return Student.objects.filter(training_group=training_group)
+            return Student.objects.filter(training_group=training_group).prefetch_related('rating')
         return super().get_queryset()
     
     @action(["patch"], detail=True)
