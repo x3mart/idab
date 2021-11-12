@@ -23,14 +23,14 @@ class ExportRatingXls(APIView):
         response = HttpResponse(content_type='application/ms-excel')
         response['Content-Disposition'] = 'attachment; filename="rating.xls"'
         user = request.user
-        # if request.user.is_anonymous:
-        #     return HttpResponseForbidden()
+        if request.user.is_anonymous:
+            return HttpResponseForbidden()
         training_groups = TrainingGroup.objects.all()
         wb = xlwt.Workbook(encoding='utf-8')
-        # if user.is_student:
-        #     training_groups = training_groups.filter(students__in=[user,])
-        # if user.is_teacher:
-        #     training_groups = training_groups.filter(schedule__teacher=user)
+        if user.is_student:
+            training_groups = training_groups.filter(students__in=[user,])
+        if user.is_teacher:
+            training_groups = training_groups.filter(schedule__teacher=user)
         if not training_groups.exists():
             ws = wb.add_sheet('-')
             wb.save(response)
@@ -42,10 +42,10 @@ class ExportRatingXls(APIView):
             columns = ['Слушатель', 'Общий рейтинг', 'Прошло занятий', 'Посещенные занятия', 'Посещаемость в %', 'Рейтинг посещаемости', 'Прошло контрольных точек (КТ)', 'Сдано контрольных точек', 'Средний бал за сданные КТ', 'Рейтинг по КТ', 'Всего заданий', 'Выполненных заданий', 'Средний бал за выполненные задания', 'Рейтинг по заданиям'] 
             for col_num in range(len(columns)):
                 ws.write(row_num, col_num, columns[col_num], font_style)
-            # if user.is_student:
-            #     rows = [user,]
-            # else:
-            rows = Student.objects.filter(training_group=training_group).prefetch_related('rating')
+            if user.is_student:
+                rows = [user,]
+            else:
+                rows = Student.objects.filter(training_group=training_group).prefetch_related('rating')
             for row in rows:
                 row_num += 1
                 font_style = xlwt.easyxf('font: colour black, bold False;')
