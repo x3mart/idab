@@ -23,13 +23,13 @@ def get_schedule_rating(rating_prc):
 @receiver(post_save, sender=Student)
 def user_post_save(instance, created, **kwargs):
     if created:
-        instance.rating.create()
+        Rating.objects.create(student=instance)
 
 @receiver(post_save, sender=CheckpointMark)
 def checkpoint_mark_post_save(instance, created, **kwargs):
     student = instance.student
-    if not student.rating.exists():
-        rating = student.rating.create()
+    if not hasattr(student, 'rating'):
+        rating = Rating.objects.create(student=student)
     else:
         rating = Rating.objects.get(student=student)
     schedules = Schedule.objects.filter(training_group=student.training_group.first()).filter(start_date__lt=timezone.now())
@@ -51,8 +51,8 @@ def checkpoint_mark_post_save(instance, created, **kwargs):
 @receiver(post_save, sender=Task)
 def task_post_save(instance, created, **kwargs):
     student = instance.student
-    if not student.rating.exists():
-        rating = student.rating.create()
+    if not hasattr(student, 'rating'):
+        rating = Rating.objects.create(student=student)
     else:
         rating = Rating.objects.get(student=student)
     tasks_count = Task.objects.filter(student=student).count()
@@ -73,17 +73,14 @@ def task_post_save(instance, created, **kwargs):
 @receiver(post_save, sender=Schedule)
 def attendance_post_save(instance, created, **kwargs):
     training_group = instance.training_group
-    print(instance.visited_students.values_list('id', flat=True))
     schedule_count = Schedule.objects.filter(training_group=training_group).filter(start_date__lt=timezone.now()).count()
     students = Student.objects.filter(training_group=training_group).prefetch_related('attendances')
     for student in students:
-        if not student.rating.exists():
-            rating = student.rating.create()
+        if not hasattr(student, 'rating'):
+            rating = Rating.objects.create(student=student)
         else:
             rating = Rating.objects.get(student=student)
         attendances_count = Schedule.objects.filter(visited_students=student).count()
-        print(attendances_count)
-        print(student.id)
         rating.attendances_count = attendances_count
         rating.schedule_count = schedule_count
         if schedule_count:
@@ -93,4 +90,3 @@ def attendance_post_save(instance, created, **kwargs):
         rating.attendances_rating_prc = attendances_rating_prc
         rating.attendances_rating = get_schedule_rating(attendances_rating_prc)
         rating.save()
-    print('WOW')
