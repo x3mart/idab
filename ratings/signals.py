@@ -20,18 +20,14 @@ def get_schedule_rating(rating_prc):
         return 10
     return 0
 
-@receiver(post_save, sender=Student)
-def user_post_save(instance, created, **kwargs):
-    if created:
-        Rating.objects.create(student=instance)
-
-@receiver(post_save, sender=CheckpointMark)
-def checkpoint_mark_post_save(instance, created, **kwargs):
-    student = instance.student
+def get_rating_obj(student):
     if not hasattr(student, 'rating'):
         rating = Rating.objects.create(student=student)
     else:
         rating = Rating.objects.get(student=student)
+    return rating
+
+def get_checkpoints_rating(rating, student):
     schedules = Schedule.objects.filter(training_group=student.training_group.first()).filter(start_date__lt=timezone.now())
     checkpoints = schedules.exclude(checkpoint__isnull=True)
     checkpoints_count = checkpoints.count()
@@ -46,15 +42,24 @@ def checkpoint_mark_post_save(instance, created, **kwargs):
     rating.completed_checkpoints = completed_checkpoints.count()
     rating.completed_checkpoints_marks_avg = completed_checkpoints_marks_avg
     rating.checkpoints_rating = checkpoints_rating
+    return rating
+
+@receiver(post_save, sender=Student)
+def user_post_save(instance, created, **kwargs):
+    if created:
+        Rating.objects.create(student=instance)
+
+@receiver(post_save, sender=CheckpointMark)
+def checkpoint_mark_post_save(instance, created, **kwargs):
+    student = instance.student
+    rating = get_rating_obj(student)
+    rating = get_checkpoints_rating(rating, student)
     rating.save()
 
 @receiver(post_save, sender=Task)
 def task_post_save(instance, created, **kwargs):
     student = instance.student
-    if not hasattr(student, 'rating'):
-        rating = Rating.objects.create(student=student)
-    else:
-        rating = Rating.objects.get(student=student)
+    rating = get_rating_obj(student)
     tasks_count = Task.objects.filter(student=student).count()
     solutions = Solution.objects.filter(student=student)
     solutions_count = solutions.count()
@@ -76,10 +81,9 @@ def attendance_post_save(instance, created, **kwargs):
     schedule_count = Schedule.objects.filter(training_group=training_group).filter(start_date__lt=timezone.now()).count()
     students = Student.objects.filter(training_group=training_group).prefetch_related('attendances')
     for student in students:
-        if not hasattr(student, 'rating'):
-            rating = Rating.objects.create(student=student)
-        else:
-            rating = Rating.objects.get(student=student)
+        rating = get_rating_obj(student)
+        if hasattr(instance, 'checkpoint'):
+            rating = get_checkpoints_rating(rating, student)
         attendances_count = Schedule.objects.filter(visited_students=student).count()
         rating.attendances_count = attendances_count
         rating.schedule_count = schedule_count

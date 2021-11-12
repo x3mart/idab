@@ -13,6 +13,7 @@ class TrainingGroupSerializer(serializers.ModelSerializer):
         fields = ['id', 'schedule_count']
 
 class StudentRatingSerializer(serializers.ModelSerializer):
+    total_rating = serializers.IntegerField(read_only=True)
     class Meta:
         model = Rating
         fields = '__all__'

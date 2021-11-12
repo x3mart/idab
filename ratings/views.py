@@ -51,8 +51,8 @@ class ExportRatingXls(APIView):
                 font_style = xlwt.easyxf('font: colour black, bold False;')
                 ws.write(row_num, 0, row.name, xlwt.easyxf('font: colour black, bold True;'))
                 if hasattr(row, 'rating'):
-                    total_rating = row.rating.tasks_rating + row.rating.attendances_rating + row.rating.checkpoints_rating
-                    ws.write(row_num, 1, total_rating, xlwt.easyxf('font: colour black, bold True;'))
+                    # total_rating = row.rating.tasks_rating + row.rating.attendances_rating + row.rating.checkpoints_rating
+                    ws.write(row_num, 1, row.total_rating, xlwt.easyxf('font: colour black, bold True;'))
                     ws.write(row_num, 2, row.rating.schedule_count, font_style)
                     ws.write(row_num, 3, row.rating.attendances_count, font_style)
                     ws.write(row_num, 4, row.rating.attendances_rating_prc, font_style)

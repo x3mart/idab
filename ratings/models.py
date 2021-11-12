@@ -22,3 +22,7 @@ class Rating(models.Model):
     
     def __str__(self):
         return self.student.name
+    
+    @property
+    def total_rating(self):
+        return self.tasks_rating + self.attendances_rating + self.checkpoints_rating
