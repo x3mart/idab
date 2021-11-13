@@ -71,10 +71,11 @@ class TeacherAdmin(UserAdmin):
         return super().save_model(request, obj, form, change)
 
 class StudentAdmin(admin.ModelAdmin):
-    list_display = ('name', 'email', 'is_active', 'last_login')
+    list_display = ('name', 'email', 'is_active', 'last_login', 'get_training_group')
     list_editable = ('is_active',)
     exclude = ('groups','user_permissions', 'is_superuser', 'is_student', 'is_teacher', 'password')
     readonly_fields = ('last_login',)
+    list_filter = ('training_group',)
     
 
     def has_add_permission(self, request):
@@ -82,6 +83,13 @@ class StudentAdmin(admin.ModelAdmin):
     
     def has_delete_permission(self, request, obj=None):
         return False
+
+    def get_training_group(self, instance):
+        try:
+            return instance.training_group.first()
+        except:
+            return '---'
+    get_training_group.short_description = 'Группа'
 
 
 class ManagerAdmin(admin.ModelAdmin):
