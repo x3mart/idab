@@ -32,11 +32,13 @@ def get_checkpoints_rating(rating, student):
     checkpoints = schedules.exclude(checkpoint__isnull=True)
     checkpoints_count = checkpoints.count()
     completed_checkpoints = CheckpointMark.objects.filter(student=student)
-    completed_checkpoints_marks_avg = completed_checkpoints.aggregate(Avg('mark'))['mark__avg']
-    completed_checkpoints_sum = completed_checkpoints.aggregate(Sum('mark'))['mark__sum']
-    if checkpoints_count:
+    if checkpoints_count and completed_checkpoints.exists():
+        completed_checkpoints_marks_avg = completed_checkpoints.aggregate(Avg('mark'))['mark__avg']
+        completed_checkpoints_sum = completed_checkpoints.aggregate(Sum('mark'))['mark__sum']
         checkpoints_rating = completed_checkpoints_sum/checkpoints_count
     else:
+        completed_checkpoints_marks_avg = 0
+        completed_checkpoints_sum = 0
         checkpoints_rating = 0
     rating.checkpoints_count = checkpoints_count
     rating.completed_checkpoints = completed_checkpoints.count()
