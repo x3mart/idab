@@ -59,7 +59,7 @@ class TeacherAdmin(UserAdmin):
     ordering = ('email',)
     fieldsets = ((None, {'fields':('name', 'email', 'password', 'is_active', 'is_staff', 'short_position', 'full_position', 'description', 'link', 'avatar', 'groups', 'user_permissions')}),)
     add_fieldsets = ((None, {'fields':('email', 'name', 'password1', 'password2', 'is_active', 'is_staff', 'short_position', 'full_position', 'description', 'link', 'avatar', 'groups', 'user_permissions', )}),)
-    list_display = ('name', 'email', 'is_active', 'on_site')
+    list_display = ('name', 'email', 'is_active', 'on_site', 'last_login')
     list_editable = ('is_active', 'on_site')
     inlines = [
         CourseInline,
@@ -69,6 +69,19 @@ class TeacherAdmin(UserAdmin):
         if not obj.is_teacher:
             obj.is_teacher = True
         return super().save_model(request, obj, form, change)
+
+class StudentAdmin(admin.ModelAdmin):
+    list_display = ('name', 'email', 'is_active', 'last_login')
+    list_editable = ('is_active',)
+    exclude = ('groups','user_permissions', 'is_superuser', 'is_student', 'is_teacher', 'password')
+    readonly_fields = ('last_login',)
+    
+
+    def has_add_permission(self, request):
+        return False
+    
+    def has_delete_permission(self, request, obj=None):
+        return False
 
 
 class ManagerAdmin(admin.ModelAdmin):
@@ -84,6 +97,6 @@ class ManagerAdmin(admin.ModelAdmin):
     get_is_active.short_description = 'is_active'
 
 admin.site.register(User, MyUserAdmin)
-admin.site.register(Student)
+admin.site.register(Student, StudentAdmin)
 admin.site.register(Manager, ManagerAdmin)
 admin.site.register(Teacher, TeacherAdmin)

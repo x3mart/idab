@@ -11,6 +11,15 @@ from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from rest_framework_simplejwt.views import TokenObtainPairView
 from rest_framework.decorators import action
 from datetime import datetime, timedelta, date
+from django.utils import timezone
+
+def set_last_login(request, **kwargs):
+    id = kwargs.get('pk')
+    print(request.user.id == int(id))
+    if request.user.id == int(id):
+        now = timezone.now()
+        request.user.last_login = now
+        request.user.save()
 
 
 class LkUserPermission(BasePermission):
@@ -37,6 +46,10 @@ class LkStudentViewSet(viewsets.ModelViewSet):
         if self.action == 'list' and training_group:
             return Student.objects.filter(training_group=training_group).prefetch_related('rating')
         return super().get_queryset()
+    
+    def retrieve(self, request, *args, **kwargs):
+        set_last_login(request, **kwargs)
+        return super().retrieve(request, *args, **kwargs)
     
     @action(["patch"], detail=True)
     def attendances(self, request, *args, **kwargs):
@@ -65,6 +78,10 @@ class LkTeacherViewSet(viewsets.ModelViewSet):
     queryset = Teacher.objects.all()
     serializer_class = LkTeacherSerializer
     permission_classes = [LkUserPermission]
+
+    def retrieve(self, request, *args, **kwargs):
+        set_last_login(request, **kwargs)
+        return super().retrieve(request, *args, **kwargs)
 
 
 class MyTokenObtainPairSerializer(TokenObtainPairSerializer):
