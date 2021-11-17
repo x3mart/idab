@@ -17,6 +17,7 @@ import {
   ACTIVATION_SUCCESS,
   ACTIVATION_FAIL,
   LOGOUT,
+  STATUS_RESET,
 } from '../types'
 
 export const load_user = () => async dispatch => {
@@ -319,6 +320,11 @@ export const reset_password = email => async dispatch => {
       type: PASSWORD_RESET_FAIL,
     })
   }
+}
+export const reset_status = () => dispatch => {
+ dispatch({
+   type: STATUS_RESET
+ })
 }
 
 export const reset_password_confirm =

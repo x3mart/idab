@@ -97,6 +97,11 @@ const AdminLayout = ({ children, user }) => {
                       icon='fas fa-calendar'
                       name='Расписание'
                     />
+                    <SubHeading
+                      link='/dashboard/study/admittance'
+                      icon='fas fa-calendar-check'
+                      name='Посещение занятий'
+                    />
                   </>
                 )}
                 {(user.is_superuser || user.is_staff) && (
@@ -151,11 +156,11 @@ const AdminLayout = ({ children, user }) => {
                       name='Задания'
                     />
                     <SubHeading
-                        link='/dashboard/study/admittance'
-                        icon='fas fa-calendar-check'
-                        name='Посещение занятий'
-                      />
-                      {/* <SubHeading
+                      link='/dashboard/study/admittance'
+                      icon='fas fa-calendar-check'
+                      name='Посещение занятий'
+                    />
+                    {/* <SubHeading
                         link='/dashboard/study/milestones'
                         icon='fas fa-map-signs'
                         name='Контрольные точки'

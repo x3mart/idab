@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react'
 import { connect } from 'react-redux'
+import axios from 'axios'
 import { load_user } from '../../redux/actions/auth/auth'
 import { Redirect } from 'react-router-dom'
-import Scheduler from './components/Scheduler'
+// import Scheduler from './components/Scheduler'
 import { load_groups_list } from '../../redux/actions/admin/groups'
 import {
   load_schedule,
@@ -12,6 +13,8 @@ import { MDBNav, MDBNavItem, MDBNavLink, MDBSpinner } from 'mdbreact'
 import { get_all_students } from '../../redux/actions/admin/students'
 import moment from 'moment'
 moment.locale('ru')
+
+var fileDownload = require('js-file-download')
 
 const Admittance = ({
   isAuthenticated,
@@ -154,6 +157,22 @@ const Admittance = ({
     setDownloaded(true)
   }
 
+  const handleDownloadXml = async () => {
+    const config = {
+      responseType: 'blob',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `JWT ${localStorage.getItem('access')}`,
+      },
+    }
+    const res = await axios.get(
+      `${process.env.REACT_APP_API_URL}/api/export/xls/`,
+      config
+    )
+
+    fileDownload(res.data, 'attendance.xls')
+  }
+
   return (
     <div className='main-body__users'>
       <div className='cards dx-viewport'>
@@ -161,7 +180,13 @@ const Admittance = ({
           <div className='cards__header-title admin-text-light'>
             Контроль <strong>присутствия</strong>
           </div>
-          <div></div>
+          <div
+            className='pr-2'
+            onClick={handleDownloadXml}
+            style={{ cursor: 'pointer' }}
+          >
+            <i className='fas fa-cloud-download-alt pr-2'></i>Скачать
+          </div>
         </div>
 
         {basicGroupsData.pending && (
@@ -249,12 +274,12 @@ const Admittance = ({
                                       )
                                     }
                                     className={`far fa-${
-                                      event.visited_students.includes(
-                                        item.id
-                                      )
+                                      event.visited_students.includes(item.id)
                                         ? 'check-circle text-success'
                                         : 'times-circle text-danger'
-                                    } ${buttonDisabled ? 'button-disabled' : ''}`}
+                                    } ${
+                                      buttonDisabled ? 'button-disabled' : ''
+                                    }`}
                                   ></i>
                                 </td>
                               ))}
