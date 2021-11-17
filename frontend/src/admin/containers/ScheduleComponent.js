@@ -100,7 +100,6 @@ const ScheduleComponent = ({
           <div className='cards__header-title admin-text-light'>
             Расписание <strong>занятий</strong>
           </div>
-          <div></div>
         </div>
 
         {basicGroupsData.pending && (
@@ -116,7 +115,7 @@ const ScheduleComponent = ({
             <button
               className='btn btn-outline-blue-grey'
               type='button'
-              onClick={() => handleReload()}
+              onClick={handleReload}
             >
               Обновить
             </button>

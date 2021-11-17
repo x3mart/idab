@@ -16,6 +16,7 @@ import {
   ACTIVATION_SUCCESS,
   ACTIVATION_FAIL,
   LOGOUT,
+  STATUS_RESET,
 } from '../../actions/types'
 
 const initialState = {
@@ -78,6 +79,11 @@ export default function (state = initialState, action) {
       return {
         ...state,
         status: payload,
+      }
+    case STATUS_RESET:
+      return {
+        ...state,
+        status: 0,
       }
     case USER_LOADED_FAIL:
       return {

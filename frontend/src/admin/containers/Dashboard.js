@@ -2,10 +2,8 @@ import React, { useState, useEffect, Fragment } from 'react'
 import { connect } from 'react-redux'
 import '../hocs/AdminLayout.scss'
 import { Link, Redirect } from 'react-router-dom'
-import ShowWeather from '../../components/admin/ShowWeather'
+// import ShowWeather from '../../components/admin/ShowWeather'
 import SmallCard from '../../components/admin/SmallCard'
-import Calendar from 'react-big-calendar'
-import moment from 'moment'
 import 'react-big-calendar/lib/css/react-big-calendar.css'
 import { load_user } from '../../redux/actions/auth/auth'
 import {
@@ -22,7 +20,12 @@ import { load_study_materials } from '../../redux/actions/admin/study_materials'
 import { MDBNav, MDBNavItem, MDBNavLink, MDBInput } from 'mdbreact'
 import { load_groups_list } from '../../redux/actions/admin/groups'
 
+import Chart from 'react-apexcharts'
+
 import { Line, Circle } from 'rc-progress'
+
+import axios from 'axios'
+var fileDownload = require('js-file-download')
 
 require('moment/locale/ru.js')
 
@@ -75,6 +78,90 @@ const Dashboard = ({
   const [ids, setIds] = useState([])
   const [scheduleEvent, setScheduleEvent] = useState(null)
   const [studentsAttendant, setStudentsAttendant] = useState('')
+
+  const [ratingAttendance, setRatingAttendance] = useState({
+    options: {},
+    series: [],
+    labels: [],
+    schedule_count: 0,
+    attendances_count: 0,
+    attendances_rating_prc: 0,
+    attendances_rating: 0,
+  })
+  const [ratingCheckpoints, setRatingCheckpoints] = useState({
+    options: {},
+    series: [],
+    labels: [],
+    checkpoints_count: 0,
+    completed_checkpoints: 0,
+    completed_checkpoints_marks_avg: 0,
+    checkpoints_rating: 0,
+  })
+  const [ratingTasks, setRatingTasks] = useState({
+    options: {},
+    series: [],
+    labels: [],
+    tasks_count: 0,
+    solutions_count: 0,
+    solutions_mark_avg: 0,
+    tasks_rating: 0,
+  })
+
+  useEffect(() => {
+    if (user && user.rating) {
+      if (
+        user.rating.schedule_count &&
+        user.rating.attendances_count &&
+        user.rating.attendances_rating_prc &&
+        user.rating.attendances_rating
+      ) {
+        setRatingAttendance({
+          ...ratingAttendance,
+          series: [
+            user.rating.attendances_count,
+            user.rating.schedule_count - user.rating.attendances_count,
+          ],
+          labels: ['Посещено', 'Пропущено'],
+          attendances_rating_prc: attendances_rating_prc,
+          attendances_rating: attendances_rating,
+        })
+      }
+      if (
+        user.rating.checkpoints_count &&
+        user.rating.completed_checkpoints &&
+        user.rating.completed_checkpoints_marks_avg &&
+        user.rating.checkpoints_rating
+      ) {
+        setRatingAttendance({
+          ...ratingAttendance,
+          series: [
+            user.rating.completed_checkpoints,
+            user.rating.checkpoints_count - user.rating.completed_checkpoints,
+          ],
+          labels: ['Сдано', 'Провалено'],
+          completed_checkpoints_marks_avg: completed_checkpoints_marks_avg,
+          checkpoints_rating: checkpoints_rating,
+        })
+      }
+      if (
+        user.rating.tasks_count &&
+        user.rating.solutions_count &&
+        user.rating.solutions_mark_avg &&
+        user.rating.tasks_rating
+      ) {
+        setRatingAttendance({
+          ...ratingAttendance,
+          series: [
+            user.rating.solutions_count,
+            user.rating.tasks_count - user.rating.solutions_count,
+          ],
+          labels: ['Выполнено', 'Не выполнено'],
+          solutions_mark_avg: solutions_mark_avg,
+          tasks_rating: tasks_rating,
+        })
+      }
+    }
+  })
 
   const toggle = (tab, name) => e => {
     if (activeItem !== tab) {
@@ -163,6 +250,22 @@ const Dashboard = ({
     return <Redirect to='/login' />
   }
 
+  const handleDownloadXml = async () => {
+    const config = {
+      responseType: 'blob',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `JWT ${localStorage.getItem('access')}`,
+      },
+    }
+    const res = await axios.get(
+      `${process.env.REACT_APP_API_URL}/api/export/xls/`,
+      config
+    )
+
+    fileDownload(res.data, 'attendance.xls')
+  }
+
   return (
     <>
       <div
@@ -247,6 +350,13 @@ const Dashboard = ({
                   <div className='cards__header-title admin-text-light'>
                     Прогресс <strong>обучения</strong>
                   </div>
+                  <div
+                    className='pr-2'
+                    onClick={handleDownloadXml}
+                    style={{ cursor: 'pointer' }}
+                  >
+                    <i className='fas fa-cloud-download-alt pr-2'></i>Скачать
+                  </div>
                 </div>
                 <div className='cards p-5'>
                   {/* <Circle
@@ -254,11 +364,130 @@ const Dashboard = ({
                       strokeWidth='4'
                       strokeColor='#D3D3D3'
                     /> */}
+                  {user && user.rating && (
+                    <>
+                      <div className='row'>
+                        <div className='col-4'>
+                          <Chart
+                            options={ratingAttendance.options}
+                            series={ratingAttendance.series}
+                            labels={ratingAttendance.labels}
+                            type='donut'
+                            height='380'
+                          />
+                        </div>
+                        <div
+                          className='col-8'
+                          style={{ borderBottom: '1px solid #EAEDF1' }}
+                        >
+                          <h3>Рейтинг посещаемости</h3>
+                          <div className='row'>
+                            <div className='col-6'>Всего занятий</div>
+                            <div className='col-6'>{schedule_count}</div>
+                          </div>
+                          <div className='row'>
+                            <div className='col-6'>Посещено занятий</div>
+                            <div className='col-6'>{attendances_count}</div>
+                          </div>
+                          <div className='row'>
+                            <div className='col-6'>
+                              Процент посещенных занятий
+                            </div>
+                            <div className='col-6'>
+                              {attendances_rating_prc}
+                            </div>
+                          </div>
+                          <div className='row'>
+                            <div className='col-6'>Рейтинг посещаемости</div>
+                            <div className='col-6'>{attendances_rating}</div>
+                          </div>
+                        </div>
+                      </div>
+                      <div className='row'>
+                        <div className='col-4'>
+                          <Chart
+                            options={ratingCheckpoints.options}
+                            series={ratingCheckpoints.series}
+                            labels={ratingCheckpoints.labels}
+                            type='donut'
+                            height='380'
+                          />
+                        </div>
+                        <div
+                          className='col-8'
+                          style={{ borderBottom: '1px solid #EAEDF1' }}
+                        >
+                          <h3>Рейтинг контрольных точек</h3>
+                          <div className='row'>
+                            <div className='col-6'>Всего контрольных точек</div>
+                            <div className='col-6'>{checkpoints_count}</div>
+                          </div>
+                          <div className='row'>
+                            <div className='col-6'>
+                              Контрольных точек пройдено
+                            </div>
+                            <div className='col-6'>{completed_checkpoints}</div>
+                          </div>
+                          <div className='row'>
+                            <div className='col-6'>
+                              Средний балл
+                            </div>
+                            <div className='col-6'>
+                              {completed_checkpoints_marks_avg}
+                            </div>
+                          </div>
+                          <div className='row'>
+                            <div className='col-6'>
+                              Рейтинг контрольных точек
+                            </div>
+                            <div className='col-6'>{checkpoints_rating}</div>
+                          </div>
+                        </div>
+                      </div>
+                      <div className='row'>
+                        <div className='col-4'>
+                          <Chart
+                            options={ratingTasks.options}
+                            series={ratingTasks.series}
+                            labels={ratingTasks.labels}
+                            type='donut'
+                            height='380'
+                          />
+                        </div>
+                        <div
+                          className='col-8'
+                          style={{ borderBottom: '1px solid #EAEDF1' }}
+                        >
+                          <h3>Рейтинг посещаемости</h3>
+                          <div className='row'>
+                            <div className='col-6'>Всего заданий</div>
+                            <div className='col-6'>{tasks_count}</div>
+                          </div>
+                          <div className='row'>
+                            <div className='col-6'>Заданий сдано</div>
+                            <div className='col-6'>{solutions_count}</div>
+                          </div>
+                          <div className='row'>
+                            <div className='col-6'>
+                              Средний балл
+                            </div>
+                            <div className='col-6'>
+                              {solutions_mark_avg}
+                            </div>
+                          </div>
+                          <div className='row'>
+                            <div className='col-6'>Рейтинг заданий</div>
+                            <div className='col-6'>{tasks_rating}</div>
+                          </div>
+                        </div>
+                      </div>
+                    </>
+                  )}
                   <div className='row'>
                     <div className='col-4'>
                       <Circle
                         percent={user.training_group[0].progress}
-                        strokeWidth='13'
+                        strokeWidth='8'
                         strokeColor={
                           user.training_group[0].progress < 25
                             ? '#FF0000'
