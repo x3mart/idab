@@ -258,14 +258,15 @@ a {
 
     &-avatar {
       @include profile-avatar;
-      height: 64px;
-      width: 64px;
+      height: 55px;
+      width: 55px;
       margin: 0 15px;
     }
 
     &-title {
       font-size: 17px;
       letter-spacing: 1px;
+      max-width: 150px;
     }
   }
 
