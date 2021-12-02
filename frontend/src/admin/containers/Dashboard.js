@@ -383,23 +383,29 @@ const Dashboard = ({
                           <h3>Рейтинг посещаемости</h3>
                           <div className='row'>
                             <div className='col-6'>Всего занятий</div>
-                            <div className='col-6'>{schedule_count}</div>
+                            <div className='col-6'>
+                              {ratingAttendance.schedule_count}
+                            </div>
                           </div>
                           <div className='row'>
                             <div className='col-6'>Посещено занятий</div>
-                            <div className='col-6'>{attendances_count}</div>
+                            <div className='col-6'>
+                              {ratingAttendance.attendances_count}
+                            </div>
                           </div>
                           <div className='row'>
                             <div className='col-6'>
                               Процент посещенных занятий
                             </div>
                             <div className='col-6'>
-                              {attendances_rating_prc}
+                              {ratingAttendance.attendances_rating_prc}
                             </div>
                           </div>
                           <div className='row'>
                             <div className='col-6'>Рейтинг посещаемости</div>
-                            <div className='col-6'>{attendances_rating}</div>
+                            <div className='col-6'>
+                              {ratingAttendance.attendances_rating}
+                            </div>
                           </div>
                         </div>
                       </div>
@@ -420,25 +426,33 @@ const Dashboard = ({
                           <h3>Рейтинг контрольных точек</h3>
                           <div className='row'>
                             <div className='col-6'>Всего контрольных точек</div>
-                            <div className='col-6'>{checkpoints_count}</div>
+                            <div className='col-6'>
+                              {ratingCheckpoints.checkpoints_count}
+                            </div>
                           </div>
                           <div className='row'>
                             <div className='col-6'>
                               Контрольных точек пройдено
                             </div>
-                            <div className='col-6'>{completed_checkpoints}</div>
+                            <div className='col-6'>
+                              {ratingCheckpoints.completed_checkpoints}
+                            </div>
                           </div>
                           <div className='row'>
                             <div className='col-6'>Средний балл</div>
                             <div className='col-6'>
-                              {completed_checkpoints_marks_avg}
+                              {
+                                ratingCheckpoints.completed_checkpoints_marks_avg
+                              }
                             </div>
                           </div>
                           <div className='row'>
                             <div className='col-6'>
                               Рейтинг контрольных точек
                             </div>
-                            <div className='col-6'>{checkpoints_rating}</div>
+                            <div className='col-6'>
+                              {ratingCheckpoints.checkpoints_rating}
+                            </div>
                           </div>
                         </div>
                       </div>
@@ -459,19 +473,27 @@ const Dashboard = ({
                           <h3>Рейтинг посещаемости</h3>
                           <div className='row'>
                             <div className='col-6'>Всего заданий</div>
-                            <div className='col-6'>{tasks_count}</div>
+                            <div className='col-6'>
+                              {ratingTasks.tasks_count}
+                            </div>
                           </div>
                           <div className='row'>
                             <div className='col-6'>Заданий сдано</div>
-                            <div className='col-6'>{solutions_count}</div>
+                            <div className='col-6'>
+                              {ratingTasks.solutions_count}
+                            </div>
                           </div>
                           <div className='row'>
                             <div className='col-6'>Средний балл</div>
-                            <div className='col-6'>{solutions_mark_avg}</div>
+                            <div className='col-6'>
+                              {ratingTasks.solutions_mark_avg}
+                            </div>
                           </div>
                           <div className='row'>
                             <div className='col-6'>Рейтинг заданий</div>
-                            <div className='col-6'>{tasks_rating}</div>
+                            <div className='col-6'>
+                              {ratingTasks.tasks_rating}
+                            </div>
                           </div>
                         </div>
                       </div>
