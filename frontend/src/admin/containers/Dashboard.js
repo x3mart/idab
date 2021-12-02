@@ -429,9 +429,7 @@ const Dashboard = ({
                             <div className='col-6'>{completed_checkpoints}</div>
                           </div>
                           <div className='row'>
-                            <div className='col-6'>
-                              Средний балл
-                            </div>
+                            <div className='col-6'>Средний балл</div>
                             <div className='col-6'>
                               {completed_checkpoints_marks_avg}
                             </div>
@@ -468,12 +466,8 @@ const Dashboard = ({
                             <div className='col-6'>{solutions_count}</div>
                           </div>
                           <div className='row'>
-                            <div className='col-6'>
-                              Средний балл
-                            </div>
-                            <div className='col-6'>
-                              {solutions_mark_avg}
-                            </div>
+                            <div className='col-6'>Средний балл</div>
+                            <div className='col-6'>{solutions_mark_avg}</div>
                           </div>
                           <div className='row'>
                             <div className='col-6'>Рейтинг заданий</div>
@@ -484,36 +478,52 @@ const Dashboard = ({
                     </>
                   )}
                   <div className='row'>
-                    <div className='col-4'>
-                      <Circle
-                        percent={user.training_group[0].progress}
-                        strokeWidth='8'
-                        strokeColor={
-                          user.training_group[0].progress < 25
-                            ? '#FF0000'
-                            : user.training_group[0].progress >= 25 &&
-                              user.training_group[0].progress < 50
-                            ? '#FFA500'
-                            : user.training_group[0].progress >= 50 &&
-                              user.training_group[0].progress < 75
-                            ? '#FFFF00'
-                            : '#008000'
-                        }
-                      />
-                    </div>
-                    <div className='col-8 w-100 d-flex justify-content-center align-items-center'>
-                      <div className='text-bold'>
-                        {user.training_group[0].progress < 25
-                          ? 'Прекрасное начало!'
-                          : user.training_group[0].progress >= 25 &&
-                            user.training_group[0].progress < 50
-                          ? 'Еще немного и экватор!'
-                          : user.training_group[0].progress >= 50 &&
-                            user.training_group[0].progress < 75
-                          ? 'Половина пути пройдена!'
-                          : 'Еще немного, еще чуть-чуть...'}
+                    {user &&
+                    user.training_group &&
+                    user.training_group.length > 0 ? (
+                      <>
+                        <div className='col-4'>
+                          <Circle
+                            percent={
+                              user &&
+                              user.training_group &&
+                              user.training_group.length > 0 &&
+                              user.training_group[0].progress
+                            }
+                            strokeWidth='8'
+                            strokeColor={
+                              user.training_group[0].progress < 25
+                                ? '#FF0000'
+                                : user.training_group[0].progress >= 25 &&
+                                  user.training_group[0].progress < 50
+                                ? '#FFA500'
+                                : user.training_group[0].progress >= 50 &&
+                                  user.training_group[0].progress < 75
+                                ? '#FFFF00'
+                                : '#008000'
+                            }
+                          />
+                        </div>
+                        <div className='col-8 w-100 d-flex justify-content-center align-items-center'>
+                          <div className='text-bold'>
+                            {user.training_group[0].progress < 25
+                              ? 'Прекрасное начало!'
+                              : user.training_group[0].progress >= 25 &&
+                                user.training_group[0].progress < 50
+                              ? 'Еще немного и экватор!'
+                              : user.training_group[0].progress >= 50 &&
+                                user.training_group[0].progress < 75
+                              ? 'Половина пути пройдена!'
+                              : 'Еще немного, еще чуть-чуть...'}
+                          </div>
+                        </div>
+                      </>
+                    ) : (
+                      <div className='my-5'>
+                        <h3>Возникла ошибка при формировании рейтинга</h3>
+                        <p>Сообщите о ней администратору</p>
                       </div>
-                    </div>
+                    )}
                   </div>
                 </div>
               </div>
