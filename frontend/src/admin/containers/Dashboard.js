@@ -373,7 +373,7 @@ const Dashboard = ({
                             series={ratingAttendance.series}
                             labels={ratingAttendance.labels}
                             type='donut'
-                            height='auto'
+                            height='140'
                           />
                         </div>
                         <div
@@ -416,7 +416,7 @@ const Dashboard = ({
                             series={ratingCheckpoints.series}
                             labels={ratingCheckpoints.labels}
                             type='donut'
-                            height='auto'
+                            height='140'
                           />
                         </div>
                         <div
@@ -465,7 +465,7 @@ const Dashboard = ({
                             series={ratingTasks.series}
                             labels={ratingTasks.labels}
                             type='donut'
-                            height='auto'
+                            height='140'
                           />
                         </div>
                         <div
@@ -506,7 +506,7 @@ const Dashboard = ({
                     user.training_group &&
                     user.training_group.length > 0 ? (
                       <>
-                        <div className='col-4'>
+                        <div className='col-4' style={{height:140, maxWidth: 140}}>
                           <Circle
                             percent={
                               user &&
