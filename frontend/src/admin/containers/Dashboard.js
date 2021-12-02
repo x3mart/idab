@@ -373,37 +373,37 @@ const Dashboard = ({
                             series={ratingAttendance.series}
                             labels={ratingAttendance.labels}
                             type='donut'
-                            height='380'
+                            height='auto'
                           />
                         </div>
                         <div
-                          className='col-8'
+                          className='col-8 pb-3'
                           style={{ borderBottom: '1px solid #EAEDF1' }}
                         >
-                          <h3>Рейтинг посещаемости</h3>
+                          <h5>Рейтинг посещаемости</h5>
                           <div className='row'>
-                            <div className='col-6'>Всего занятий</div>
-                            <div className='col-6'>
+                            <div className='col-10'>Всего занятий</div>
+                            <div className='col-2'>
                               {ratingAttendance.schedule_count}
                             </div>
                           </div>
                           <div className='row'>
-                            <div className='col-6'>Посещено занятий</div>
-                            <div className='col-6'>
+                            <div className='col-10'>Посещено занятий</div>
+                            <div className='col-2'>
                               {ratingAttendance.attendances_count}
                             </div>
                           </div>
                           <div className='row'>
-                            <div className='col-6'>
+                            <div className='col-10'>
                               Процент посещенных занятий
                             </div>
-                            <div className='col-6'>
+                            <div className='col-2'>
                               {ratingAttendance.attendances_rating_prc}
                             </div>
                           </div>
                           <div className='row'>
-                            <div className='col-6'>Рейтинг посещаемости</div>
-                            <div className='col-6'>
+                            <div className='col-10'>Рейтинг посещаемости</div>
+                            <div className='col-2'>
                               {ratingAttendance.attendances_rating}
                             </div>
                           </div>
@@ -416,41 +416,43 @@ const Dashboard = ({
                             series={ratingCheckpoints.series}
                             labels={ratingCheckpoints.labels}
                             type='donut'
-                            height='380'
+                            height='auto'
                           />
                         </div>
                         <div
-                          className='col-8'
+                          className='col-8 pb-3'
                           style={{ borderBottom: '1px solid #EAEDF1' }}
                         >
-                          <h3>Рейтинг контрольных точек</h3>
+                          <h5 className='mt-4'>Рейтинг контрольных точек</h5>
                           <div className='row'>
-                            <div className='col-6'>Всего контрольных точек</div>
-                            <div className='col-6'>
+                            <div className='col-10'>
+                              Всего контрольных точек
+                            </div>
+                            <div className='col-2'>
                               {ratingCheckpoints.checkpoints_count}
                             </div>
                           </div>
                           <div className='row'>
-                            <div className='col-6'>
+                            <div className='col-10'>
                               Контрольных точек пройдено
                             </div>
-                            <div className='col-6'>
+                            <div className='col-2'>
                               {ratingCheckpoints.completed_checkpoints}
                             </div>
                           </div>
                           <div className='row'>
-                            <div className='col-6'>Средний балл</div>
-                            <div className='col-6'>
+                            <div className='col-10'>Средний балл</div>
+                            <div className='col-2'>
                               {
                                 ratingCheckpoints.completed_checkpoints_marks_avg
                               }
                             </div>
                           </div>
                           <div className='row'>
-                            <div className='col-6'>
+                            <div className='col-10'>
                               Рейтинг контрольных точек
                             </div>
-                            <div className='col-6'>
+                            <div className='col-2'>
                               {ratingCheckpoints.checkpoints_rating}
                             </div>
                           </div>
@@ -463,35 +465,35 @@ const Dashboard = ({
                             series={ratingTasks.series}
                             labels={ratingTasks.labels}
                             type='donut'
-                            height='380'
+                            height='auto'
                           />
                         </div>
                         <div
-                          className='col-8'
+                          className='col-8 pb-3'
                           style={{ borderBottom: '1px solid #EAEDF1' }}
                         >
-                          <h3>Рейтинг посещаемости</h3>
+                          <h5 className='mt-4'>Рейтинг заданий</h5>
                           <div className='row'>
-                            <div className='col-6'>Всего заданий</div>
-                            <div className='col-6'>
+                            <div className='col-10'>Всего заданий</div>
+                            <div className='col-2'>
                               {ratingTasks.tasks_count}
                             </div>
                           </div>
                           <div className='row'>
-                            <div className='col-6'>Заданий сдано</div>
-                            <div className='col-6'>
+                            <div className='col-10'>Заданий сдано</div>
+                            <div className='col-2'>
                               {ratingTasks.solutions_count}
                             </div>
                           </div>
                           <div className='row'>
-                            <div className='col-6'>Средний балл</div>
-                            <div className='col-6'>
+                            <div className='col-10'>Средний балл</div>
+                            <div className='col-2'>
                               {ratingTasks.solutions_mark_avg}
                             </div>
                           </div>
                           <div className='row'>
-                            <div className='col-6'>Рейтинг заданий</div>
-                            <div className='col-6'>
+                            <div className='col-10'>Рейтинг заданий</div>
+                            <div className='col-2'>
                               {ratingTasks.tasks_rating}
                             </div>
                           </div>
@@ -499,7 +501,7 @@ const Dashboard = ({
                       </div>
                     </>
                   )}
-                  <div className='row'>
+                  <div className='row mt-4'>
                     {user &&
                     user.training_group &&
                     user.training_group.length > 0 ? (
