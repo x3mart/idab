@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react'
 import { connect } from 'react-redux'
+import axios from 'axios'
 import { load_user } from '../../redux/actions/auth/auth'
 import { Redirect } from 'react-router-dom'
-import Scheduler from './components/Scheduler'
+// import Scheduler from './components/Scheduler'
 import { load_groups_list } from '../../redux/actions/admin/groups'
 import {
   load_schedule,
@@ -12,6 +13,8 @@ import { MDBNav, MDBNavItem, MDBNavLink, MDBSpinner } from 'mdbreact'
 import { get_all_students } from '../../redux/actions/admin/students'
 import moment from 'moment'
 moment.locale('ru')
+
+var fileDownload = require('js-file-download')
 
 const Admittance = ({
   isAuthenticated,
@@ -30,6 +33,7 @@ const Admittance = ({
   }
 
   const [downloaded, setDownloaded] = useState(false)
+  const [buttonDisabled, setButtonDisabled] = useState(false)
 
   const getProperDate = date => {
     return moment(new Date(date)).format('DD.MM.YYYY')
@@ -72,6 +76,13 @@ const Admittance = ({
       }
     }
   }, [groups_list, basicGroupsList, schedule_list])
+
+  useEffect(() => {
+    if (Array.isArray(schedule_list) && schedule_list.length > 0) {
+      setScheduleItems(schedule_list)
+    }
+    
+  }, [schedule_list])
 
 
   const [basicGroupsList, setBasicGroupsList] = useState([])
@@ -120,10 +131,14 @@ const Admittance = ({
 
 
   const handleUpdateAttendance = (student_id, schedule_id, bool) => {
+    setButtonDisabled(true)
+
+    setTimeout(() => setButtonDisabled(false), 1000)
 
     let obj = { schedule: schedule_id, attendance: !bool }
     update_attendance(student_id, obj)
-    load_schedule()
+    // load_schedule()
+    
   }
 
   const handleDownload = () => {
@@ -142,6 +157,22 @@ const Admittance = ({
     setDownloaded(true)
   }
 
+  const handleDownloadXml = async () => {
+    const config = {
+      responseType: 'blob',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `JWT ${localStorage.getItem('access')}`,
+      },
+    }
+    const res = await axios.get(
+      `${process.env.REACT_APP_API_URL}/api/export/xls/`,
+      config
+    )
+
+    fileDownload(res.data, 'attendance.xls')
+  }
+
   return (
     <div className='main-body__users'>
       <div className='cards dx-viewport'>
@@ -149,7 +180,13 @@ const Admittance = ({
           <div className='cards__header-title admin-text-light'>
             Контроль <strong>присутствия</strong>
           </div>
-          <div></div>
+          <div
+            className='pr-2'
+            onClick={handleDownloadXml}
+            style={{ cursor: 'pointer' }}
+          >
+            <i className='fas fa-cloud-download-alt pr-2'></i>Скачать
+          </div>
         </div>
 
         {basicGroupsData.pending && (
@@ -228,7 +265,7 @@ const Admittance = ({
                               data.map(event => (
                                 <td key={event.id}>
                                   <i
-                                  style={{cursor:'pointer'}}
+                                    style={{ cursor: 'pointer' }}
                                     onClick={() =>
                                       handleUpdateAttendance(
                                         item.id,
@@ -240,6 +277,8 @@ const Admittance = ({
                                       event.visited_students.includes(item.id)
                                         ? 'check-circle text-success'
                                         : 'times-circle text-danger'
+                                    } ${
+                                      buttonDisabled ? 'button-disabled' : ''
                                     }`}
                                   ></i>
                                 </td>

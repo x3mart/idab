@@ -15,7 +15,7 @@ import './Login.css';
 import bg from '../assets/login_bg.jpg'
 import {connect} from "react-redux";
 import {login} from "../redux/actions/auth/auth";
-import { Redirect, Link } from 'react-router-dom'
+import { Redirect, Link, useHistory } from 'react-router-dom'
 
 const Login = ({ login, isAuthenticated, error_text }) => {
 
@@ -28,6 +28,15 @@ const Login = ({ login, isAuthenticated, error_text }) => {
 
   if (isAuthenticated) {
     return <Redirect to='/dashboard/main' />
+  }
+
+  const history = useHistory()
+
+  const handleReset = (e) => {
+    e.preventDefault()
+    setEmail('')
+    setPass('')
+    history.push('/reset')
   }
 
   return (
@@ -81,7 +90,7 @@ const Login = ({ login, isAuthenticated, error_text }) => {
                       </div>
                       <hr />
                       <div className='d-flex justify-content-center'>
-                        <Link to='/reset' className='text-white'>
+                        <Link to='/reset' className='text-white' onClick={handleReset}>
                         Забыли пароль?
                         </Link>
                       </div>

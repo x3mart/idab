@@ -13,10 +13,10 @@ import './Login.css'
 
 import bg from '../assets/login_bg.jpg'
 import { connect } from 'react-redux'
-import { reset_password } from '../redux/actions/auth/auth'
+import { reset_password, reset_status } from '../redux/actions/auth/auth'
 import { Redirect, Link } from 'react-router-dom'
 
-const PassReset = ({ reset_password, status }) => {
+const PassReset = ({ reset_password, status, reset_status }) => {
   const [email, setEmail] = useState('')
   const [statusData, setStatusData] = useState(false)
   const [redirectToLogin, setRedirectToLogin] = useState(false)
@@ -25,6 +25,7 @@ const PassReset = ({ reset_password, status }) => {
     if (status >= 200 && status < 300) {
       setStatusData(true)
     }
+    return reset_status()
   }, [status])
 
   const handlePassChange = () => {
@@ -118,4 +119,6 @@ const mapStateToProps = state => ({
   status: state.auth.status,
 })
 
-export default connect(mapStateToProps, { reset_password })(PassReset)
+export default connect(mapStateToProps, { reset_password, reset_status })(
+  PassReset
+)

@@ -4,7 +4,7 @@ from django.utils.translation import gettext_lazy as _
 # Create your models here.
 class CoursesBlock(models.Model):
     name = models.CharField(max_length=255, verbose_name='Название')
-    programs = models.ManyToManyField('programs.Program', verbose_name='Блоки дсциплин', blank=True, related_name='courses_blocks')
+    programs = models.ManyToManyField('programs.Program', verbose_name='Программы', blank=True, related_name='courses_blocks')
     is_active = models.BooleanField(default=True)
 
     def __str__(self):
@@ -26,5 +26,5 @@ class Course(models.Model):
         return self.name
 
     class Meta:
-        verbose_name = 'Курс'
-        verbose_name_plural = 'Курсы'
+        verbose_name = 'Дисциплина'
+        verbose_name_plural = 'Дисциплины'

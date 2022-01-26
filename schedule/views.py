@@ -52,3 +52,4 @@ class LkScheduleViewSet(viewsets.ModelViewSet):
             return self.retrieve(request, *args, **kwargs)
         if request.method == "PATCH":
             return self.partial_update(request, *args, **kwargs)
+

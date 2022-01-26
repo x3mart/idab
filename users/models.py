@@ -125,7 +125,7 @@ class Teacher(User):
 class Student(User):
     company = models.CharField(max_length=255, null=True, blank=True, verbose_name='Компания')
     position = models.CharField(max_length=255, null=True, blank=True, verbose_name='Должность')
-    training_group = models.ManyToManyField('programs.TrainingGroup', null=True, related_name='students')
+    training_group = models.ManyToManyField('programs.TrainingGroup', blank=True, related_name='students', verbose_name='Группа')
 
     def __str__(self):
         return self.name

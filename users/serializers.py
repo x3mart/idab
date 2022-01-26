@@ -1,3 +1,4 @@
+from ratings.serializers import StudentRatingSerializer
 from schedule.models import Schedule
 from schedule.serializers import LkScheduleSerializer
 from utils.image_crop import create_avatar
@@ -68,6 +69,7 @@ class LkStudentSerializer(serializers.ModelSerializer):
     training_group = TrainingGroupSerializer(read_only=True, many=True)
     password = serializers.CharField(write_only=True, min_length=8, required=False)
     schedule_for_today = serializers.SerializerMethodField(read_only=True,)
+    rating = StudentRatingSerializer(read_only=True, many=False)
     # re_password = serializers.CharField(write_only=True, min_length=8)
     class Meta:
         exclude = ['is_superuser', 'is_staff', 'groups', 'user_permissions']
