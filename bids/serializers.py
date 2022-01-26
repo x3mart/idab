@@ -10,19 +10,19 @@ def send_to_admin(data, title, reason):
     if reason == 'event':
         subject = 'Получена заявка на участие в мероприятии {}'.format(title)
         message = 'Получена заявка на участие в мероприятии "{}". \n Имя: {}, \n email: {}, \n тел: {}'.format(title, data['name'], data['email'], data['phone'])
-        send_mail(subject, message, 'idab.guu@gmail.com',['annadenisova@mail.ru', 'ie_narvatov@guu.ru', 'viperovm@gmail.com'])
+        send_mail(subject, message, 'idab.guu@gmail.com',['annadenisova@mail.ru', 'vpetrunenko00@mail.ru', 'viperovm@gmail.com'])
     if reason == 'program':
         subject = 'Получена заявка на обучение по программе {}'.format(title)
         message = 'Получена заявка на обучение по программе "{}". \n Имя: {}, \n email: {}, \n тел: {}, \n место работы: {}, \n должность: {}, \n стаж: {}, \n образование: {}'.format(title, data['name'], data['email'], data['phone'], data['company'], data['position'], data['work_experience'], data['education'])
-        send_mail(subject, message, 'idab.guu@gmail.com',['annadenisova@mail.ru', 'ie_narvatov@guu.ru', 'viperovm@gmail.com'])
+        send_mail(subject, message, 'idab.guu@gmail.com',['annadenisova@mail.ru', 'vpetrunenko00@mail.ru', 'viperovm@gmail.com'])
     if reason == 'plan':
         subject = 'Отправлен учебный план по программе {}'.format(title)
         message = 'Отправлен учебный план по программе "{}". \n Имя: {}, \n email: {}, \n тел: {}'.format(title, data['name'], data['email'], data['phone'])
-        send_mail(subject, message, 'idab.guu@gmail.com',['annadenisova@mail.ru', 'ie_narvatov@guu.ru', 'viperovm@gmail.com'])
+        send_mail(subject, message, 'idab.guu@gmail.com',['annadenisova@mail.ru', 'vpetrunenko00@mail.ru', 'viperovm@gmail.com'])
     if reason == 'education':
         subject = 'Получена заявка на обучение в ИДАБ'
         message = 'Получена заявка на обучение в ИДАБ \n Имя: {}, \n email: {}, \n тел: {}, \n доп иформация: {}'.format(data['name'], data['email'], data['phone'], data['info'])
-        send_mail(subject, message, 'idab.guu@gmail.com',['annadenisova@mail.ru', 'ie_narvatov@guu.ru', 'viperovm@gmail.com'])
+        send_mail(subject, message, 'idab.guu@gmail.com',['annadenisova@mail.ru', 'vpetrunenko00@mail.ru', 'viperovm@gmail.com'])
 
 class EventBidSerializer(serializers.Serializer):
     event_id = serializers.IntegerField()
