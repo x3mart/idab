@@ -10,6 +10,7 @@ class CheckpointsNameSerializer(serializers.ModelSerializer):
 
 
 class CheckpointSerializer(serializers.ModelSerializer):
+    basic = serializers.StringRelatedField(many=False)
     class Meta:
         model = Checkpoint
         fields = '__all__'
