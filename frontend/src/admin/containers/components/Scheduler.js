@@ -129,9 +129,10 @@ class Scheduler extends Component {
         )
       }
       scheduler.templates.event_text = function (start, end, event) {
+        console.log('event: ', event)
         event.guest_star = event.guest_star === null ? '' : event.guest_star
         event.teacher = event.guest_star ? '' : event.teacher
-        event.checkpoint = event.checkpoint ? event.checkpoint : ''
+        event.checkpoint = event.checkpoint ? event.checkpoint.basic : ''
         return (
           '<div style="display: flex; flex-direction: column; align-items: center; justify-content: center;"><div style="font-weight: bold; padding: 15px 0 10px 0;">' +
           event.course +
@@ -176,6 +177,8 @@ class Scheduler extends Component {
   }
 
   render() {
+    console.log(this.state.schedule_items)
+    console.log(this.props.events)
     const { timeFormatState } = this.props
     this.setHoursScaleFormat(timeFormatState)
     return (
