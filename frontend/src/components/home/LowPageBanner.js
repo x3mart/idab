@@ -6,7 +6,7 @@ const LowPageBanner = () => {
   return (
     <MDBRow className='pt-2'>
       <MDBCol md="4" className="d-flex justify-content-center">
-        <p className="pre-text-light mb-0"><span className="pre-text-bold mr-2">MBA старт: </span> 19 ноября 2021</p>
+        <p className="pre-text-light mb-0"><span className="pre-text-bold mr-2">MBA старт: </span> 20 мая 2022</p>
       </MDBCol>
       <MDBCol md="4" className="d-flex justify-content-center">
         <p className="pre-text-light mb-0"><span className="pre-text-bold mr-2">Продолжительность: </span> 2

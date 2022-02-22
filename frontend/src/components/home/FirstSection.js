@@ -27,9 +27,9 @@ const FirstSection = ({height, margin}) => {
         </MDBModalBody>
       </MDBModal>
       <div className="d-flex flex-column" style={firstSectionStyle}>
-        <a href="/events/8" style={{width:'100%'}}>
+        {/* <a href="/events/8" style={{width:'100%'}}>
           <img src={banner} height="120" style={{width:'100%'}} alt="banner"/>
-        </a>
+        </a> */}
       <MDBRow className="w-100 mx-0 d-flex justify-content-stretch idab-2" style={{flex:'1 0 auto'}}>
         <MDBCol className="home-first-section d-flex justify-content-center align-items-center text-idab" md="6">
           <div>
