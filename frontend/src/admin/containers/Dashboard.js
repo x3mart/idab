@@ -290,7 +290,7 @@ const Dashboard = ({
               {sorted_list &&
                 sorted_list.length > 0 &&
                 sorted_list.map(item => (
-                  <div className='d-flex justify-content-between px-0 px-lg-3 mb-3'>
+                  <div key={item.id} className='d-flex justify-content-between px-0 px-lg-3 mb-3'>
                     <div>{item.name}</div>
                     <MDBInput
                       type='checkbox'

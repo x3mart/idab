@@ -31,7 +31,7 @@ export const load_tasks = () => async dispatch => {
 
     try {
       const res = await axios.get(
-        `${process.env.REACT_APP_API_URL}/api/lk/task/`,
+        `${process.env.REACT_APP_API_URL}/api/lk/tasks/`,
         config
       )
 
@@ -58,16 +58,19 @@ export const add_task = task => async dispatch => {
     },
   }
 
-  const {name, description, file } = task
+  const { teacher, training_group, students, name, description, file } = task
 
   const form_data = new FormData()
+  form_data.append('teacher', teacher)
+  form_data.append('training_group', training_group)
+  form_data.append('students', students)
   form_data.append('name', name)
   form_data.append('description', description)
   form_data.append('file', file, file.name)
 
   try {
     const res = await axios.post(
-      `${process.env.REACT_APP_API_URL}/api/lk/task/`,
+      `${process.env.REACT_APP_API_URL}/api/lk/tasks/`,
       form_data,
       config
     )
@@ -105,7 +108,7 @@ export const update_task = (task) => async dispatch => {
 
   try {
     const res = await axios.patch(
-      `${process.env.REACT_APP_API_URL}/api/lk/task/${id}/`,
+      `${process.env.REACT_APP_API_URL}/api/lk/tasks/${id}/`,
       form_data,
       config
     )
@@ -131,7 +134,7 @@ export const delete_task = id => async dispatch => {
 
   try {
     await axios.delete(
-      `${process.env.REACT_APP_API_URL}/api/lk/task/${id}/`,
+      `${process.env.REACT_APP_API_URL}/api/lk/tasks/${id}/`,
       config
     )
 
@@ -162,7 +165,7 @@ export const load_solutions = () => async dispatch => {
 
     try {
       const res = await axios.get(
-        `${process.env.REACT_APP_API_URL}/api/lk/task/`,
+        `${process.env.REACT_APP_API_URL}/api/lk/solutions/`,
         config
       )
 
@@ -203,7 +206,7 @@ export const add_solution = task => async dispatch => {
 
   try {
     const res = await axios.post(
-      `${process.env.REACT_APP_API_URL}/api/lk/solution/`,
+      `${process.env.REACT_APP_API_URL}/api/lk/solutions/`,
       form_data,
       config
     )
@@ -244,7 +247,7 @@ export const update_solution = (id, task) => async dispatch => {
 
   try {
     const res = await axios.patch(
-      `${process.env.REACT_APP_API_URL}/api/lk/solution/${id}/`,
+      `${process.env.REACT_APP_API_URL}/api/lk/solutions/${id}/`,
       form_data,
       config
     )
@@ -270,7 +273,7 @@ export const delete_solution = id => async dispatch => {
 
   try {
     await axios.delete(
-      `${process.env.REACT_APP_API_URL}/api/lk/solution/${id}/`,
+      `${process.env.REACT_APP_API_URL}/api/lk/solutions/${id}/`,
       config
     )
 

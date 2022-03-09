@@ -69,11 +69,13 @@ const StudyMaterials = ({
   const [studentsList, setStudentsList] = useState([])
   const [selectedGroup, setSelectedGroup] = useState('')
 
+  console.log(selectedGroup)
+
   useEffect(() => {
     {
       let timer = setTimeout(
         () => setTasksData({ loaded: false, pending: false, error: true }),
-        10000
+        5000
       )
       if (Array.isArray(tasks) && tasks.length > 0) {
         setTasksList(tasks)
@@ -107,13 +109,18 @@ const StudyMaterials = ({
     setSelectedStudent(arr)
   }
   const handleGroupsSelect = e => {
-    sort_students(e.target.value)
+    console.log(e.target)
+    sort_students(e.target.name)
     setSelectedGroup(e.target.value)
   }
+
+  console.log(selectedStudent)
 
   const handleAdd = e => {
     e.preventDefault()
     const task = {
+      teacher: user.id,
+      training_group: selectedGroup,
       students: selectedStudent.join(' '),
       name: taskName,
       description: taskDescription,
@@ -252,7 +259,11 @@ const StudyMaterials = ({
                       <option selected>Выберите группу</option>
                       {groups_list &&
                         groups_list.map(item => (
-                          <option key={item.id} value={item.name}>
+                          <option
+                            key={item.id}
+                            name={item.name}
+                            value={item.id}
+                          >
                             {item.name}
                           </option>
                         ))}
@@ -349,7 +360,11 @@ const StudyMaterials = ({
                       <option selected>Выберите группу</option>
                       {groups_list &&
                         groups_list.map(item => (
-                          <option key={item.id} value={item.name}>
+                          <option
+                            key={item.id}
+                            name={item.name}
+                            value={item.id}
+                          >
                             {item.name}
                           </option>
                         ))}
