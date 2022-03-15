@@ -17,9 +17,9 @@ def get_solution_file_path(instance, filename):
 
 class Task(models.Model):
     students = models.ManyToManyField('users.Student', related_name='tasks', verbose_name='Студент')
-    teacher = models.ForeignKey('users.Teacher', on_delete=models.CASCADE, related_name='tasks', verbose_name='Преподаватель')
-    training_group = models.ForeignKey('programs.TrainingGroup', on_delete=models.CASCADE, related_name='tasks', verbose_name='Группа')
-    name = models.CharField(max_length=255, verbose_name='Название')
+    teacher = models.ForeignKey('users.Teacher', on_delete=models.CASCADE, related_name='tasks', verbose_name='Преподаватель', null=True, blank=True)
+    training_group = models.ForeignKey('programs.TrainingGroup', on_delete=models.CASCADE, related_name='tasks', verbose_name='Группа', null=True, blank=True)
+    name = models.CharField(max_length=255, verbose_name='Название', null=True, blank=True)
     description = models.TextField(verbose_name='Описание', null=True, blank=True)
     file = models.FileField(max_length=255, upload_to=get_tasks_file_path, verbose_name='Вложение', null=True, blank=True)
     
@@ -38,6 +38,7 @@ class Solution(models.Model):
     description = models.TextField(verbose_name='Описание', null=True, blank=True)
     file = models.FileField(max_length=255, upload_to=get_solution_file_path, verbose_name='Вложение', null=True, blank=True)
     mark = models.PositiveIntegerField(verbose_name='Отметка', null=True)
+    unreaded = models.BooleanField(default=True)
 
     class Meta:
         verbose_name = 'Решение'

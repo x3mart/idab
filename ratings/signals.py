@@ -60,22 +60,23 @@ def checkpoint_mark_post_save(instance, created, **kwargs):
 
 @receiver(post_save, sender=Task)
 def task_post_save(instance, created, **kwargs):
-    student = instance.student
-    rating = get_rating_obj(student)
-    tasks_count = Task.objects.filter(student=student).count()
-    solutions = Solution.objects.filter(student=student)
-    solutions_count = solutions.count()
-    solutions_mark_avg = solutions(Avg('mark'))['mark__avg']
-    solutions_sum = solutions.aggregate(Sum('mark'))['mark__sum']
-    if tasks_count:
-        tasks_rating = solutions_sum/tasks_count
-    else:
-        tasks_rating = 0
-    rating.tasks_count = tasks_count 
-    rating.solutions_count = solutions_count 
-    rating.solutions_mark_avg = solutions_mark_avg 
-    rating.tasks_rating = tasks_rating 
-    rating.save()
+    students = instance.students.all()
+    for student in students:
+        rating = get_rating_obj(student)
+        tasks_count = Task.objects.filter(student=student).count()
+        solutions = Solution.objects.filter(student=student)
+        solutions_count = solutions.count()
+        solutions_mark_avg = solutions(Avg('mark'))['mark__avg']
+        solutions_sum = solutions.aggregate(Sum('mark'))['mark__sum']
+        if tasks_count:
+            tasks_rating = solutions_sum/tasks_count
+        else:
+            tasks_rating = 0
+        rating.tasks_count = tasks_count 
+        rating.solutions_count = solutions_count 
+        rating.solutions_mark_avg = solutions_mark_avg 
+        rating.tasks_rating = tasks_rating 
+        rating.save()
 
 @receiver(post_save, sender=Schedule)
 def attendance_post_save(instance, created, **kwargs):
