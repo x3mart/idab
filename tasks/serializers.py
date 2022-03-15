@@ -1,3 +1,4 @@
+from multiprocessing import context
 import threading
 from programs.models import TrainingGroup
 from rest_framework import serializers
@@ -58,26 +59,36 @@ class LkSolutionSerializer(serializers.ModelSerializer):
 
 
 class StudentsSerializer(serializers.ModelSerializer):
-    # training_group = serializers.CharField(read_only=True, source='training_group.basic.name')
+    solution = serializers.SerializerMethodField(read_only=True)
 
     class Meta:
         model = Student
-        fields = ('training_group', 'name', 'id')
+        fields = ('name', 'solution')
+    
+    def get_solution(self, obj):
+        solution = Solution.objects.filter(student=obj).filter(task_id=self.context.get('task')).first()
+        if solution:
+            return LkSolutionSerializer(solution, many=False).data
+        else:
+            return None
 
 class LkTaskSerializer(serializers.ModelSerializer):
     training_group = serializers.CharField(read_only=True, source='training_group.basic.name')
-    students = StudentsSerializer(read_only=True, many=True)
+    students = serializers.SerializerMethodField()
+    
     class Meta:
         model = Task
         fields = '__all__'
-        extra_kwargs = {'traning_group': {'read_only': True, 'required': False},
+        extra_kwargs = {'training_group': {'read_only': True, 'required': False},
         'teacher': {'read_only': True, 'required': False},
         }
+    
+    def get_students(self, obj):
+        return StudentsSerializer(obj.students, many=True, context={'task': obj.id}).data
     
     def create(self, validated_data):
         request = self.context['request']
         students = request.data.get('students')
-        teacher = request.data.get('teacher')
         training_group = request.data.get('training_group')
         if students is not None:
             students = list(map(int, students.split()))

@@ -22,6 +22,7 @@ class Task(models.Model):
     name = models.CharField(max_length=255, verbose_name='Название', null=True, blank=True)
     description = models.TextField(verbose_name='Описание', null=True, blank=True)
     file = models.FileField(max_length=255, upload_to=get_tasks_file_path, verbose_name='Вложение', null=True, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
     
 
     class Meta:
@@ -29,7 +30,7 @@ class Task(models.Model):
         verbose_name_plural = 'Задания'
     
     def __str__(self):
-        return self.name
+        return self.name if self.name else '--'
 
 
 class Solution(models.Model):
@@ -39,6 +40,7 @@ class Solution(models.Model):
     file = models.FileField(max_length=255, upload_to=get_solution_file_path, verbose_name='Вложение', null=True, blank=True)
     mark = models.PositiveIntegerField(verbose_name='Отметка', null=True)
     unreaded = models.BooleanField(default=True)
+    created_at = models.DateTimeField(auto_now_add=True, null=True, blank=True)
 
     class Meta:
         verbose_name = 'Решение'

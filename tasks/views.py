@@ -1,6 +1,6 @@
 from rest_framework import viewsets
 from rest_framework.permissions import AllowAny, BasePermission, SAFE_METHODS
-
+from django_filters.rest_framework import DjangoFilterBackend
 from users.models import Student
 from .serializers import LkTaskSerializer, LkSolutionSerializer
 from .models import Solution, Task
@@ -28,17 +28,19 @@ class LkTaskViewSet(viewsets.ModelViewSet):
     queryset = Task.objects.all()
     serializer_class = LkTaskSerializer
     permission_classes = [TaskPermission]
+    filter_backends = [DjangoFilterBackend]
+    filterset_fields = ['training_group']
 
     def get_serializer(self, *args, **kwargs):
         return super().get_serializer(*args, **kwargs)
 
     def get_queryset(self):
         user = self.request.user 
-        students = Student.objects.prefetch_related('training_group') 
+        students = Student.objects.all()
         if user.is_student:
             return Task.objects.filter(students__pk=user.id)
         if user.is_teacher:
-            return Task.objects.filter(teacher__pk=user.id)
+            return Task.objects.filter(teacher__pk=user.id).prefetch_related('students')
         return None
 
 
