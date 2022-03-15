@@ -57,13 +57,20 @@ class LkSolutionSerializer(serializers.ModelSerializer):
         return solution
 
 
+class StudentsSerializer(serializers.ModelSerializer):
+    # training_group = serializers.CharField(read_only=True, source='training_group.basic.name')
+
+    class Meta:
+        model = Student
+        fields = ('training_group', 'name', 'id')
+
 class LkTaskSerializer(serializers.ModelSerializer):
     training_group = serializers.CharField(read_only=True, source='training_group.basic.name')
+    students = StudentsSerializer(read_only=True, many=True)
     class Meta:
         model = Task
         fields = '__all__'
         extra_kwargs = {'traning_group': {'read_only': True, 'required': False},
-        'students': {'read_only': True, 'required': False},
         'teacher': {'read_only': True, 'required': False},
         }
     
@@ -79,22 +86,10 @@ class LkTaskSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError({
                 'details': 'students Обязательное поле!'
             })
-        # if teacher is not None:
-        #     teacher = Teacher.objects.get(pk=teacher)
-        # else:
-        #     raise serializers.ValidationError({
-        #         'teacher': 'Обязательное поле!'
-        #     })
-        # if training_group is not None:
-        #     training_group = TrainingGroup.objects.get(pk=training_group)
-        # else:
-        #     raise serializers.ValidationError({
-        #         'training_group': 'Обязательное поле!'
-        #     })
         teacher = Teacher.objects.get(pk=request.user.id)
         task = Task(**validated_data)
         task.teacher=teacher
-        task.training_group=training_group
+        # task.training_group=training_group
         task.save()
         task.students.set(students)
         send_mail_task(students, teacher, task)
@@ -125,10 +120,10 @@ class LkTaskStudentSerializer(serializers.ModelSerializer):
         return None
 
 
-class LkTaskRieveSerializer(serializers.ModelSerializer):
-    students = LkTaskStudentSerializer(read_only=True, many=True)
-    teacher = LkTeacherSerializer(read_only=True, many=False)
-    training_group = serializers.CharField(read_only=True, source='training_group.basic.name')
-    class Meta:
-        model = Task
-        fields = '__all__'
+# class LkTaskRieveSerializer(serializers.ModelSerializer):
+#     students = LkTaskStudentSerializer(read_only=True, many=True)
+#     teacher = LkTeacherSerializer(read_only=True, many=False)
+#     training_group = serializers.CharField(read_only=True, source='training_group.basic.name')
+#     class Meta:
+#         model = Task
+#         fields = '__all__'

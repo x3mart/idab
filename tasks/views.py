@@ -2,7 +2,7 @@ from rest_framework import viewsets
 from rest_framework.permissions import AllowAny, BasePermission, SAFE_METHODS
 
 from users.models import Student
-from .serializers import LkTaskSerializer, LkSolutionSerializer, LkTaskRieveSerializer
+from .serializers import LkTaskSerializer, LkSolutionSerializer
 from .models import Solution, Task
 
 class TaskPermission(BasePermission):
@@ -30,12 +30,11 @@ class LkTaskViewSet(viewsets.ModelViewSet):
     permission_classes = [TaskPermission]
 
     def get_serializer(self, *args, **kwargs):
-        if self.action == 'retrieve':
-            return LkTaskRieveSerializer(*args, **kwargs, context={'task': self.kwargs['pk']})
         return super().get_serializer(*args, **kwargs)
 
     def get_queryset(self):
-        user = self.request.user  
+        user = self.request.user 
+        students = Student.objects.prefetch_related('training_group') 
         if user.is_student:
             return Task.objects.filter(students__pk=user.id)
         if user.is_teacher:
