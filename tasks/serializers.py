@@ -87,9 +87,10 @@ class LkTaskSerializer(serializers.ModelSerializer):
                 'details': 'students Обязательное поле!'
             })
         teacher = Teacher.objects.get(pk=request.user.id)
+        training_group = TrainingGroup.objects.get(pk=training_group)
         task = Task(**validated_data)
         task.teacher=teacher
-        # task.training_group=training_group
+        task.training_group=training_group
         task.save()
         task.students.set(students)
         send_mail_task(students, teacher, task)
