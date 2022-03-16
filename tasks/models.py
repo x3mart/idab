@@ -35,10 +35,10 @@ class Task(models.Model):
 
 class Solution(models.Model):
     student = models.ForeignKey('users.Student', on_delete=models.CASCADE, related_name='solutions', verbose_name='Студент')
-    task = models.ForeignKey('Task', on_delete=models.CASCADE, related_name='solutions', verbose_name='Решение')
+    task = models.ForeignKey('Task', on_delete=models.CASCADE, related_name='solutions', verbose_name='Задача')
     description = models.TextField(verbose_name='Описание', null=True, blank=True)
     file = models.FileField(max_length=255, upload_to=get_solution_file_path, verbose_name='Вложение', null=True, blank=True)
-    mark = models.PositiveIntegerField(verbose_name='Отметка', null=True)
+    mark = models.PositiveIntegerField(verbose_name='Отметка', null=True, blank=True)
     unreaded = models.BooleanField(default=True)
     created_at = models.DateTimeField(auto_now_add=True, null=True, blank=True)
 

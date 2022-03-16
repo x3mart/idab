@@ -1,8 +1,10 @@
-from rest_framework import viewsets
+from rest_framework import viewsets, status
 from rest_framework.permissions import AllowAny, BasePermission, SAFE_METHODS
 from django_filters.rest_framework import DjangoFilterBackend
+from rest_framework.decorators import action
+from rest_framework.response import Response
 from users.models import Student
-from .serializers import LkTaskSerializer, LkSolutionSerializer
+from .serializers import LkTaskSerializer, LkSolutionSerializer, LkTaskStudentSerializer
 from .models import Solution, Task
 
 class TaskPermission(BasePermission):
@@ -38,11 +40,24 @@ class LkTaskViewSet(viewsets.ModelViewSet):
         user = self.request.user 
         students = Student.objects.all()
         if user.is_student:
-            return Task.objects.filter(students__pk=user.id)
+            return Task.objects.filter(students__pk=user.id).prefetch_related('solutions')
         if user.is_teacher:
             return Task.objects.filter(teacher__pk=user.id).prefetch_related('students')
         return None
-
+    
+    @action(detail=True, methods=['post'])
+    def solution(self, request, pk=None):
+        task = self.get_object()
+        student = Student.objects.get(pk=request.user.id)
+        serializer = LkSolutionSerializer(data=request.data)
+        if serializer.is_valid():
+            data = serializer.data
+        else:
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        if not self.request.user.is_teacher and self.request.data.get('mark'):
+            self.request.data.pop('mark', None)
+        Solution.objects.create(task=task, student=student, **data)
+        return Response(LkTaskStudentSerializer(task, many=False, context={'task':task.id}).data, status=status.HTTP_201_CREATED)
 
 
 class LkSolutionViewSet(viewsets.ModelViewSet):

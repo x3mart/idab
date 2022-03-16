@@ -29,33 +29,9 @@ def send_mail_task(students, teacher, task):
 
 
 class LkSolutionSerializer(serializers.ModelSerializer):
-    student = LkStudentSerializer(read_only=True, many=False)
-    task = serializers.CharField(read_only=True, source='task.name')
     class Meta:
         model = Solution
-        fields = '__all__'
-    
-    def create(self, validated_data):
-        request = self.context['request']
-        student = request.data.get('student')
-        if student is not None:
-            student = Student.objects.get(pk=int(student))
-            validated_data['student']=student
-        else:
-            raise serializers.ValidationError({
-                'student': 'Обязательное поле!'
-            })
-        task = request.data.get('task')
-        if task is not None:
-            task = Task.objects.get(pk=task)
-            validated_data['task']=task
-        else:
-            raise serializers.ValidationError({
-                'task': 'Обязательное поле!'
-            })
-        solution = Solution(**validated_data)
-        solution.save()
-        return solution
+        exclude = ('student', 'task')
 
 
 class StudentsSerializer(serializers.ModelSerializer):
@@ -122,11 +98,11 @@ class LkTaskSerializer(serializers.ModelSerializer):
 class LkTaskStudentSerializer(serializers.ModelSerializer):
     solution = serializers.SerializerMethodField()
     class Meta:
-        model = Student
-        fields = ('id', 'name')
+        model = Task
+        fields = '__all__'
     
     def get_solution(self, obj):
-        solution = Solution.objects.filter(student_id=obj.id).filter(task=self.context['task']).first()
+        solution = Solution.objects.filter(student_id=self.request.user.id).filter(task_id=self.context['task']).first()
         if solution:
             return LkSolutionSerializer(solution).data
         return None
