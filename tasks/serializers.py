@@ -108,10 +108,7 @@ class LkTaskStudentSerializer(serializers.ModelSerializer):
         return None
 
 
-# class LkTaskRieveSerializer(serializers.ModelSerializer):
-#     students = LkTaskStudentSerializer(read_only=True, many=True)
-#     teacher = LkTeacherSerializer(read_only=True, many=False)
-#     training_group = serializers.CharField(read_only=True, source='training_group.basic.name')
-#     class Meta:
-#         model = Task
-#         fields = '__all__'
+class SolutionMarkSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Solution
+        fields = ('mark',)

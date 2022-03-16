@@ -4,7 +4,7 @@ from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from users.models import Student
-from .serializers import LkTaskSerializer, LkSolutionSerializer, LkTaskStudentSerializer
+from .serializers import LkTaskSerializer, LkSolutionSerializer, LkTaskStudentSerializer, SolutionMarkSerializer
 from .models import Solution, Task
 
 class TaskPermission(BasePermission):
@@ -34,6 +34,9 @@ class LkTaskViewSet(viewsets.ModelViewSet):
     filterset_fields = ['training_group']
 
     def get_serializer(self, *args, **kwargs):
+        user = self.request.user 
+        if user.is_student:
+            return LkTaskStudentSerializer
         return super().get_serializer(*args, **kwargs)
 
     def get_queryset(self):
@@ -62,7 +65,7 @@ class LkTaskViewSet(viewsets.ModelViewSet):
 
 class LkSolutionViewSet(viewsets.ModelViewSet):
     queryset = Solution.objects.all()
-    serializer_class = LkSolutionSerializer
+    serializer_class = SolutionMarkSerializer
     permission_classes = [SolutionPermission]
 
     def get_queryset(self):
