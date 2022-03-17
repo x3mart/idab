@@ -29,9 +29,16 @@ def send_mail_task(students, teacher, task):
 
 
 class LkSolutionSerializer(serializers.ModelSerializer):
+    # file = serializers.SerializerMethodField(read_only=True, method_name='get_file_absolute_url')
     class Meta:
         model = Solution
-        exclude = ('student', 'task')
+        exclude = ('task', 'student')
+    
+    # def get_file_absolute_url(self, obj):
+    #     if obj.file:
+    #         request = self.context.get('request')
+    #         return request.build_absolute_uri(obj.file.url)
+    #     return None
 
 
 class StudentsSerializer(serializers.ModelSerializer):
@@ -42,9 +49,10 @@ class StudentsSerializer(serializers.ModelSerializer):
         fields = ('name', 'solution')
     
     def get_solution(self, obj):
+        request = self.context.get('request')
         solution = Solution.objects.filter(student=obj).filter(task_id=self.context.get('task')).first()
         if solution:
-            return LkSolutionSerializer(solution, many=False).data
+            return LkSolutionSerializer(solution, many=False, context={'request':request}).data
         else:
             return None
 
@@ -60,7 +68,8 @@ class LkTaskSerializer(serializers.ModelSerializer):
         }
     
     def get_students(self, obj):
-        return StudentsSerializer(obj.students, many=True, context={'task': obj.id}).data
+        request = self.context.get('request')
+        return StudentsSerializer(obj.students, many=True, context={'task': obj.id, 'request':request}).data
     
     def create(self, validated_data):
         request = self.context['request']
@@ -97,14 +106,21 @@ class LkTaskSerializer(serializers.ModelSerializer):
 
 class LkTaskStudentSerializer(serializers.ModelSerializer):
     solution = serializers.SerializerMethodField()
+    teacher = serializers.SerializerMethodField()
     class Meta:
         model = Task
         fields = '__all__'
     
     def get_solution(self, obj):
-        solution = Solution.objects.filter(student_id=self.request.user.id).filter(task_id=self.context['task']).first()
+        solution = obj.solutions.filter(student_id=self.context['request'].user.id).first()
         if solution:
-            return LkSolutionSerializer(solution).data
+            request = self.context.get('request')
+            return LkSolutionSerializer(solution, context={'request':request}).data
+        return None
+    
+    def get_teacher(self, obj):
+        if obj.teacher:
+            return obj.teacher.name
         return None
 
 
