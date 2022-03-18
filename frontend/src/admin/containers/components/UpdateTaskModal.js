@@ -1,15 +1,22 @@
-import React, {useState, useEffect, Fragment} from 'react'
+import React, {useEffect, useState} from "react";
 import {connect} from 'react-redux'
 import SelectGroup from "./SelectGroup";
 import {
-  add_task,
+  update_task,
 } from '../../../redux/actions/admin/tasks'
 import {
   get_all_students,
-  get_sorted_students,
+  sort_students,
 } from '../../../redux/actions/admin/students'
 
-const AddTask = ({user, sorted_list, get_all_students, get_sorted_students, add_task}) => {
+const UpdateTaskModal = ({
+                           task,
+                           sorted_list,
+                           update_task,
+                           get_all_students,
+                           sort_students,
+                         }) => {
+
   const [active, setActive] = useState(false)
   const [selectedGroup, setSelectedGroup] = useState(null)
   const [selectedStudents, setSelectedStudents] = useState([])
@@ -18,29 +25,35 @@ const AddTask = ({user, sorted_list, get_all_students, get_sorted_students, add_
   const [taskFile, setTaskFile] = useState(null)
 
   useEffect(() => {
-    get_all_students()
+    console.log(task.training_group)
+    sort_students(task.training_group)
+  }, [task])
+
+  useEffect(() => {
+    if (task) {
+      setSelectedGroup(task.training_group)
+      setSelectedStudents(task.students)
+      setTaskName(task.name)
+      setTaskDescription(task.description)
+    }
   }, [])
 
   const handleSubmit = e => {
     e.preventDefault()
-    const task = {
-      teacher: user.id,
-      training_group: selectedGroup,
-      students: selectedStudents.join(' '),
+    const t = {
+      id: task.id,
       name: taskName,
       description: taskDescription,
       file: taskFile,
     }
     setActive(false)
-    add_task(task)
+    update_task(t)
     setSelectedGroup(null)
     setSelectedStudents([])
     setTaskName('')
     setTaskDescription('')
     setTaskFile(null)
   }
-
-  console.log(sorted_list)
 
   const handleCancel = () => {
     setActive(false)
@@ -51,30 +64,29 @@ const AddTask = ({user, sorted_list, get_all_students, get_sorted_students, add_
     setTaskFile(null)
   }
 
-  const handleGroupsSelect = data => {
-    setSelectedGroup(data)
-    console.log(data)
-    get_sorted_students(data)
-  }
-
   const handleStudentsSelect = e => {
     setSelectedStudents([...e.target.options].filter(o => o.selected).map(o => o.value))
     console.log([...e.target.options].filter(o => o.selected).map(o => o.value))
   }
 
+  const handleOpen = () => {
+    setActive(true)
+  }
+
 
   return (
     <>
-
       <div
         className={`modal fade ${active ? 'show' : ''}`}
-        style={{ display: active ? 'block' : 'none' }}
+        style={{display: active ? 'block' : 'none'}}
       >
         <div className='modal-dialog'>
           <div className='modal-content'>
-            <form onSubmit={handleSubmit}>
+            <form
+              onSubmit={handleSubmit}
+            >
               <div className='modal-header'>
-                <h4 className='modal-title'>Добавить задание</h4>
+                <h4 className='modal-title'>Обновить задание</h4>
                 <button
                   type='button'
                   className='close'
@@ -86,23 +98,6 @@ const AddTask = ({user, sorted_list, get_all_students, get_sorted_students, add_
               </div>
               <div className='modal-body'>
                 <div className='custom-modal-form'>
-                  <SelectGroup action={handleGroupsSelect}/>
-                  <div className='form-group'>
-                    <select
-                      multiple
-                      className='form-select multiselect'
-                      aria-label='Выберите слушателей'
-                      onChange={handleStudentsSelect}
-                    >
-                      <option defaultValue>Выберите слушателей</option>
-                      {sorted_list &&
-                        sorted_list.map(item => (
-                          <option key={item.id} value={item.id}>
-                            {item.name}
-                          </option>
-                        ))}
-                    </select>
-                  </div>
                   <div className='form-group'>
                     <label>Название</label>
                     <input
@@ -135,7 +130,7 @@ const AddTask = ({user, sorted_list, get_all_students, get_sorted_students, add_
                   type='button'
                   className='btn btn-default'
                   value='Отменить'
-                  onClick={() => handleCancel()}
+                  onClick={handleCancel}
                 />
                 <input
                   type='submit'
@@ -148,13 +143,15 @@ const AddTask = ({user, sorted_list, get_all_students, get_sorted_students, add_
         </div>
       </div>
 
-      <button
-        className='btn btn-success'
-        onClick={() => setActive(true)}
+      <a
+        className='edit'
+        data-toggle='modal'
+        onClick={handleOpen}
       >
-        <i className='material-icons'>&#xE147;</i>{' '}
-        <span>Добавить задание</span>
-      </button>
+        <i className='material-icons' data-toggle='tooltip' title='Edit'>
+          &#xE254;
+        </i>
+      </a>
     </>
   )
 }
@@ -165,6 +162,6 @@ const mapStateToProps = state => ({
 
 export default connect(mapStateToProps, {
   get_all_students,
-  get_sorted_students,
-  add_task,
-})(AddTask)
+  sort_students,
+  update_task,
+})(UpdateTaskModal)
