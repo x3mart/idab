@@ -16,6 +16,7 @@ import {
   GET_GROUPS_FAIL,
   SORT_STUDENTS_SUCCESS,
   SORT_STUDENTS_FAIL,
+  GET_SORTED_STUDENTS_SUCCESS,
 } from '../../actions/types'
 
 const initialState = {
@@ -27,6 +28,7 @@ const initialState = {
   groups: [],
   error: '',
   status: null,
+  sorted_value: null,
 }
 
 export default function (state = initialState, action) {
@@ -89,6 +91,28 @@ export default function (state = initialState, action) {
         ...state,
         sort_value: payload,
         sorted_list: getSort(payload),
+      }
+    case GET_SORTED_STUDENTS_SUCCESS:
+      const getSortedStudents = payload => {
+        console.log(payload)
+        if (state.sorted_value == null && !payload) {
+          console.log(1)
+          return state.students_list
+        } else if (payload && payload == state.sorted_value) {
+          console.log(2)
+          return state.sorted_list
+        } else if (payload && payload != state.sorted_value) {
+          console.log(3)
+          console.log(state.students_list)
+          return state.students_list.filter(item =>
+            item.training_group.some(group => group.id == payload)
+          )
+        }
+      }
+      return {
+        ...state,
+        sorted_value: payload,
+        sorted_list: getSortedStudents(payload),
       }
 
     //     item.training_group.map(group => {

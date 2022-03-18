@@ -15,6 +15,10 @@ import {
   UPDATE_SOLUTION_FAIL,
   DELETE_SOLUTION_SUCCESS,
   DELETE_SOLUTION_FAIL,
+  ADD_SOLUTION_SUCCESS,
+  ADD_SOLUTION_FAIL,
+  ADD_MARK_SUCCESS,
+  ADD_MARK_FAIL,
 } from '../../actions/types'
 
 const initialState = {
@@ -45,6 +49,48 @@ export default function (state = initialState, action) {
           }
           return item
         }),
+      }
+    case ADD_SOLUTION_SUCCESS:
+      return {
+        ...state,
+        tasks: state.tasks.map(item => {
+          if (item.id == payload.id) {
+            return payload
+          }
+          return item
+        }),
+      }
+    case ADD_MARK_SUCCESS:
+
+      const addMark = (tasks, data) => {
+        let arr = tasks.map(task => {
+          if(task.id === data.task_id) {
+            task.students.map(student => {
+              if(student.id === data.student_id) {
+                if(student.solution && student.solution.id === data.solution_id) {
+                  return {
+                    ...student,
+                    solution: {
+                      ...student.solution,
+                      mark: data.mark,
+                    }
+                  }
+                }
+
+              } else {
+                return student
+              }
+            })
+          } else {
+            return task
+          }
+        })
+        return arr
+      }
+
+      return {
+        ...state,
+        tasks: addMark(state.tasks, payload),
       }
     case DELETE_TASK_SUCCESS:
       return {

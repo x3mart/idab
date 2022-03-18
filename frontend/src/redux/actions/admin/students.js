@@ -20,6 +20,7 @@ import {
   GET_GROUPS_FAIL,
   SORT_STUDENTS_SUCCESS,
   SORT_STUDENTS_FAIL,
+  GET_SORTED_STUDENTS_SUCCESS,
 } from '../types'
 import axios from 'axios'
 
@@ -273,5 +274,13 @@ export const sort_students = name => dispatch => {
   dispatch({
     type: SORT_STUDENTS_SUCCESS,
     payload: name,
+  })
+}
+
+export const get_sorted_students = id => dispatch => {
+  console.log(id)
+  dispatch({
+    type: GET_SORTED_STUDENTS_SUCCESS,
+    payload: id,
   })
 }
