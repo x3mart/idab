@@ -7,8 +7,17 @@ import {
 
 const AddSolution = ({task, add_solution}) => {
   const [active, setActive] = useState(false)
+  const [viewActive, setViewActive] = useState(false)
   const [taskDescription, setTaskDescription] = useState('')
   const [taskFile, setTaskFile] = useState(null)
+  const [fileName, setFileName] = useState('')
+
+  useEffect(() => {
+    if (task.solution.file) {
+      let arr = task.solution.file.split('/')
+      setFileName(arr[arr.length - 1])
+    }
+  }, [task.solution.file])
 
   const handleSubmit = e => {
     e.preventDefault()
@@ -31,6 +40,61 @@ const AddSolution = ({task, add_solution}) => {
 
   return (
     <>
+      <div
+        className={`modal fade ${viewActive ? 'show' : ''}`}
+        style={{ display: viewActive ? 'block' : 'none' }}
+      >
+        <div className='modal-dialog'>
+          <div className='modal-content'>
+            <div className='modal-header'>
+              <h4 className='modal-title'>Решение {task.name}</h4>
+              <button
+                type='button'
+                className='close'
+                aria-hidden='true'
+                onClick={() => setViewActive(false)}
+              >
+                &times;
+              </button>
+            </div>
+            <div className='modal-body'>
+              <div className="solution-body-wrapper">
+                <div className="solution-wrapper">
+                  <div className="solution-text">
+                    <h5>
+                      Решение:
+                    </h5>
+                    <p>
+                      {task.solution.description}
+                    </p>
+                  </div>
+                  {task.solution.file && (<div className="solution-file">
+                    <h5>
+                      Скачать файл с решением:
+                    </h5>
+                    <a href={task.file}>{fileName}</a>
+                  </div>)}
+                </div>
+                <div className="mark-wrapper">
+                  <h5>Оценка:</h5>
+                  <input type="number" disabled value={task.solution.mark}/>
+                  <h5>баллов</h5>
+                </div>
+              </div>
+
+            </div>
+            <div className='modal-footer'>
+              <button
+                className='btn btn-default'
+                onClick={() => setViewActive(false)}
+              >
+                Закрыть
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
       <div
         className={`modal fade ${active ? 'show' : ''}`}
         style={{ display: active ? 'block' : 'none' }}
@@ -87,13 +151,25 @@ const AddSolution = ({task, add_solution}) => {
         </div>
       </div>
 
-      <div
-        className='add-solution'
-        data-toggle='modal'
-        onClick={() => setActive(true)}
-      >
-        Добавить решение
-      </div>
+      {task && task.solution && (
+        <div
+          className='view-solution'
+          data-toggle='modal'
+          onClick={() => setViewActive(true)}
+        >
+          Просмотр решения
+        </div>
+      )}
+
+      {task && !task.solution && (
+        <div
+          className='add-solution'
+          data-toggle='modal'
+          onClick={() => setActive(true)}
+        >
+          Добавить решение
+        </div>
+      )}
 
     </>
   )

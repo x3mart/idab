@@ -81,6 +81,7 @@ const Tasks = ({isAuthenticated, load_user, user, load_tasks, tasks, load_groups
                 {user && !user.is_student && <th><SelectGroup action={handleGroupsSelect}/></th>}
                 {user && user.is_student && <th>Преподаватель</th>}
                 <th>Название</th>
+                {user && user.is_student && <th>Оценка</th>}
                 <th>Действия</th>
               </tr>
               </thead>

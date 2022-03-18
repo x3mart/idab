@@ -697,6 +697,11 @@ a {
     cursor: pointer;
 }
 
+.view-solution {
+    color: #5b2732;
+    cursor: pointer;
+}
+
 .mark-wrapper {
     margin-top: 30px;
     display: flex;

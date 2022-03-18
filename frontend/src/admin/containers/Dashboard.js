@@ -161,7 +161,7 @@ const Dashboard = ({
         })
       }
     }
-  })
+  }, [])
 
   const toggle = (tab, name) => e => {
     if (activeItem !== tab) {

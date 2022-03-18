@@ -177,6 +177,11 @@ const TasksTableRow = ({
           )}
         </div>
       </td>
+      {user && user.is_student && (
+        <td>
+          {task && task.solution && task.solution.mark}
+        </td>
+      )}
       <ActionSection/>
     </tr>
   )
