@@ -20,8 +20,7 @@ class TaskEmailThread(threading.Thread):
         subject = f'{self.student.name}, Вы получили новое задание'
         task_data = {'student':self.student, "teacher":self.teacher, "task":self.task}
         message_html = render_to_string("task_mail.html", task_data)
-        sended = send_mail(subject, "message", 'idab.guu@gmail.com',['x3mart@gmail.com'], html_message=message_html,)
-        # sended = await send_mail(subject, "message", 'idab.guu@gmail.com',[student.email, 'viperovm@gmail.com'], html_message=message_html,)
+        sended = send_mail(subject, "message", 'idab.guu@gmail.com',[self.student.email, 'viperovm@gmail.com'], html_message=message_html,)
 
 def send_mail_task(students, teacher, task):
     for student in students:
