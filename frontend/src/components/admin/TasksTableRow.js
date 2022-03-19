@@ -1,59 +1,100 @@
-import React, { Fragment, useEffect, useState } from 'react'
-import { connect } from 'react-redux'
+import React, {Fragment, useEffect, useState} from 'react'
+import {connect} from 'react-redux'
 import '../../admin/containers/Students.css'
-import { load_groups_list } from '../../redux/actions/admin/groups'
-import { load_user } from '../../redux/actions/auth/auth'
+import {load_groups_list} from '../../redux/actions/admin/groups'
+import {load_user} from '../../redux/actions/auth/auth'
+import Solution from "../../admin/containers/components/Solution";
+import {
+  delete_task,
+} from '../../redux/actions/admin/tasks'
+import DeleteModal from "../../admin/containers/components/DeleteModal";
+import UpdateTaskModal from "../../admin/containers/components/UpdateTaskModal";
+import AddSolution from "../../admin/containers/components/AddSolution";
+// import {load_solutions} from "../../redux/actions/admin/tasks";
 
 const TasksTableRow = ({
-  material,
-  update_modal,
-  delete_modal,
-  groups_list,
-  load_groups_list,
-  load_user,
-  user,
-  
-}) => {
-  const { id, name, training_groups, file } = material
+                         task,
+                         update_modal,
+                         delete_modal,
+                         groups_list,
+                         load_groups_list,
+                         load_user,
+                         user,
+                         delete_task,
+
+                       }) => {
+  const {id, name, description, training_group, file, students, solution} = task
+
+  const [fileName, setFileName] = useState('')
+  const [rowOpened, setRowOpened] = useState(false)
+  const [activeRow, setActiveRow] = useState(false)
+  const [positiveRow, setPositiveRow] = useState(false)
+
+  const handleRowClick = () => {
+    setRowOpened(!rowOpened)
+  }
+
+
+  const handleDeleteTask = () => {
+    delete_task(id)
+  }
+
+  // useEffect(() => {
+  //   if(students.some(item => !item.solution.mark)){
+  //     setActiveRow(true)
+  //   } else {
+  //     setActiveRow(false)
+  //   }
+  // }, [students])
 
   useEffect(() => {
-    load_groups_list()
+    if (file) {
+      let arr = file.split('/')
+      setFileName(arr[arr.length - 1])
+    }
   }, [])
+
   useEffect(() => {
     if (!user) {
       load_user()
     }
   }, [])
 
+  useEffect(() => {
+    if (user.is_student) {
+      if (solution) {
+        setActiveRow(false)
+      } else {
+        setActiveRow(true)
+      }
+    }
+    if (user.is_teacher) {
+      if (students && students.some(item => item.solution && !item.solution.mark)) {
+        setActiveRow(true)
+        setPositiveRow(false)
+      } else if (students && students.some(item => item.solution && item.solution.mark)) {
+        setPositiveRow(true)
+        setActiveRow(false)
+      } else {
+        setActiveRow(false)
+        setPositiveRow(false)
+      }
+    }
+  }, [user, solution])
+
   const ActionSection = () => {
     if (user) {
       if (user.is_student) {
-        return ''
+        return (
+          <td>
+            <AddSolution task={task}/>
+          </td>
+        )
       } else {
         return (
           <td>
-            <a
-              className='edit'
-              data-toggle='modal'
-              onClick={() => update_modal(id)}
-            >
-              <i className='material-icons' data-toggle='tooltip' title='Edit'>
-                &#xE254;
-              </i>
-            </a>
-            <a
-              className='delete'
-              data-toggle='modal'
-              onClick={() => delete_modal(id)}
-            >
-              <i
-                className='material-icons'
-                data-toggle='tooltip'
-                title='Delete'
-              >
-                &#xE872;
-              </i>
-            </a>
+            <UpdateTaskModal task={task}/>
+            <DeleteModal name='задание' action={handleDeleteTask}/>
           </td>
         )
       }
@@ -62,16 +103,15 @@ const TasksTableRow = ({
   const GroupsSection = () => {
     if (user) {
       if (user.is_student) {
-        return ''
+        return (
+          <td>
+            {task.teacher}
+          </td>
+        )
       } else {
         return (
           <td>
-            {groups_list.length > 0 &&
-              groups_list.map(item => {
-                if (item.id == training_groups) {
-                  return item.name
-                }
-              })}
+            {training_group}
           </td>
         )
       }
@@ -80,11 +120,69 @@ const TasksTableRow = ({
 
   return (
     <tr>
-      <GroupsSection />
+      <GroupsSection/>
       <td>
-        <a href={file}>{name}</a>
+        <div className="row-name-wrapper">
+          <div className="row-name-section">
+            <div className="row-name" onClick={handleRowClick} style={{cursor: 'pointer'}}>
+              {activeRow && (
+                <div className='new-solutions'/>
+              )}
+              {positiveRow && (
+                <div className='new-solutions-marks'/>
+              )}
+              {rowOpened ? 'Название: ' + name : name}
+            </div>
+            {rowOpened && (
+              <>
+                <div className="row-description">
+                  Описание: {description}
+                </div>
+                {file && (
+                  <div className="row-file">
+                    Скачать файл: <a href={file}>{fileName}</a>
+                  </div>
+                )}
+              </>
+            )}
+          </div>
+          {rowOpened && !user.is_student && (
+            <div className="row-student-section">
+              <div className="row-title">
+                Слушатели:{' '}
+              </div>
+              <div className="row-students-list">
+                {students && students.map(item => {
+                  if (item.solution) {
+                    return (
+                      <Solution
+                        key={item.id}
+                        student_name={item.name}
+                        task_name={task.name}
+                        solution={item.solution}
+                        task_id={task.id}
+                        student_id={item.id}
+                      />
+                    )
+                  } else {
+                    return (
+                      <div key={item.id} className='student-item-grey'>
+                        {item.name}
+                      </div>
+                    )
+                  }
+                })}
+              </div>
+            </div>
+          )}
+        </div>
       </td>
-      <ActionSection />
+      {user && user.is_student && (
+        <td>
+          {task && task.solution && task.solution.mark}
+        </td>
+      )}
+      <ActionSection/>
     </tr>
   )
 }
@@ -97,4 +195,5 @@ const mapStateToProps = state => ({
 export default connect(mapStateToProps, {
   load_groups_list,
   load_user,
+  delete_task,
 })(TasksTableRow)

@@ -156,12 +156,12 @@ const Dashboard = ({
             user.rating.tasks_count - user.rating.solutions_count,
           ],
           labels: ['Выполнено', 'Не выполнено'],
-          solutions_mark_avg: solutions_mark_avg,
-          tasks_rating: tasks_rating,
+          // solutions_mark_avg: solutions_mark_avg,
+          // tasks_rating: tasks_rating,
         })
       }
     }
-  })
+  }, [])
 
   const toggle = (tab, name) => e => {
     if (activeItem !== tab) {

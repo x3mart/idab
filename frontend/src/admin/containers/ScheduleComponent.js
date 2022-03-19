@@ -67,7 +67,7 @@ const ScheduleComponent = ({
   const [activeItem, setActiveItem] = useState(null)
   const [scheduleItems, setScheduleItems] = useState([])
 
-  const toggle = tab => e => {
+  const toggle = tab => {
     if (activeItem !== tab) {
       setActiveItem(tab)
       setData(scheduleItems.filter(item => item.training_group == tab))
@@ -132,7 +132,7 @@ const ScheduleComponent = ({
                       <MDBNavLink
                         link
                         active={activeItem === item.id}
-                        onClick={toggle(item.id)}
+                        onClick={() => toggle(item.id)}
                         role='tab'
                       >
                         {item.name}

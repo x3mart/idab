@@ -150,11 +150,11 @@ const AdminLayout = ({ children, user }) => {
                       icon='fas fa-book'
                       name='Библиотека'
                     />
-                    <SubHeading
-                      link='/dashboard/study/tasks'
-                      icon='fas fa-user-check'
-                      name='Задания'
-                    />
+                    {/*<SubHeading*/}
+                    {/*  link='/dashboard/study/tasks'*/}
+                    {/*  icon='fas fa-user-check'*/}
+                    {/*  name='Задания'*/}
+                    {/*/>*/}
                     <SubHeading
                       link='/dashboard/study/admittance'
                       icon='fas fa-calendar-check'

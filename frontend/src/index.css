@@ -608,3 +608,125 @@ a {
     color: #7099AD!important;
     pointer-events: none;
 }
+
+.group-select {
+    margin-bottom: 0!important;
+}
+
+.group-select select {
+    border: none;
+    padding-right: 20px;
+    padding-bottom: 5px;
+    border-bottom: 1px solid #000;
+}
+
+.row-name-wrapper {
+    display: flex;
+}
+
+.row-name-section {
+    flex:1;
+    display: flex;
+    flex-direction: column;
+}
+
+.row-description, .row-file {
+    margin-top: 10px;
+}
+
+.row-student-section {
+    flex:1;
+    display: flex;
+}
+
+.row-students-list {
+    margin-left: 5px;
+     display: flex;
+     flex-direction: column;
+ }
+
+.student-item-green {
+    color: #00c851;
+}
+
+.student-item-red {
+    color: #F44336;
+}
+
+.student-item-grey {
+    color: #AEAEAE;
+}
+
+.modal-header {
+    background-color: #7099AD;
+}
+
+.form-group label {
+    color: #7099AD;
+}
+
+.form-group select {
+    margin-bottom: 15px;
+}
+
+.new-solutions {
+    height: 5px;
+    width: 5px;
+    background-color: #F44336;
+    border-radius: 50%;
+    margin-left: -10px;
+    margin-right: 5px;
+}
+
+.new-solutions-marks {
+    height: 5px;
+    width: 5px;
+    background-color: #00c851;
+    border-radius: 50%;
+    margin-left: -10px;
+    margin-right: 5px;
+}
+
+.row-name {
+    display: flex;
+    align-items: center;
+}
+
+.add-solution {
+    color: #00c851;
+    cursor: pointer;
+}
+
+.view-solution {
+    color: #5b2732;
+    cursor: pointer;
+}
+
+.mark-wrapper {
+    margin-top: 30px;
+    display: flex;
+}
+
+.mark-wrapper input {
+    width: 45px;
+    padding-bottom: 1px;
+    margin: 0 10px 10px 10px;
+    border: none;
+    border-bottom: 1px solid #000;
+    font-size: 1.25rem;
+    line-height: 1.25rem;
+}
+
+.mark-wrapper input[type="number"]::-webkit-outer-spin-button,
+.mark-wrapper input[type="number"]::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+.mark-wrapper input[type="number"] {
+    -moz-appearance: textfield;
+}
+.mark-wrapper input[type="number"]:hover,
+.mark-wrapper input[type="number"]:focus {
+    -moz-appearance: number-input;
+}

@@ -9,17 +9,13 @@ import {
   UPDATE_TASK_FAIL,
   DELETE_TASK_SUCCESS,
   DELETE_TASK_FAIL,
-  GET_SOLUTIONS_SUCCESS,
-  GET_SOLUTIONS_FAIL,
-  SET_SOLUTION_SUCCESS,
-  SET_SOLUTION_FAIL,
-  UPDATE_SOLUTION_SUCCESS,
-  UPDATE_SOLUTION_FAIL,
-  DELETE_SOLUTION_SUCCESS,
-  DELETE_SOLUTION_FAIL,
+  ADD_SOLUTION_SUCCESS,
+  ADD_SOLUTION_FAIL,
+  ADD_MARK_SUCCESS,
+  ADD_MARK_FAIL,
 } from '../types'
 
-export const load_tasks = () => async dispatch => {
+export const load_tasks = (id) => async dispatch => {
   if (localStorage.getItem('access')) {
     const config = {
       headers: {
@@ -29,9 +25,11 @@ export const load_tasks = () => async dispatch => {
       },
     }
 
+    let url = id ? `${process.env.REACT_APP_API_URL}/api/lk/tasks/?training_group=${id}` : `${process.env.REACT_APP_API_URL}/api/lk/tasks/`
+
     try {
       const res = await axios.get(
-        `${process.env.REACT_APP_API_URL}/api/lk/tasks/`,
+        url,
         config
       )
 
@@ -123,6 +121,7 @@ export const update_task = (task) => async dispatch => {
     })
   }
 }
+
 export const delete_task = id => async dispatch => {
   const config = {
     headers: {
@@ -149,42 +148,7 @@ export const delete_task = id => async dispatch => {
   }
 }
 
-
-
-
-
-export const load_solutions = () => async dispatch => {
-  if (localStorage.getItem('access')) {
-    const config = {
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `JWT ${localStorage.getItem('access')}`,
-        Accept: 'application/json',
-      },
-    }
-
-    try {
-      const res = await axios.get(
-        `${process.env.REACT_APP_API_URL}/api/lk/solutions/`,
-        config
-      )
-
-      dispatch({
-        type: GET_SOLUTIONS_SUCCESS,
-        payload: res.data,
-      })
-    } catch (err) {
-      dispatch({
-        type: GET_SOLUTIONS_FAIL,
-      })
-    }
-  } else {
-    dispatch({
-      type: GET_SOLUTIONS_FAIL,
-    })
-  }
-}
-export const add_solution = task => async dispatch => {
+export const add_solution = (task) => async dispatch => {
   const config = {
     headers: {
       'Content-Type': 'multipart/form-data',
@@ -192,13 +156,12 @@ export const add_solution = task => async dispatch => {
     },
   }
 
-  const { name, description, url, file } = task
+  const { id, description, file } = task
 
   const form_data = new FormData()
-  form_data.append('name', name)
-  form_data.append('description', description)
-  if (url) {
-    form_data.append('url', url)
+
+  if (description) {
+    form_data.append('description', description)
   }
   if (file) {
     form_data.append('file', file, file.name)
@@ -206,22 +169,23 @@ export const add_solution = task => async dispatch => {
 
   try {
     const res = await axios.post(
-      `${process.env.REACT_APP_API_URL}/api/lk/solutions/`,
+      `${process.env.REACT_APP_API_URL}/api/lk/tasks/${id}/solution/`,
       form_data,
       config
     )
 
     dispatch({
-      type: SET_SOLUTION_SUCCESS,
+      type: ADD_SOLUTION_SUCCESS,
       payload: res.data,
     })
   } catch (err) {
     dispatch({
-      type: SET_SOLUTION_FAIL,
+      type: ADD_SOLUTION_FAIL,
     })
   }
 }
-export const update_solution = (id, task) => async dispatch => {
+
+export const add_mark = (solution) => async dispatch => {
   const config = {
     headers: {
       'Content-Type': 'multipart/form-data',
@@ -229,20 +193,12 @@ export const update_solution = (id, task) => async dispatch => {
     },
   }
 
-  const { name, description, url, file } = task
+  const { student_id, id, mark, task_id } = solution
 
   const form_data = new FormData()
-  if (name) {
-    form_data.append('name', name)
-  }
-  if (description) {
-    form_data.append('description', description)
-  }
-  if (url) {
-    form_data.append('url', url)
-  }
-  if (file) {
-    form_data.append('file', file, file.name)
+
+  if (mark) {
+    form_data.append('mark', mark)
   }
 
   try {
@@ -252,38 +208,17 @@ export const update_solution = (id, task) => async dispatch => {
       config
     )
 
+    let payload = {solution_id: id, data: res.data, student_id: student_id,
+      task_id: task_id}
+
     dispatch({
-      type: UPDATE_SOLUTION_SUCCESS,
-      payload: res.data,
+      type: ADD_MARK_SUCCESS,
+      payload: payload,
     })
   } catch (err) {
     dispatch({
-      type: UPDATE_SOLUTION_FAIL,
+      type: ADD_MARK_FAIL,
     })
   }
 }
-export const delete_solution = id => async dispatch => {
-  const config = {
-    headers: {
-      'Content-Type': 'application/json',
-      Authorization: `JWT ${localStorage.getItem('access')}`,
-      Accept: 'application/json',
-    },
-  }
 
-  try {
-    await axios.delete(
-      `${process.env.REACT_APP_API_URL}/api/lk/solutions/${id}/`,
-      config
-    )
-
-    dispatch({
-      type: DELETE_SOLUTION_SUCCESS,
-      payload: id,
-    })
-  } catch (err) {
-    dispatch({
-      type: DELETE_SOLUTION_FAIL,
-    })
-  }
-}
