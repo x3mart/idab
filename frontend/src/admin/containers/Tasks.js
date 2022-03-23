@@ -89,8 +89,8 @@ const Tasks = ({isAuthenticated, load_user, user, load_tasks, tasks, load_groups
               {tasks && tasks.length > 0 &&
                 tasks.map(item => (
                   <TasksTableRow
-                    key={item.id}
-                    task={item}
+                    key={item && item.id}
+                    task={item && item}
                     // update_modal={updateRow}
                     // delete_modal={deleteRow}
                   />

@@ -23,7 +23,6 @@ const TasksTableRow = ({
                          delete_task,
 
                        }) => {
-  const {id, name, description, training_group, file, students, solution} = task
 
   const [fileName, setFileName] = useState('')
   const [rowOpened, setRowOpened] = useState(false)
@@ -36,7 +35,7 @@ const TasksTableRow = ({
 
 
   const handleDeleteTask = () => {
-    delete_task(id)
+    delete_task(task.id)
   }
 
   // useEffect(() => {
@@ -48,8 +47,8 @@ const TasksTableRow = ({
   // }, [students])
 
   useEffect(() => {
-    if (file) {
-      let arr = file.split('/')
+    if (task && task.file) {
+      let arr = task.file.split('/')
       setFileName(arr[arr.length - 1])
     }
   }, [])
@@ -62,17 +61,17 @@ const TasksTableRow = ({
 
   useEffect(() => {
     if (user.is_student) {
-      if (solution) {
+      if (task && task.solution) {
         setActiveRow(false)
       } else {
         setActiveRow(true)
       }
     }
     if (user.is_teacher) {
-      if (students && students.some(item => item.solution && !item.solution.mark)) {
+      if (task && task.students && task.students.some(item => item.solution && !item.solution.mark)) {
         setActiveRow(true)
         setPositiveRow(false)
-      } else if (students && students.some(item => item.solution && item.solution.mark)) {
+      } else if (task && task.students && task.students.some(item => item.solution && item.solution.mark)) {
         setPositiveRow(true)
         setActiveRow(false)
       } else {
@@ -80,7 +79,7 @@ const TasksTableRow = ({
         setPositiveRow(false)
       }
     }
-  }, [user, solution])
+  }, [user, task])
 
   const ActionSection = () => {
     if (user) {
@@ -111,7 +110,7 @@ const TasksTableRow = ({
       } else {
         return (
           <td>
-            {training_group}
+            {task && task.training_group}
           </td>
         )
       }
@@ -131,16 +130,16 @@ const TasksTableRow = ({
               {positiveRow && (
                 <div className='new-solutions-marks'/>
               )}
-              {rowOpened ? 'Название: ' + name : name}
+              {rowOpened ? 'Название: ' + task && task.name : task && task.name}
             </div>
             {rowOpened && (
               <>
                 <div className="row-description">
-                  Описание: {description}
+                  Описание: {task && task.description}
                 </div>
-                {file && (
+                {task && task.file && (
                   <div className="row-file">
-                    Скачать файл: <a href={file}>{fileName}</a>
+                    Скачать файл: <a href={task && task.file}>{fileName}</a>
                   </div>
                 )}
               </>
@@ -152,7 +151,7 @@ const TasksTableRow = ({
                 Слушатели:{' '}
               </div>
               <div className="row-students-list">
-                {students && students.map(item => {
+                {task && task.students && task.students.map(item => {
                   if (item.solution) {
                     return (
                       <Solution

@@ -13,11 +13,11 @@ const AddSolution = ({task, add_solution}) => {
   const [fileName, setFileName] = useState('')
 
   useEffect(() => {
-    if (task.solution.file) {
+    if (task && task.solution && task.solution.file) {
       let arr = task.solution.file.split('/')
       setFileName(arr[arr.length - 1])
     }
-  }, [task.solution.file])
+  }, [task])
 
   const handleSubmit = e => {
     e.preventDefault()
@@ -65,10 +65,10 @@ const AddSolution = ({task, add_solution}) => {
                       Решение:
                     </h5>
                     <p>
-                      {task.solution.description}
+                      {task && task.solution && task.solution.description}
                     </p>
                   </div>
-                  {task.solution.file && (<div className="solution-file">
+                  {task && task.solution && task.solution.file && (<div className="solution-file">
                     <h5>
                       Скачать файл с решением:
                     </h5>
@@ -77,7 +77,7 @@ const AddSolution = ({task, add_solution}) => {
                 </div>
                 <div className="mark-wrapper">
                   <h5>Оценка:</h5>
-                  <input type="number" disabled value={task.solution.mark}/>
+                  <input type="number" disabled value={task && task.solution && task.solution.mark}/>
                   <h5>баллов</h5>
                 </div>
               </div>
