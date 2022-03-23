@@ -45,7 +45,7 @@ class StudentsSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Student
-        fields = ('name', 'solution')
+        fields = ('id', 'name', 'solution')
     
     def get_solution(self, obj):
         request = self.context.get('request')
