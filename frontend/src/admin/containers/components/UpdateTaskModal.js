@@ -25,8 +25,8 @@ const UpdateTaskModal = ({
   const [taskFile, setTaskFile] = useState(null)
 
   useEffect(() => {
-    console.log(task.training_group)
-    sort_students(task.training_group)
+    console.log(task && task.training_group)
+    sort_students(task && task.training_group)
   }, [task])
 
   useEffect(() => {
