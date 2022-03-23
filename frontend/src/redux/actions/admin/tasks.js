@@ -64,7 +64,7 @@ export const add_task = task => async dispatch => {
   form_data.append('students', students)
   form_data.append('name', name)
   form_data.append('description', description)
-  form_data.append('file', file, file.name)
+  file && form_data.append('file', file, file.name)
 
   try {
     const res = await axios.post(
