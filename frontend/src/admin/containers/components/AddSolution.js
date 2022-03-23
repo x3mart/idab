@@ -13,11 +13,11 @@ const AddSolution = ({task, add_solution}) => {
   const [fileName, setFileName] = useState('')
 
   useEffect(() => {
-    if (task.solution.file) {
+    if (task && task.solution && task.solution.file) {
       let arr = task.solution.file.split('/')
       setFileName(arr[arr.length - 1])
     }
-  }, [task.solution.file])
+  }, [task])
 
   const handleSubmit = e => {
     e.preventDefault()
@@ -68,7 +68,7 @@ const AddSolution = ({task, add_solution}) => {
                       {task.solution.description}
                     </p>
                   </div>
-                  {task.solution.file && (<div className="solution-file">
+                  {task && task.solution && task.solution.file && (<div className="solution-file">
                     <h5>
                       Скачать файл с решением:
                     </h5>
